@@ -163,6 +163,12 @@ function renderStats() {
 $('exportExcel').onclick = () => exportExcel($('toast'));
 initBackupButtons($('exportBackup'), $('importBackup'), $('importFile'), $('toast'), () => { renderStats(); });
 
+// New data from another device: refresh counts; reload newer settings unless you are editing
+window.addEventListener('cloud-updated', e => {
+  renderStats();
+  if (e.detail.configChanged && !dirty) location.reload();
+});
+
 renderEditor('songs');
 renderEditor('albums');
 renderStats();

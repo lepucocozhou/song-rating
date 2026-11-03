@@ -11,11 +11,19 @@ const store = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
 };
 
+// Called after every change to saved data; cloud.js uses it to upload (no-op without cloud)
+let onDataChanged = () => {};
+const now = () => new Date().toISOString();
+
 /* ---------- settings ---------- */
+// Stored with _updatedAt so the newest settings win when syncing devices; _reset = use the defaults
 const Config = {
-  load: () => ({ ...clone(DEFAULT_CONFIG), ...store.get('songRatingConfig', {}) }),
-  save: cfg => store.set('songRatingConfig', cfg),
-  reset: () => { try { localStorage.removeItem('songRatingConfig'); } catch (e) {} },
+  load() {
+    const saved = store.get('songRatingConfig', null);
+    return saved && !saved._reset ? { ...clone(DEFAULT_CONFIG), ...saved } : clone(DEFAULT_CONFIG);
+  },
+  save(cfg) { store.set('songRatingConfig', { ...cfg, _updatedAt: now() }); onDataChanged(); },
+  reset() { store.set('songRatingConfig', { _reset: true, _updatedAt: now() }); onDataChanged(); },
 };
 const CONFIG = Config.load();
 const SONG_CATS = CONFIG.songs;
@@ -30,18 +38,27 @@ function normAnswers(a) {
   return out;
 }
 
+// Every record carries updatedAt; a deleted record stays as { id, deleted: true, updatedAt }
+// so that the deletion also reaches other devices when syncing.
 function makeCollection(key) {
   const c = {
-    all: () => store.get(key, []).map(r => ({ ...r, answers: normAnswers(r.answers) })),
-    saveAll: list => store.set(key, list),
+    raw: () => store.get(key, []),
+    all: () => c.raw().filter(r => !r.deleted).map(r => ({ ...r, answers: normAnswers(r.answers) })),
     get: id => c.all().find(r => r.id === id),
-    upsert(rec) {
-      const list = c.all();
+    // Replace all records (keeps deletion markers of ids that are not in the list)
+    saveAll(list) {
+      const ids = new Set(list.map(r => r.id));
+      c.setRaw([...list, ...c.raw().filter(r => r.deleted && !ids.has(r.id))]);
+    },
+    upsert(rec) { c.put({ ...rec, updatedAt: now() }); },
+    remove(id) { c.put({ id, deleted: true, updatedAt: now() }); },
+    put(rec) {
+      const list = c.raw();
       const pos = list.findIndex(r => r.id === rec.id);
       if (pos >= 0) list[pos] = rec; else list.push(rec);
-      c.saveAll(list);
+      c.setRaw(list);
     },
-    remove: id => c.saveAll(c.all().filter(r => r.id !== id)),
+    setRaw(list, silent) { store.set(key, list); if (!silent) onDataChanged(); },
   };
   return c;
 }
@@ -181,6 +198,7 @@ function download(name, data, type) {
   ];
   h.innerHTML = `<div class="wrap head">
     <a class="logo" href="index.html">🎵 Song Rating</a>
+    <a class="cloud" id="cloudChip" href="einstellungen.html#konto" hidden></a>
     <nav>${tabs.map(([k, href, label]) => `<a class="tab ${h.dataset.active === k ? 'active' : ''}" href="${href}">${label}</a>`).join('')}</nav>
   </div>`;
   refreshCounts();
