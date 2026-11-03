@@ -185,12 +185,13 @@ function download(name, data, type) {
 }
 
 /* ---------- header ---------- */
-// <header id="top" data-active="songs|rate|albums|rateAlbum|settings"></header>
+// <header id="top" data-active="start|songs|rate|albums|rateAlbum|settings"></header>
 (function renderHeader() {
   const h = $('top');
   if (!h) return;
   const tabs = [
-    ['songs', 'index.html', 'Songs <span class="count" id="countSongs"></span>'],
+    ['start', 'index.html', 'Start'],
+    ['songs', 'songs.html', 'Songs <span class="count" id="countSongs"></span>'],
     ['rate', 'bewerten.html', '+ Song'],
     ['albums', 'alben.html', 'Alben <span class="count" id="countAlbums"></span>'],
     ['rateAlbum', 'album.html', '+ Album'],
@@ -211,8 +212,8 @@ function renderTabbar(active) {
   const ICONS = {
     songs: icon('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
     albums: icon('<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="2.5"/>'),
+    start: icon('<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>'),
     plus: icon('<path d="M12 5v14M5 12h14"/>'),
-    cloud: icon('<path d="M17.5 19H8a5 5 0 1 1 .9-9.9A6 6 0 0 1 20 11a4 4 0 0 1-2.5 8z"/>'),
     settings: icon('<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>'),
   };
   const item = (key, href, label, isActive) =>
@@ -224,10 +225,10 @@ function renderTabbar(active) {
       <a href="album.html">💿 <span>Album bewerten</span></a>
     </div>
     <nav class="tabbar">
-      ${item('songs', 'index.html', 'Songs', active === 'songs')}
-      ${item('albums', 'alben.html', 'Alben', active === 'albums')}
+      ${item('start', 'index.html', 'Start', active === 'start')}
+      ${item('songs', 'songs.html', 'Songs', active === 'songs')}
       <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${ICONS.plus}</button>
-      <a href="einstellungen.html#konto" id="tabCloud">${ICONS.cloud}<span>Konto</span></a>
+      ${item('albums', 'alben.html', 'Alben', active === 'albums')}
       ${item('settings', 'einstellungen.html', 'Einstellungen', active === 'settings')}
     </nav>`);
   $('plusBtn').onclick = e => { e.stopPropagation(); $('plusSheet').hidden = !$('plusSheet').hidden; };

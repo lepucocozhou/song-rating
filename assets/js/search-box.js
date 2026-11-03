@@ -1,14 +1,15 @@
 // Search-as-you-type box with suggestions (used for songs and albums).
-// opts: { search(term) → Promise<items>, title(item), sub(item), onPick(item) }
+// opts: { search(term) → Promise<items>, title(item), sub(item), onPick(item),
+//         trending() → Promise<items> shown while the box is still empty }
 
 function initSearchBox(input, list, opts) {
-  let results = [], hl = -1, timer = null, lastTerm = '';
+  let results = [], hl = -1, timer = null, lastTerm = '', heading = '';
 
   function show(html) { list.innerHTML = html; list.hidden = !html; }
 
   function renderResults() {
     if (!results.length) return show('<div class="sug-msg">Nichts gefunden – du kannst die Details unten auch selbst eintragen.</div>');
-    show(results.map((r, i) => `
+    show((heading ? `<div class="sug-head">${heading}</div>` : '') + results.map((r, i) => `
       <div class="sug ${i === hl ? 'hl' : ''}" data-i="${i}">
         <img src="${esc(Itunes.artwork(r.artwork, 100))}" alt="">
         <div><div class="t">${esc(opts.title(r))}</div><div class="sub">${esc(opts.sub(r))}</div></div>
@@ -17,6 +18,7 @@ function initSearchBox(input, list, opts) {
 
   async function run(term) {
     lastTerm = term;
+    heading = '';
     show('<div class="sug-msg">Suche …</div>');
     try {
       const found = await opts.search(term);
@@ -39,7 +41,7 @@ function initSearchBox(input, list, opts) {
   input.addEventListener('input', () => {
     clearTimeout(timer);
     const term = input.value.trim();
-    if (term.length < 2) { lastTerm = ''; return show(''); }
+    if (term.length < 2) { lastTerm = ''; return showTrending(); }
     timer = setTimeout(() => run(term), 300);
   });
   input.addEventListener('keydown', e => {
@@ -58,8 +60,20 @@ function initSearchBox(input, list, opts) {
   });
   // Keep the suggestions open when the phone keyboard closes; hide them only on a tap outside the search box
   document.addEventListener('pointerdown', e => { if (!input.parentElement.contains(e.target)) show(''); });
+  // Empty box: suggest what is popular right now
+  async function showTrending() {
+    if (!opts.trending) return show('');
+    try {
+      const items = await opts.trending();
+      if (input.value.trim().length >= 2 || document.activeElement !== input) return;
+      results = items; hl = -1; heading = '🔥 Gerade in den Charts';
+      if (items.length) renderResults();
+    } catch (e) { show(''); }
+  }
+
   input.addEventListener('focus', () => {
     if (input.value.trim().length >= 2 && results.length) renderResults();
+    else if (!input.value.trim()) showTrending();
     // On phones, move the search box up so the suggestions are not hidden behind the keyboard
     if (window.innerWidth < 700) setTimeout(() => input.scrollIntoView({ block: 'start', behavior: 'smooth' }), 300);
   });

@@ -12,28 +12,42 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <title>Song Rating</title>
 <link rel="stylesheet" href="assets/css/base.css">
-<link rel="stylesheet" href="assets/css/liste.css">
+<link rel="stylesheet" href="assets/css/start.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
 </head>
 <body>
-<header id="top" data-active="songs"></header>
+<header id="top" data-active="start"></header>
 
-<main class="wrap">
-  <div class="tools">
-    <input id="filter" placeholder="Suchen nach Song, Artist, Album …">
-    <select id="sort" aria-label="Sortieren"></select>
-    <div class="seg">
-      <button data-view="gallery">▦ Galerie</button>
-      <button data-view="table">☰ Tabelle</button>
+<main class="wrap start">
+  <section class="hero">
+    <div>
+      <h1 id="greeting"></h1>
+      <p id="summary"></p>
     </div>
-    <a class="btn primary" href="bewerten.html">+ Song bewerten</a>
-  </div>
-  <div class="tools2">
-    <button id="fetchCovers" hidden>🖼 Fehlende Cover suchen</button>
-    <button class="excel" id="exportExcel">📊 Excel exportieren</button>
-    <span class="toast" id="toast"></span>
-  </div>
-  <div id="list"></div>
+    <div class="hero-actions">
+      <a class="btn primary" href="bewerten.html">🎵 Song bewerten</a>
+      <a class="btn" href="album.html">💿 Album bewerten</a>
+    </div>
+  </section>
+
+  <!-- filled by start.js: stats, top 3, charts – or a short intro when nothing is rated yet -->
+  <div id="mine"></div>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>🆕 Neu &amp; angesagt</h2>
+      <span>Neue Songs aus den deutschen Charts – antippen zum Bewerten</span>
+    </div>
+    <div class="rail" id="newSongs"><div class="rail-msg">Lade Charts …</div></div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>💿 Neue Alben</h2>
+      <span>Frisch erschienen und gerade beliebt</span>
+    </div>
+    <div class="rail" id="newAlbums"><div class="rail-msg">Lade Charts …</div></div>
+  </section>
 </main>
 
 <script src="assets/js/defaults.js"></script>
@@ -42,8 +56,7 @@
 <script src="assets/js/cloud-config.js"></script>
 <script src="assets/js/cloud.js"></script>
 <script src="assets/js/itunes.js"></script>
-<script src="assets/js/list-view.js"></script>
-<script src="assets/js/excel.js"></script>
-<script src="assets/js/songs.js"></script>
+<script src="assets/js/charts.js"></script>
+<script src="assets/js/start.js"></script>
 </body>
 </html>

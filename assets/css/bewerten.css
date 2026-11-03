@@ -121,3 +121,4 @@
   .bar-cover{width:48px;height:48px}
   .search input{scroll-margin-top:90px}
 }
+.sug-head{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:10px 12px 4px}

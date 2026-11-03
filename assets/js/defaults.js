@@ -32,7 +32,7 @@ const DEFAULT_CONFIG = {
       ],
     },
     {
-      id: "c2", name: "Production & Sound", w: 0.18, color: "#14b8a6",
+      id: "c2", name: "Production & Sound", w: 0.18, color: "#16a34a",
       qs: [
         { id: "q5", q: "How good is the overall sound quality and mix?", w: 0.25, na: false,
           think: "Think: can I hear everything clearly and does it sound good? Judge it relative to the style (intentional lo-fi is fine).",

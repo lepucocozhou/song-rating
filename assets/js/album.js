@@ -1,5 +1,6 @@
 // Album rating page: pick an album, choose how much its songs count, rate songs + album questions, save.
-// URL: ?id=… edits a saved album; otherwise the unsaved draft is continued.
+// URL: ?id=… edits a saved album · ?collectionId=… starts a new rating of that Apple album
+//      (from the start page); otherwise the unsaved draft is continued.
 
 const params = new URLSearchParams(location.search);
 const albumIn = $('album'), artistIn = $('artist');
@@ -22,15 +23,18 @@ const form = createQuestionnaire({
 /* ---------- album search ---------- */
 initSearchBox($('search'), $('suggest'), {
   search: term => Itunes.searchAlbums(term),
+  trending: async () => (await Itunes.charts()).albums.slice(0, 8),
   title: r => r.album,
   sub: r => `${r.artist}${r.year ? ' · ' + r.year : ''}${r.trackCount ? ' · ' + r.trackCount + ' Songs' : ''}`,
-  onPick(r) {
-    albumIn.value = r.album; artistIn.value = r.artist;
-    meta = Object.fromEntries(META_KEYS.map(k => [k, r[k]]));
-    tracks = []; excluded = [];
-    loadTracks();
-  },
+  onPick: pickAlbum,
 });
+
+function pickAlbum(r) {
+  albumIn.value = r.album; artistIn.value = r.artist;
+  meta = Object.fromEntries(META_KEYS.map(k => [k, r[k]]));
+  tracks = []; excluded = [];
+  loadTracks();
+}
 ['album', 'artist'].forEach(id => $(id).addEventListener('input', update));
 
 async function loadTracks() {
@@ -234,5 +238,9 @@ const draft = store.get('albumRatingDraft', null);
 const editId = params.get('id');
 if (editId && draft && draft.id === editId) setForm(draft);
 else if (editId && Albums.get(editId)) setForm(Albums.get(editId));
+else if (params.get('collectionId')) {
+  setForm({});
+  Itunes.lookupAlbum(params.get('collectionId')).then(r => { if (r) pickAlbum(r); });
+}
 else setForm(draft && !draft.id ? draft : {});
 form.goto(editId ? form.lastStep : tracks.length ? 1 : 0);

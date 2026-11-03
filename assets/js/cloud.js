@@ -128,6 +128,6 @@ const Cloud = (() => {
 
 // Overview pages: show data that arrived from another device
 window.addEventListener('cloud-updated', e => {
-  if (e.detail.configChanged && /index\.html|alben\.html|\/$/.test(location.pathname)) location.reload();
+  if (e.detail.configChanged && /(index|songs|alben)\.html|\/$/.test(location.pathname)) location.reload();
   else if (typeof list !== 'undefined' && list.render) list.render();
 });

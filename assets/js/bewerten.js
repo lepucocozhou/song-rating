@@ -25,6 +25,7 @@ if (back && back.startsWith('album.html')) {
 /* ---------- song search + picked song ---------- */
 initSearchBox($('search'), $('suggest'), {
   search: term => Itunes.search(term),
+  trending: async () => (await Itunes.charts()).songs.slice(0, 8),
   title: r => r.song,
   sub: r => `${r.artist} · ${r.album}${r.year ? ' · ' + r.year : ''}`,
   onPick(r) {
@@ -122,7 +123,7 @@ $('save').onclick = () => {
   pickedKey = '';
   update();
   $('toast').innerHTML = `„${esc(rec.song)}“ gespeichert ✓ ` +
-    (back ? `<a href="${esc(back)}">Zurück zum Album →</a>` : '<a href="index.html">Zur Übersicht →</a>');
+    (back ? `<a href="${esc(back)}">Zurück zum Album →</a>` : '<a href="songs.html">Zu deinen Songs →</a>');
 };
 
 $('newSong').onclick = () => {
@@ -135,7 +136,7 @@ $('delete').onclick = () => {
   if (!confirm(`„${song.value}“ aus der Übersicht löschen?`)) return;
   Songs.remove(editingId);
   store.set('songRatingDraft', null);
-  location.href = back || 'index.html';
+  location.href = back || 'songs.html';
 };
 
 // ?id=… opens a saved song, ?prefill=1 starts a new one with given details, otherwise continue the draft
