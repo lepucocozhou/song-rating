@@ -6,8 +6,16 @@
 const Cloud = (() => {
   if (!window.supabase || typeof CLOUD_URL === 'undefined') return null;
   const sb = supabase.createClient(CLOUD_URL, CLOUD_KEY, {
-    auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit' },
+    auth: {
+      persistSession: true, autoRefreshToken: true, detectSessionInUrl: true, flowType: 'implicit',
+      // No cross-tab lock: with several tabs open, a frozen background tab could hold the lock forever
+      // and every sync in the active tab would wait for it.
+      lock: (name, timeout, fn) => fn(),
+    },
   });
+  const SYNC_TIMEOUT = 20000;
+  const withTimeout = p => Promise.race([p, new Promise((_, reject) =>
+    setTimeout(() => reject(new Error('Zeitüberschreitung – der Server hat nicht geantwortet')), SYNC_TIMEOUT))]);
   const listeners = [];
   let user = null;
   let status = 'idle';   // idle | syncing | ok | offline | error
@@ -58,6 +66,7 @@ const Cloud = (() => {
     }
     store.set('cloudPending', false);
     store.set('cloudLastSync', now());
+    store.set('cloudCounts', { songs: merged.songs.filter(r => !r.deleted).length, albums: merged.albums.filter(r => !r.deleted).length });
   }
 
   async function sync() {
@@ -66,8 +75,13 @@ const Cloud = (() => {
     running = (async () => {
       do {
         again = false;
-        try { await syncOnce(); setStatus('ok'); }
-        catch (e) { console.warn('Cloud sync failed', e); setStatus(navigator.onLine ? 'error' : 'offline'); break; }
+        try { await withTimeout(syncOnce()); store.set('cloudLastError', null); setStatus('ok'); }
+        catch (e) {
+          console.warn('Cloud sync failed', e);
+          store.set('cloudLastError', e.message || String(e));
+          setStatus(navigator.onLine ? 'error' : 'offline');
+          break;
+        }
       } while (again);
     })();
     await running;

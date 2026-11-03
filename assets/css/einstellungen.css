@@ -66,3 +66,4 @@ button.excel{background:#e7f8ee;border-color:#9fdcb8;color:#14532d;font-weight:6
 .signed{font-size:15px}
 .signed b{color:var(--accent-strong)}
 .err{color:#dc2626;font-size:14px}
+.ok{color:#15803d;font-size:14px;font-weight:600}

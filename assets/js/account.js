@@ -3,6 +3,7 @@
 let loginEmail = store.get('cloudLoginEmail', '');
 let codeSent = false;
 let accountMsg = '';
+let accountOk = '';
 
 function renderAccount() {
   const box = $('account');
@@ -13,21 +14,35 @@ function renderAccount() {
   const u = Cloud.user;
   if (u) {
     const last = store.get('cloudLastSync', null);
+    const counts = store.get('cloudCounts', null);
+    const lastError = store.get('cloudLastError', null);
     const status = { syncing: 'speichert gerade …', ok: 'alles gespeichert ✓', offline: 'offline – wird hochgeladen, sobald du wieder online bist',
       error: 'Fehler beim Speichern – versuch es mit „Jetzt synchronisieren“' }[Cloud.status] || 'verbunden';
     box.innerHTML = `
       <div class="account">
         <div class="signed">Angemeldet als <b>${esc(u.email)}</b></div>
         <p>Status: ${esc(status)}${last ? ` · zuletzt synchronisiert ${new Date(last).toLocaleString('de-DE')}` : ''}</p>
+        ${counts ? `<p>In deinem Konto: <b>${counts.songs}</b> Songs, <b>${counts.albums}</b> Alben · auf diesem Gerät: <b>${Songs.all().length}</b> Songs, <b>${Albums.all().length}</b> Alben</p>` : ''}
+        ${lastError && Cloud.status !== 'ok' ? `<div class="err">Letzter Fehler: ${esc(lastError)}</div>` : ''}
         <p>Deine Bewertungen werden automatisch in deinem Konto gespeichert. Auf jedem anderen Gerät einfach hier mit derselben E-Mail anmelden.</p>
         <div class="login-row">
-          <button id="syncNow">🔄 Jetzt synchronisieren</button>
+          <button id="syncNow" ${Cloud.status === 'syncing' ? 'disabled' : ''}>${Cloud.status === 'syncing' ? '🔄 Synchronisiere …' : '🔄 Jetzt synchronisieren'}</button>
           <button id="logout">Abmelden</button>
           <button class="danger" id="logoutClear" title="Für fremde Geräte: nach dem Abmelden bleibt hier nichts zurück">Abmelden &amp; Daten von diesem Gerät entfernen</button>
         </div>
+        ${accountOk ? `<div class="ok">${esc(accountOk)}</div>` : ''}
         ${accountMsg ? `<div class="err">${esc(accountMsg)}</div>` : ''}
       </div>`;
-    $('syncNow').onclick = () => Cloud.sync();
+    $('syncNow').onclick = async () => {
+      $('syncNow').disabled = true;
+      $('syncNow').textContent = '🔄 Synchronisiere …';
+      accountMsg = accountOk = '';
+      await Cloud.sync();
+      const c = store.get('cloudCounts', null);
+      if (Cloud.status === 'ok') accountOk = `✓ Synchronisiert um ${new Date().toLocaleTimeString('de-DE')}` + (c ? ` – ${c.songs} Songs und ${c.albums} Alben in deinem Konto.` : '.');
+      else accountMsg = 'Synchronisieren hat nicht geklappt: ' + (store.get('cloudLastError', null) || 'unbekannter Fehler');
+      renderAccount();
+    };
     $('logout').onclick = async () => { await Cloud.signOut(false); accountMsg = ''; renderAccount(); };
     $('logoutClear').onclick = async () => {
       if (!confirm('Abmelden und alle Bewertungen von diesem Gerät entfernen?\nIn deinem Cloud-Konto bleiben sie erhalten.')) return;
