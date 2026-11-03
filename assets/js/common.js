@@ -201,8 +201,38 @@ function download(name, data, type) {
     <a class="cloud" id="cloudChip" href="einstellungen.html#konto" hidden></a>
     <nav>${tabs.map(([k, href, label]) => `<a class="tab ${h.dataset.active === k ? 'active' : ''}" href="${href}">${label}</a>`).join('')}</nav>
   </div>`;
+  renderTabbar(h.dataset.active);
   refreshCounts();
 })();
+
+// Phones: app-like tab bar at the bottom; "+" opens a choice between rating a song or an album
+function renderTabbar(active) {
+  const icon = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const ICONS = {
+    songs: icon('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
+    albums: icon('<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="2.5"/>'),
+    plus: icon('<path d="M12 5v14M5 12h14"/>'),
+    cloud: icon('<path d="M17.5 19H8a5 5 0 1 1 .9-9.9A6 6 0 0 1 20 11a4 4 0 0 1-2.5 8z"/>'),
+    settings: icon('<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>'),
+  };
+  const item = (key, href, label, isActive) =>
+    `<a class="${isActive ? 'active' : ''}" href="${href}">${ICONS[key]}<span>${label}</span></a>`;
+  const rating = active === 'rate' || active === 'rateAlbum';
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="plus-sheet" id="plusSheet" hidden>
+      <a href="bewerten.html">🎵 <span>Song bewerten</span></a>
+      <a href="album.html">💿 <span>Album bewerten</span></a>
+    </div>
+    <nav class="tabbar">
+      ${item('songs', 'index.html', 'Songs', active === 'songs')}
+      ${item('albums', 'alben.html', 'Alben', active === 'albums')}
+      <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${ICONS.plus}</button>
+      <a href="einstellungen.html#konto" id="tabCloud">${ICONS.cloud}<span>Konto</span></a>
+      ${item('settings', 'einstellungen.html', 'Einstellungen', active === 'settings')}
+    </nav>`);
+  $('plusBtn').onclick = e => { e.stopPropagation(); $('plusSheet').hidden = !$('plusSheet').hidden; };
+  document.addEventListener('click', e => { if (!e.target.closest('#plusSheet')) $('plusSheet').hidden = true; });
+}
 
 function refreshCounts() {
   if (!$('countSongs')) return;

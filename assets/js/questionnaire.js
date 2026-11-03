@@ -43,15 +43,18 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
         <div><div class="q-title">Q${++qNo}. ${esc(q.q)}</div><div class="q-think">${esc(q.think || '')}</div></div>
         <div class="q-val">–</div>
       </div>
-      <div class="slider-row">
-        <input type="range" min="1" max="10" step="0.5" value="5.5" aria-label="Q${qNo}">
+      <input type="range" min="1" max="10" step="0.5" value="5.5" aria-label="Q${qNo}">
+      <div class="ticks">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n =>
+        `<span style="left:calc(13px + (100% - 26px) * ${(n - 1) / 9})">${n}</span>`).join('')}</div>
+      <div class="desc"></div>
+      <div class="q-opts">
         ${q.na ? '<button class="opt na">N/A</button>' : ''}
         <button class="opt skip" title="Frage auslassen – zählt nicht in den Score">🤷 Weiß nicht</button>
-      </div>
-      <div class="ticks">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<span>${n}</span>`).join('')}</div>
-      <div class="desc"></div>`;
+      </div>`;
     const range = el.querySelector('input[type=range]');
     const set = v => { answers[q.id] = v; onChange(); };
+    // Tapping the track counts as an answer even if the value does not change
+    range.addEventListener('change', () => { if (answers[q.id] === undefined) set(+range.value); });
     range.addEventListener('input', () => set(+range.value));
     el.querySelector('.skip').onclick = () => set(answers[q.id] === 'skip' ? +range.value : 'skip');
     if (q.na) el.querySelector('.na').onclick = () => set(answers[q.id] === 'N/A' ? +range.value : 'N/A');
@@ -62,14 +65,18 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
   pages.forEach((p, pi) => p.insertAdjacentHTML('beforeend', `
     <div class="nav">
       <button ${pi === 0 ? 'disabled' : ''} data-go="${pi - 1}">← Zurück</button>
-      ${pi < steps.length - 1 ? `<button class="primary" data-go="${pi + 1}">Weiter: ${esc(steps[pi + 1].name)} →</button>` : ''}
+      ${pi < steps.length - 1 ? `<button class="primary" data-go="${pi + 1}">Weiter<span class="nav-name">: ${esc(steps[pi + 1].name)}</span> →</button>` : ''}
     </div>`));
   $('pages').addEventListener('click', e => { const g = e.target.closest('[data-go]'); if (g) goto(+g.dataset.go); });
 
   function goto(s) {
     current = Math.max(0, Math.min(steps.length - 1, s));
     pages.forEach((p, i) => p.classList.toggle('active', i === current));
-    document.querySelectorAll('.step').forEach((b, i) => b.classList.toggle('active', i === current));
+    const btns = document.querySelectorAll('.step');
+    btns.forEach((b, i) => b.classList.toggle('active', i === current));
+    // Keep the active step visible in the (scrollable) step bar
+    const b = btns[current], bar = $('steps');
+    bar.scrollTo({ left: b.offsetLeft - bar.offsetLeft - (bar.clientWidth - b.offsetWidth) / 2, behavior: 'smooth' });
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -87,6 +94,8 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
         el.querySelector('.skip').classList.toggle('on', v === 'skip');
         if (q.na) el.querySelector('.na').classList.toggle('on', v === 'N/A');
         el.querySelector('.q-val').textContent = v === undefined ? '–' : v === 'skip' ? 'ausgelassen' : v;
+        const range = el.querySelector('input[type=range]');
+        range.style.setProperty('--fill', typeof v === 'number' ? (v - 1) / 9 * 100 + '%' : '0%');
         el.querySelector('.desc').innerHTML =
           v === undefined ? 'Noch nicht bewertet – Regler bewegen oder „Weiß nicht“ wählen.' :
           v === 'N/A' ? 'Nicht zutreffend – das Gewicht geht an die anderen Fragen dieser Kategorie.' :

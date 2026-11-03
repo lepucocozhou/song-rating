@@ -99,6 +99,11 @@ const Cloud = (() => {
     chip.textContent = text;
     chip.title = user ? `Angemeldet als ${user.email}` : 'Anmelden, um deine Bewertungen auf allen Geräten zu sehen';
     chip.classList.toggle('warn', !!user && (status === 'error' || status === 'offline'));
+    const tab = $('tabCloud');
+    if (tab) {
+      tab.dataset.state = !user ? 'out' : status;
+      tab.querySelector('span').textContent = user ? (status === 'syncing' ? 'Speichert …' : status === 'ok' ? 'Gespeichert' : status === 'idle' ? 'Konto' : 'Offline') : 'Anmelden';
+    }
   }
   renderChip();
 

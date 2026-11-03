@@ -22,6 +22,8 @@
 
 /* steps */
 .steps{display:flex;gap:6px;margin:18px 0 6px;overflow-x:auto;padding-bottom:4px}
+.steps{scrollbar-width:none}
+.steps::-webkit-scrollbar{display:none}
 .step{flex:1;min-width:92px;font-size:12px;padding:8px;border-radius:10px;text-align:left;line-height:1.25;
   border:1px solid var(--line);background:var(--card);border-top:4px solid var(--c,var(--accent))}
 .step.active{background:var(--accent-soft);border-color:var(--c,var(--accent));font-weight:600}
@@ -73,14 +75,26 @@
 .q-val{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;min-width:56px;text-align:right;line-height:1.1;color:var(--c)}
 .q.unset .q-val,.q.isna .q-val{color:var(--na)}
 .q.isskip .q-val{color:var(--skip-text);font-size:14px}
-.slider-row{display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap}
-input[type=range]{flex:1;min-width:180px;accent-color:var(--c);height:24px;margin:0}
-.q.unset input[type=range]{opacity:.45}
+/* slider: thick track filled up to the value, big round thumb that is easy to grab on phones */
+.q input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:34px;margin:8px 0 0;
+  background:transparent;cursor:pointer;touch-action:pan-y}
+.q input[type=range]:focus{outline:none}
+.q input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:4px;
+  background:linear-gradient(to right,var(--c) var(--fill,0%),var(--track) var(--fill,0%))}
+.q input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:26px;height:26px;margin-top:-9px;border-radius:50%;
+  background:#fff;border:3px solid var(--c);box-shadow:0 2px 6px rgba(15,53,84,.25)}
+.q input[type=range]::-moz-range-track{height:8px;border-radius:4px;background:var(--track)}
+.q input[type=range]::-moz-range-progress{height:8px;border-radius:4px;background:var(--c)}
+.q input[type=range]::-moz-range-thumb{width:20px;height:20px;border-radius:50%;background:#fff;border:3px solid var(--c)}
+.q input[type=range]:focus-visible::-webkit-slider-thumb{box-shadow:0 0 0 4px var(--cs)}
+.q.unset input[type=range]{opacity:.5}
 .q.isna input[type=range],.q.isskip input[type=range]{opacity:.2;pointer-events:none}
+.q-opts{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
 .opt{font-size:13px;padding:5px 10px;border-radius:20px;color:var(--muted)}
 .opt.on{background:var(--skip);border-color:var(--skip-text);color:var(--skip-text);font-weight:600}
 .opt.na.on{background:var(--accent-soft);border-color:var(--accent-strong);color:var(--accent-strong)}
-.ticks{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:0 2px;margin-top:2px}
+.ticks{position:relative;height:16px;font-size:11px;color:var(--muted)}
+.ticks span{position:absolute;top:0;transform:translateX(-50%)}
 .desc{margin-top:8px;font-size:14px;padding:8px 10px;border-radius:8px;background:var(--cs);min-height:36px}
 .q.unset .desc,.q.isna .desc,.q.isskip .desc{background:transparent;color:var(--muted);padding-left:0}
 

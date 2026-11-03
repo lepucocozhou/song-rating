@@ -1,0 +1,16 @@
+{
+  "name": "Song Rating",
+  "short_name": "Song Rating",
+  "description": "Songs und Alben bewerten und ranken",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4fbff",
+  "theme_color": "#b5e6fd",
+  "lang": "de",
+  "icons": [
+    { "src": "assets/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "assets/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
