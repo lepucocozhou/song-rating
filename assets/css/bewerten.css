@@ -1,7 +1,8 @@
 /* Rating pages (songs + albums): sticky score bar, steps, search, questions */
 .score{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 12px;border-bottom:2px solid var(--line)}
 .score-top{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
-.final{display:flex;align-items:center;gap:14px}
+.final{display:flex;align-items:center;gap:14px;min-width:0;max-width:100%}
+.final>div:last-child{min-width:0}
 .bar-cover{width:64px;height:64px;border-radius:10px;font-size:12px;box-shadow:0 2px 8px rgba(15,53,84,.15)}
 .final-badge{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;
   background:conic-gradient(var(--accent-strong) calc(var(--p,0)*1%),var(--track) 0)}
@@ -90,7 +91,19 @@ input[type=range]{flex:1;min-width:180px;accent-color:var(--c);height:24px;margi
 .sum-card .s{font-size:12px;color:var(--muted)}
 .save-row{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
 .danger:hover{border-color:#ef4444;color:#ef4444}
+.backlink[hidden]{display:none}
 .backlink{display:inline-block;margin-top:14px;font-size:14px;font-weight:600;color:var(--accent-strong);text-decoration:none}
 .hint a,.toast a{color:var(--accent-strong)}
 .already{margin-top:10px;font-size:13px;font-weight:600;color:var(--skip-text);background:var(--skip);border-radius:8px;padding:6px 10px}
 .already a{color:inherit}
+
+/* Phones: compact score bar so the page (and the keyboard) have room */
+.search input{scroll-margin-top:110px;-webkit-appearance:none;appearance:none}
+@media (max-width:600px){
+  .score{padding:8px 0}
+  .score .cats,.answered{display:none}
+  .final-badge{width:56px;height:56px}
+  .final-badge span{width:46px;height:46px;font-size:16px}
+  .bar-cover{width:48px;height:48px}
+  .search input{scroll-margin-top:90px}
+}

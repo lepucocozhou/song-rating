@@ -33,6 +33,7 @@ function initSearchBox(input, list, opts) {
     opts.onPick(results[i]);
     input.value = '';
     show('');
+    input.blur(); // closes the keyboard on phones
   }
 
   input.addEventListener('input', () => {
@@ -51,10 +52,15 @@ function initSearchBox(input, list, opts) {
     e.preventDefault();
     renderResults();
   });
-  list.addEventListener('mousedown', e => {
+  list.addEventListener('click', e => {
     const s = e.target.closest('[data-i]');
-    if (s) { e.preventDefault(); pick(+s.dataset.i); }
+    if (s) pick(+s.dataset.i);
   });
-  input.addEventListener('blur', () => setTimeout(() => show(''), 150));
-  input.addEventListener('focus', () => { if (input.value.trim().length >= 2 && results.length) renderResults(); });
+  // Keep the suggestions open when the phone keyboard closes; hide them only on a tap outside the search box
+  document.addEventListener('pointerdown', e => { if (!input.parentElement.contains(e.target)) show(''); });
+  input.addEventListener('focus', () => {
+    if (input.value.trim().length >= 2 && results.length) renderResults();
+    // On phones, move the search box up so the suggestions are not hidden behind the keyboard
+    if (window.innerWidth < 700) setTimeout(() => input.scrollIntoView({ block: 'start', behavior: 'smooth' }), 300);
+  });
 }
