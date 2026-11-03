@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Einstellungen – Song Rating</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/einstellungen.css">
+</head>
+<body>
+<header id="top" data-active="settings"></header>
+
+<main class="wrap">
+  <div class="sec-nav">
+    <a href="#songs">Song-Fragen</a><a href="#albums">Album-Fragen</a><a href="#rules">Album-Regeln</a><a href="#data">Daten &amp; Speicherung</a>
+  </div>
+
+  <section id="songs">
+    <h2>Song-Fragen</h2>
+    <p class="intro">Kategorien und Fragen für Songs. Gewichte in Prozent – stimmt die Summe nicht genau, wird beim Rechnen automatisch auf 100&nbsp;% umgerechnet.</p>
+    <div id="songEditor"></div>
+  </section>
+
+  <section id="albums">
+    <h2>Album-Fragen <span class="badge">Platzhalter</span></h2>
+    <p class="intro">Die Album-Fragen sind noch Platzhalter – hier kannst du sie umbenennen, ergänzen oder löschen.</p>
+    <div id="albumEditor"></div>
+  </section>
+
+  <section id="rules">
+    <h2>Album-Regeln</h2>
+    <p class="intro">Wie stark die Song-Bewertungen in den Album-Score eingehen. Der Rest kommt aus den Album-Fragen.</p>
+    <div class="rules">
+      <label class="rule"><b>🎯 Vollständig</b><span>Alle Songs müssen bewertet sein. Anteil der Songs:</span>
+        <span class="pct"><input type="number" min="0" max="100" step="1" data-rule="songWeight"> %</span></label>
+      <label class="rule"><b>⚡ Schnell</b><span>Nur bewertete Songs zählen. Anteil der Songs:</span>
+        <span class="pct"><input type="number" min="0" max="100" step="1" data-rule="songWeightLight"> %</span></label>
+    </div>
+  </section>
+
+  <section id="data">
+    <h2>Daten &amp; Speicherung</h2>
+    <div class="info">
+      <b>Wo sind meine Bewertungen gespeichert?</b>
+      Im Speicher dieses Browsers auf diesem Gerät (<span id="stats"></span>). Ein anderes Gerät oder ein anderer Browser sieht sie nicht.
+      Wenn du die Website-Daten im Browser löschst, sind sie weg – speichere deshalb ab und zu ein Backup,
+      am besten in einen Cloud-Ordner wie iCloud Drive oder Google Drive.
+    </div>
+    <div class="data-btns">
+      <button class="excel" id="exportExcel">📊 Excel exportieren</button>
+      <button id="exportBackup">💾 Backup speichern</button>
+      <button id="importBackup">📂 Backup laden</button>
+      <input type="file" id="importFile" accept=".json" hidden>
+      <span class="toast" id="toast"></span>
+    </div>
+  </section>
+</main>
+
+<div class="savebar" id="savebar" hidden>
+  <div class="wrap">
+    <span>Ungespeicherte Änderungen</span>
+    <button id="discard">Verwerfen</button>
+    <button class="primary" id="saveCfg">💾 Einstellungen speichern</button>
+  </div>
+</div>
+<div class="wrap reset-row"><button class="danger" id="resetCfg">Alle Fragen &amp; Gewichte auf Standard zurücksetzen</button></div>
+
+<script src="assets/js/defaults.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/excel.js"></script>
+<script src="assets/js/backup.js"></script>
+<script src="assets/js/einstellungen.js"></script>
+</body>
+</html>

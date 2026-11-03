@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Song bewerten</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/bewerten.css">
+</head>
+<body>
+<header id="top" data-active="rate"></header>
+
+<div class="score">
+  <div class="wrap">
+    <div class="score-top">
+      <div class="final">
+        <div id="barCover"></div>
+        <div class="final-badge" id="badge"><span id="final">–</span></div>
+        <div>
+          <div class="lbl">Final Score</div>
+          <div class="now" id="now"></div>
+          <div class="hint" id="finalHint"></div>
+        </div>
+      </div>
+      <div class="answered" id="answered"></div>
+    </div>
+    <div class="cats" id="catsMini"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <a class="backlink" id="backToAlbum" hidden>← Zurück zum Album</a>
+  <div class="steps" id="steps"></div>
+  <div id="pages">
+    <div class="page">
+      <div class="page-title"><h2>Welcher Song?</h2></div>
+      <div class="search">
+        <input id="search" placeholder="Song oder Artist suchen …" autocomplete="off">
+        <div class="suggest" id="suggest" hidden></div>
+      </div>
+      <div id="picked"></div>
+      <div class="meta-title">Details – werden durch die Suche ausgefüllt, du kannst sie aber auch selbst eintragen oder ändern:</div>
+      <div class="meta">
+        <label>Song<input id="song"></label>
+        <label>Artist<input id="artist"></label>
+        <label>Album<input id="album"></label>
+      </div>
+    </div>
+    <!-- Kategorie-Seiten werden aus den Einstellungen erzeugt -->
+    <div class="page">
+      <div class="page-title"><h2 style="color:var(--accent-strong)">Ergebnis</h2></div>
+      <div class="sum" id="sum"></div>
+      <div class="save-row">
+        <button class="primary" id="save">💾 In Übersicht speichern</button>
+        <button id="newSong">Neuer Song</button>
+        <button class="danger" id="delete" hidden>🗑 Löschen</button>
+        <span class="toast" id="toast"></span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="assets/js/defaults.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/itunes.js"></script>
+<script src="assets/js/search-box.js"></script>
+<script src="assets/js/questionnaire.js"></script>
+<script src="assets/js/bewerten.js"></script>
+</body>
+</html>

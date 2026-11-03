@@ -1,0 +1,45 @@
+/* Shared look: colors, header/nav, buttons, covers */
+:root{
+  --bg:#f4fbff;--card:#ffffff;--text:#16324a;--muted:#5f7a90;--line:#d6eefb;
+  --accent:#7dd3fc;--accent-strong:#38b6f0;--accent-soft:#e6f7ff;--track:#dcf0fb;--na:#a9bfcf;
+  --hero1:#b5e6fd;--hero2:#e0f5ff;--hero-text:#0f3554;--on-accent:#0c4a6e;
+  --skip:#fff3d6;--skip-text:#9a6a00;
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0e1a24;--card:#152532;--text:#e4f1fa;--muted:#8fa9bc;--line:#24394a;
+    --accent:#7dd3fc;--accent-strong:#a5e3fd;--accent-soft:#183a52;--track:#24394a;--na:#4d6475;
+    --hero1:#1d5f8a;--hero2:#2b7fb3;--hero-text:#eaf6fe;--on-accent:#0c4a6e;
+    --skip:#3a3018;--skip-text:#f2c35b;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+a{color:inherit}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+
+button,.btn{font:inherit;font-size:14px;padding:8px 14px;border-radius:10px;border:1px solid var(--line);
+  background:var(--card);color:var(--text);cursor:pointer;text-decoration:none;display:inline-block}
+button:hover,.btn:hover{border-color:var(--accent-strong)}
+button.primary,.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:600}
+button.primary:hover,.btn.primary:hover{background:#bae6fd;border-color:#bae6fd}
+button:disabled{opacity:.4;cursor:default}
+
+/* header + page tabs */
+header{background:linear-gradient(120deg,var(--hero1),var(--hero2));color:var(--hero-text)}
+.head{display:flex;align-items:flex-end;gap:12px;padding-top:16px;flex-wrap:wrap}
+.logo{font-size:20px;font-weight:700;letter-spacing:-.3px;text-decoration:none;margin:0 auto 12px 0}
+nav{display:flex;gap:4px;overflow-x:auto;max-width:100%}
+.tab{border-radius:10px 10px 0 0;background:rgba(255,255,255,.4);color:var(--hero-text);font-weight:600;
+  padding:9px 16px;text-decoration:none;white-space:nowrap}
+.tab.active{background:var(--bg)}
+.count{display:inline-block;min-width:20px;padding:0 6px;margin-left:4px;border-radius:10px;
+  background:var(--accent);color:var(--on-accent);font-size:12px;text-align:center}
+
+/* score chip + covers */
+.chip{display:inline-block;min-width:48px;text-align:center;padding:3px 8px;border-radius:12px;font-weight:700;
+  color:var(--on-accent);font-variant-numeric:tabular-nums}
+.cover{display:block;object-fit:cover;background:var(--accent-soft);aspect-ratio:1}
+.cover-ph{display:grid;place-items:center;background:linear-gradient(135deg,#bae6fd,#e0f2fe 60%,#ddd6fe);
+  color:#0c4a6e;font-weight:700}
+.cover-ph span{font-size:2.2em;opacity:.7}
+.toast{font-size:14px;color:var(--accent-strong);font-weight:600}

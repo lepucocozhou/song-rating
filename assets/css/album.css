@@ -1,0 +1,32 @@
+/* Album rating page: mode choice, tracklist, score formula */
+.meta.two{grid-template-columns:1fr 1fr}
+@media (max-width:600px){.meta.two{grid-template-columns:1fr}}
+
+.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:780px}
+@media (max-width:600px){.modes{grid-template-columns:1fr}}
+.mode{display:block;cursor:pointer;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px}
+.mode.on{border-color:var(--accent-strong);background:var(--accent-soft)}
+.mode input{position:absolute;opacity:0}
+.mode b{display:block;font-size:16px;margin-bottom:4px}
+.mode span{font-size:13px;color:var(--muted)}
+.mode span b{display:inline;font-size:13px;color:var(--text)}
+
+.track-sum{display:grid;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;max-width:780px}
+.track-sum .btn{justify-self:start}
+.tracks{display:grid;gap:6px;max-width:780px;margin-bottom:10px}
+.track{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-left:4px solid #0ea5e9;
+  border-radius:10px;padding:8px 12px}
+.track.off{opacity:.5;border-left-color:var(--line)}
+.track input{width:18px;height:18px;accent-color:#0ea5e9}
+.track .no{width:22px;text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.track .tt{flex:1;font-weight:600;min-width:0}
+.track .tt small{display:block;font-weight:400;color:var(--muted)}
+.btn.small{font-size:13px;padding:5px 10px}
+a.small{font-size:13px;color:var(--accent-strong)}
+
+.formula{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+.part{background:var(--card);border:1px solid var(--line);border-top:5px solid var(--c);border-radius:12px;padding:10px 16px;min-width:170px}
+.part .n{font-size:28px;font-weight:700;color:var(--c);font-variant-numeric:tabular-nums}
+.part .s{font-size:12px;color:var(--muted)}
+.op{font-size:24px;color:var(--muted);font-weight:700}
+.missing{margin-top:12px;color:var(--skip-text);font-size:14px;display:grid;gap:4px}

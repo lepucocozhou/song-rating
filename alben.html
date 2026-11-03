@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Alben – Song Rating</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/liste.css">
+</head>
+<body>
+<header id="top" data-active="albums"></header>
+
+<main class="wrap">
+  <div class="tools">
+    <input id="filter" placeholder="Suchen nach Album oder Artist …">
+    <select id="sort" aria-label="Sortieren"></select>
+    <div class="seg">
+      <button data-view="gallery">▦ Galerie</button>
+      <button data-view="table">☰ Tabelle</button>
+    </div>
+    <a class="btn primary" href="album.html">+ Album bewerten</a>
+  </div>
+  <div class="tools2">
+    <button class="excel" id="exportExcel">📊 Excel exportieren</button>
+    <span class="toast" id="toast"></span>
+  </div>
+  <div id="list"></div>
+</main>
+
+<script src="assets/js/defaults.js"></script>
+<script src="assets/js/common.js"></script>
+<script src="assets/js/list-view.js"></script>
+<script src="assets/js/excel.js"></script>
+<script src="assets/js/alben.js"></script>
+</body>
+</html>
