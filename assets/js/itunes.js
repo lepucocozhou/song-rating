@@ -72,45 +72,64 @@ const Itunes = {
   // "Taylor Swift & Ed Sheeran, Future" → ['taylorswift', 'edsheeran', 'future']
   artistNames: s => (s || '').split(/,|&| feat\.? | ft\.? | x | und /i).map(norm).filter(Boolean),
 
-  /* ---------- charts (Apple iTunes top lists for Germany, cached for a few hours) ---------- */
-  async charts() {
-    const cached = store.get('chartsCache', null);
+  /* ---------- charts (Apple iTunes top lists, cached for a few hours) ---------- */
+  // Apple has no worldwide list, so "global" adds up the charts of several big markets:
+  // a place in a country's top 100 gives 101 − rank points, the most points come first.
+  GLOBAL_COUNTRIES: ['us', 'gb', 'de', 'fr', 'ca', 'au', 'br', 'mx', 'es', 'it'],
+
+  chartRegion: () => store.get('chartRegion', 'de'),
+
+  async charts(region = Itunes.chartRegion()) {
+    const cached = store.get('chartsCache-' + region, null);
     if (cached && Date.now() - cached.at < 6 * 3600 * 1000) return cached;
-    const feed = async kind => (await Itunes.jsonp(`https://itunes.apple.com/de/rss/${kind}/limit=100/json`)).feed.entry || [];
-    const [songs, albums] = await Promise.all([feed('topsongs'), feed('topalbums')]);
-    const image = e => Itunes.artwork(e['im:image'].at(-1).label, 600);
-    const data = {
-      at: Date.now(),
-      songs: songs.map((e, i) => ({
-        chartRank: i + 1,
-        song: e['im:name'].label,
-        artist: e['im:artist'].label,
-        album: (e['im:collection']?.['im:name']?.label || '').replace(/ - (Single|EP)$/, ''),
-        artwork: image(e),
-        appleUrl: e.link?.[0]?.attributes?.href || '',
-        preview: e.link?.find?.(l => l.attributes?.['im:assetType'] === 'preview')?.attributes.href || '',
-        year: (e['im:releaseDate']?.label || '').slice(0, 4),
-        released: (e['im:releaseDate']?.label || '').slice(0, 10),
-        trackId: +e.id.attributes['im:id'],
-      })),
-      albums: albums.map((e, i) => ({
-        chartRank: i + 1,
-        album: e['im:name'].label.replace(/ - (Single|EP)$/, ''),
-        artist: e['im:artist'].label,
-        artwork: image(e),
-        appleUrl: e.id?.label || '',
-        year: (e['im:releaseDate']?.label || '').slice(0, 4),
-        released: (e['im:releaseDate']?.label || '').slice(0, 10),
-        collectionId: +e.id.attributes['im:id'],
-      })),
+    const countries = region === 'global' ? Itunes.GLOBAL_COUNTRIES : [region];
+    const lists = await Promise.all(countries.map(async c => {
+      const feed = async kind => (await Itunes.jsonp(`https://itunes.apple.com/${c}/rss/${kind}/limit=100/json`)).feed.entry || [];
+      const [songs, albums] = await Promise.all([feed('topsongs'), feed('topalbums')]);
+      return { songs: songs.map(Itunes.chartSong), albums: albums.map(Itunes.chartAlbum) };
+    }));
+    const combine = (key, id) => {
+      const byId = new Map();
+      lists.forEach(l => l[key].forEach((x, i) => {
+        const cur = byId.get(x[id]) || { ...x, points: 0 };
+        cur.points += 100 - i;
+        byId.set(x[id], cur);
+      }));
+      return [...byId.values()].sort((a, b) => b.points - a.points).slice(0, 100)
+        .map(({ points, ...x }, i) => ({ ...x, chartRank: i + 1 }));
     };
-    store.set('chartsCache', data);
+    const data = { at: Date.now(), songs: combine('songs', 'trackId'), albums: combine('albums', 'collectionId') };
+    store.set('chartsCache-' + region, data);
     return data;
   },
 
+  chartImage: e => Itunes.artwork(e['im:image'].at(-1).label, 600),
+
+  chartSong: e => ({
+    song: e['im:name'].label,
+    artist: e['im:artist'].label,
+    album: (e['im:collection']?.['im:name']?.label || '').replace(/ - (Single|EP)$/, ''),
+    artwork: Itunes.chartImage(e),
+    appleUrl: e.link?.[0]?.attributes?.href || '',
+    preview: e.link?.find?.(l => l.attributes?.['im:assetType'] === 'preview')?.attributes.href || '',
+    year: (e['im:releaseDate']?.label || '').slice(0, 4),
+    released: (e['im:releaseDate']?.label || '').slice(0, 10),
+    trackId: +e.id.attributes['im:id'],
+  }),
+
+  chartAlbum: e => ({
+    album: e['im:name'].label.replace(/ - (Single|EP)$/, ''),
+    artist: e['im:artist'].label,
+    artwork: Itunes.chartImage(e),
+    appleUrl: e.id?.label || '',
+    year: (e['im:releaseDate']?.label || '').slice(0, 4),
+    released: (e['im:releaseDate']?.label || '').slice(0, 10),
+    collectionId: +e.id.attributes['im:id'],
+  }),
+
   // Artist names from the cached charts (empty until the charts were loaded once)
   trendingArtists() {
-    const c = store.get('chartsCache', null);
+    const c = store.get('chartsCache-' + Itunes.chartRegion(), null);
     return new Set(c ? [...c.songs, ...c.albums].flatMap(x => Itunes.artistNames(x.artist)) : []);
   },
 

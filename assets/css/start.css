@@ -116,3 +116,8 @@
   .step-card h3{margin:2px 0 2px;font-size:15px}
   .step-card p{font-size:13.5px}
 }
+
+/* Germany / global switch for the charts */
+.region-pick{margin-left:auto;display:flex;gap:2px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:3px}
+.region-pick button{border:0;background:none;font-size:13px;font-weight:600;color:var(--muted);padding:5px 10px;border-radius:8px}
+.region-pick button.on{background:var(--accent);color:var(--on-accent)}

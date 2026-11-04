@@ -122,12 +122,26 @@ const releaseLabel = x => isNew(x.released)
   : `#${x.chartRank} in den Charts`;
 
 async function renderReleases() {
+  const region = Itunes.chartRegion();
+  document.querySelectorAll('[data-region]').forEach(btn => {
+    btn.classList.toggle('on', btn.dataset.region === region);
+    btn.onclick = () => {
+      if (btn.dataset.region === Itunes.chartRegion()) return;
+      store.set('chartRegion', btn.dataset.region);
+      $('newSongs').innerHTML = $('newAlbums').innerHTML = '<div class="rail-msg">Lade Charts …</div>';
+      renderReleases();
+    };
+  });
+  $('chartsSub').textContent = region === 'global'
+    ? 'Neue Songs aus den Charts weltweit – antippen zum Bewerten'
+    : 'Neue Songs aus den deutschen Charts – antippen zum Bewerten';
   let charts;
-  try { charts = await Itunes.charts(); }
+  try { charts = await Itunes.charts(region); }
   catch (e) {
     $('newSongs').innerHTML = $('newAlbums').innerHTML = '<div class="rail-msg">Die Charts sind gerade nicht erreichbar – bist du online?</div>';
     return;
   }
+  if (region !== Itunes.chartRegion()) return;   // switched again while loading
   const songRows = rankedSongs(), albumList = Albums.all();
 
   $('newSongs').innerHTML = freshFirst(charts.songs).map(x => {

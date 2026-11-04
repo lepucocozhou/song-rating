@@ -93,6 +93,9 @@
   .track{padding:8px 10px;gap:8px}
   .meta input,.search input,.meta-title + .meta input{font-size:16px}
 
+  /* start page: charts switch under the heading, on the left */
+  .region-pick{margin-left:0}
+
   /* settings */
   .q-row .qtext{flex:1 1 100%;order:-1}
   .q-row .no{display:none}
