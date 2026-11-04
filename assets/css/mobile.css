@@ -25,9 +25,10 @@
     height:calc(var(--tabbar) + env(safe-area-inset-bottom));padding:0 6px env(safe-area-inset-bottom);
     background:color-mix(in srgb,var(--card) 95%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     border-top:1px solid var(--line)}
-  .tabbar a{justify-self:center;display:grid;place-items:center;min-width:56px;height:44px;padding:0 6px;border-radius:12px;
-    font-size:12px;font-weight:600;color:var(--muted);text-decoration:none;-webkit-tap-highlight-color:transparent;white-space:nowrap}
-  .tabbar a.active{background:var(--accent-soft);color:var(--text)}
+  .tabbar a{justify-self:center;display:grid;place-items:center;width:56px;height:44px;border-radius:12px;
+    color:var(--muted);text-decoration:none;-webkit-tap-highlight-color:transparent}
+  .tabbar a svg{width:24px;height:24px}
+  .tabbar a.active{background:var(--accent-soft);color:var(--accent-strong)}
   .tabbar .plus{justify-self:center;width:48px;height:48px;border-radius:50%;border:0;padding:0;display:grid;place-items:center;
     background:var(--accent);color:var(--on-accent)}
   .tabbar .plus svg{width:24px;height:24px;stroke-width:2.4}

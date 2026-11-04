@@ -1,6 +1,7 @@
 /* Rating pages (songs + albums): sidebar with score + steps, search, questions */
-.rate{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start;max-width:1200px;margin:0 auto}
-.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--card);border-right:1px solid var(--line);border-left:1px solid var(--line);
+/* sidebar sits at the very left edge; the questions are centred in the remaining space */
+.rate{display:grid;grid-template-columns:300px minmax(0,1fr);align-items:start}
+.side{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--card);border-right:1px solid var(--line);
   padding:24px 20px;display:flex;flex-direction:column;gap:18px}
 .side-head{display:flex;gap:12px;align-items:center;min-width:0}
 .bar-cover{width:64px;height:64px;border-radius:10px;font-size:12px;flex:none}
@@ -32,7 +33,7 @@
 .step small{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
 .step.done small{color:var(--accent-strong)}
 
-.rate-main{padding:28px 40px 64px;max-width:820px;min-width:0}
+.rate-main{padding:28px 40px 64px;width:100%;max-width:900px;margin:0 auto;min-width:0}
 .page{display:none}
 .page.active{display:block}
 .page-title{display:flex;justify-content:space-between;align-items:baseline;margin:0 0 14px;gap:12px}

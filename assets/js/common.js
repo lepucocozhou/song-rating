@@ -223,9 +223,17 @@ function download(name, data, type) {
 
 // Phones: app-like tab bar at the bottom; "+" opens a choice between rating a song or an album
 function renderTabbar(active) {
-  const plusIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
+  const icon = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+  const ICONS = {
+    start: icon('<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>'),
+    songs: icon('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
+    plus: icon('<path d="M12 5v14M5 12h14"/>'),
+    albums: icon('<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="2.5"/>'),
+    settings: icon('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
+  };
+  // Icons only; the name is read out by screen readers and shown as tooltip
   const item = (key, href, label, isActive) =>
-    `<a class="${isActive ? 'active' : ''}" href="${href}">${label}</a>`;
+    `<a class="${isActive ? 'active' : ''}" href="${href}" aria-label="${label}" title="${label}">${ICONS[key]}</a>`;
   const rating = active === 'rate' || active === 'rateAlbum';
   document.body.insertAdjacentHTML('beforeend', `
     <div class="plus-sheet" id="plusSheet" hidden>
@@ -235,9 +243,9 @@ function renderTabbar(active) {
     <nav class="tabbar">
       ${item('start', 'index.html', 'Start', active === 'start')}
       ${item('songs', 'songs.html', 'Songs', active === 'songs')}
-      <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${plusIcon}</button>
+      <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${ICONS.plus}</button>
       ${item('albums', 'alben.html', 'Alben', active === 'albums')}
-      ${item('settings', 'einstellungen.html', 'Einst.', active === 'settings')}
+      ${item('settings', 'einstellungen.html', 'Einstellungen', active === 'settings')}
     </nav>`);
   $('plusBtn').onclick = e => { e.stopPropagation(); $('plusSheet').hidden = !$('plusSheet').hidden; };
   document.addEventListener('click', e => { if (!e.target.closest('#plusSheet')) $('plusSheet').hidden = true; });
