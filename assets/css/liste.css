@@ -1,4 +1,5 @@
 /* Overview pages (songs + albums): tools, cover gallery, table */
+.wrap.wide{max-width:none;padding:0 24px}
 .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
 .tools input,.tools select{padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:inherit}
 .tools input{flex:1;min-width:200px}
@@ -42,7 +43,7 @@
 /* table */
 .table-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:60px}
 /* fixed column widths: everything fits on a normal laptop screen without scrolling sideways */
-table{border-collapse:collapse;width:100%;font-size:14px;table-layout:fixed;min-width:1180px}
+table{border-collapse:collapse;width:100%;font-size:14px;table-layout:fixed;min-width:1100px}
 th,td{padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
 th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;background:var(--accent-soft)}
 th.sorted{color:var(--accent-strong)}
@@ -55,13 +56,13 @@ th,td{overflow:hidden;text-overflow:ellipsis}
 .c-rank{width:52px}
 .c-cover{width:60px}
 .c-final{width:80px}
-.c-text{width:15%}
 .c-num{width:72px}
 .c-cat{width:106px}
 th.c-cat{text-transform:none;letter-spacing:0;font-size:12.5px}
 th.c-cat,td.c-cat{padding-left:8px;padding-right:8px}
 .c-del{width:52px;text-overflow:clip}
-td.c-title b,td.c-title .sub{display:block;overflow:hidden;text-overflow:ellipsis}
+/* long song / album names wrap onto a second line instead of being cut off */
+td.c-title,td.c-text{white-space:normal;overflow-wrap:anywhere}
 .rank{font-weight:700;color:var(--accent-strong)}
 td.song{font-weight:600}
 td .sub{color:var(--muted);font-weight:400}

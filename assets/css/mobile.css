@@ -6,7 +6,7 @@
 
 @media (max-width:640px){
   body{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 12px)}
-  .wrap{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+  .wrap,.wrap.wide{padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
 
   /* header: just the title – navigation lives in the tab bar */
   header{padding-top:env(safe-area-inset-top)}
