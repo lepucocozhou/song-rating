@@ -42,15 +42,15 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
     el.dataset.q = q.id;
     el.innerHTML = `
       <div class="q-head">
-        <div><div class="q-title">${L('Q', 'F')}${++qNo}. ${esc(q.q)}</div><div class="q-think">${esc(q.think || '')}</div></div>
+        <div><div class="q-title">${L('Q', 'F', '')}${++qNo}. ${esc(q.q)}</div><div class="q-think">${esc(q.think || '')}</div></div>
         <div class="q-val">–</div>
       </div>
-      <input type="range" min="1" max="10" step="0.5" value="5.5" aria-label="${L('Q', 'F')}${qNo}">
+      <input type="range" min="1" max="10" step="0.5" value="5.5" aria-label="${L('Q', 'F', '问题 ')}${qNo}">
       <div class="ticks">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n =>
         `<span style="left:calc(13px + (100% - 26px) * ${(n - 1) / 9})">${n}</span>`).join('')}</div>
       <div class="desc"></div>
       <div class="q-opts">
-        ${q.na ? `<button class="opt na">${L('N/A', 'k.A.')}</button>` : ''}
+        ${q.na ? `<button class="opt na">${L('N/A', 'k.A.', '不适用')}</button>` : ''}
         <button class="opt skip" title="Frage auslassen – zählt nicht in den Score">Weiß nicht</button>
       </div>`;
     const range = el.querySelector('input[type=range]');
@@ -95,7 +95,7 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
         el.classList.toggle('isskip', v === 'skip');
         el.querySelector('.skip').classList.toggle('on', v === 'skip');
         if (q.na) el.querySelector('.na').classList.toggle('on', v === 'N/A');
-        el.querySelector('.q-val').textContent = v === undefined ? '–' : v === 'skip' ? 'ausgelassen' : v === 'N/A' ? L('N/A', 'k.A.') : v;
+        el.querySelector('.q-val').textContent = v === undefined ? '–' : v === 'skip' ? 'ausgelassen' : v === 'N/A' ? L('N/A', 'k.A.', '不适用') : v;
         const range = el.querySelector('input[type=range]');
         range.style.setProperty('--fill', typeof v === 'number' ? (v - 1) / 9 * 100 + '%' : '0%');
         el.querySelector('.desc').innerHTML =

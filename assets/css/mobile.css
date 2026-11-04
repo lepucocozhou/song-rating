@@ -18,7 +18,8 @@
   header[data-active=start]{background:var(--hero1);border-bottom:0}
   header[data-active=start] .logo{color:var(--hero-text)}
   header[data-active=start] .logo em{color:var(--hero-em)}
-  header[data-active=start] .cloud{background:rgba(255,255,255,.55);color:var(--hero-text)}
+  header[data-active=start] .cloud,header[data-active=start] .lang-btn{background:rgba(255,255,255,.55);color:var(--hero-text);border-color:transparent}
+  .lang-btn{padding:5px 11px}
 
   /* bottom tab bar */
   .tabbar{display:grid;grid-template-columns:repeat(5,1fr);align-items:center;position:fixed;left:0;right:0;bottom:0;z-index:40;

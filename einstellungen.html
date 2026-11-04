@@ -15,9 +15,9 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
-<link rel="stylesheet" href="assets/css/base.css?v=5">
+<link rel="stylesheet" href="assets/css/base.css?v=6">
 <link rel="stylesheet" href="assets/css/einstellungen.css?v=5">
-<link rel="stylesheet" href="assets/css/mobile.css?v=7">
+<link rel="stylesheet" href="assets/css/mobile.css?v=8">
 </head>
 <body>
 <header id="top" data-active="settings"></header>
@@ -41,11 +41,12 @@
       <button type="button" data-theme-choice="light">☀️ Hell</button>
       <button type="button" data-theme-choice="dark">🌙 Dunkel</button>
     </div>
-    <h3 class="sub-h">Sprache der Fragen und Bewertungen</h3>
-    <p class="intro">Kategorien, Fragen, „Überlege“-Sätze und die Beschreibungen der Skala 1–10. Fragen, die du selbst umgeschrieben hast, bleiben so, wie du sie geschrieben hast.</p>
-    <div class="theme-pick" id="langPick">
+    <h3 class="sub-h">Sprache</h3>
+    <p class="intro">Bei „中文“ ist die ganze App auf Chinesisch. Bei Deutsch und English sind Menüs und Knöpfe auf Deutsch, nur Kategorien, Fragen und die Skala 1–10 wechseln. Fragen, die du selbst umgeschrieben hast, bleiben so, wie du sie geschrieben hast. Oben neben dem Logo kannst du auch schnell zwischen Deutsch und 中文 wechseln.</p>
+    <div class="theme-pick" id="langPick" translate="no">
       <button type="button" data-lang-choice="de">🇩🇪 Deutsch</button>
       <button type="button" data-lang-choice="en">🇬🇧 English</button>
+      <button type="button" data-lang-choice="zh">🇨🇳 中文</button>
     </div>
   </section>
 
@@ -101,15 +102,18 @@
 
 <script src="assets/js/defaults.js"></script>
 <script src="assets/js/texts-de.js"></script>
-<script src="assets/js/language.js"></script>
-<script src="assets/js/common.js"></script>
+<script src="assets/js/texts-zh.js"></script>
+<script src="assets/js/language.js?v=2"></script>
+<script src="assets/js/i18n-zh.js"></script>
+<script src="assets/js/i18n.js"></script>
+<script src="assets/js/common.js?v=11"></script>
 <script src="assets/vendor/supabase.min.js"></script>
 <script src="assets/js/cloud-config.js"></script>
 <script src="assets/js/cloud.js"></script>
-<script src="assets/js/excel.js"></script>
+<script src="assets/js/excel.js?v=11"></script>
 <script src="assets/js/backup.js"></script>
-<script src="assets/js/account.js"></script>
-<script src="assets/js/theme-pick.js"></script>
-<script src="assets/js/einstellungen.js"></script>
+<script src="assets/js/account.js?v=11"></script>
+<script src="assets/js/theme-pick.js?v=2"></script>
+<script src="assets/js/einstellungen.js?v=11"></script>
 </body>
 </html>

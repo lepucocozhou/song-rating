@@ -117,7 +117,7 @@ function freshFirst(items) {
 }
 
 const releaseLabel = x => isNew(x.released)
-  ? `Neu · ${new Date(x.released).toLocaleDateString('de-DE', { day: 'numeric', month: 'short' })}`
+  ? `Neu · ${new Date(x.released).toLocaleDateString(LOCALE, { day: 'numeric', month: 'short' })}`
   : `#${x.chartRank} in den Charts`;
 
 async function renderReleases() {

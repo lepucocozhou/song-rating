@@ -30,14 +30,29 @@ async function exportExcel(toast) {
     if (albums.length) answersSheet(wb, 'Album-Antworten', 'Alle Antworten – Alben', albums.map(r => [r.a.album, r.a.artist, r.a.answers]), ALBUM_CATS);
     weightsSheet(wb);
 
+    if (LANG === 'zh') translateWorkbook(wb);
+
     const buf = await wb.xlsx.writeBuffer();
-    download(`Song Ratings ${new Date().toISOString().slice(0, 10)}.xlsx`, buf,
+    download(t(`Song Ratings ${new Date().toISOString().slice(0, 10)}.xlsx`), buf,
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     say('Excel-Datei erstellt ✓');
   } catch (e) {
     console.error(e);
     say('Export fehlgeschlagen: ' + e.message);
   }
+}
+
+// Chinese mode: sheet names, headings and labels in Chinese. Data rows keep song titles and artists as they are.
+function translateWorkbook(wb) {
+  const labels = ['Weiß nicht', '⚡ Schnell', '🎯 Vollständig'];
+  wb.eachSheet(ws => {
+    const all = ws.name === 'Gewichtung';
+    ws.eachRow((row, rowNo) => row.eachCell(cell => {
+      if (typeof cell.value !== 'string' || (cell.isMerged && cell.master !== cell)) return;
+      if (all || rowNo <= 5 || labels.includes(cell.value)) cell.value = t(cell.value);
+    }));
+    ws.name = t(ws.name);
+  });
 }
 
 // Download small versions of the covers; songs without a reachable cover just get none
@@ -130,7 +145,7 @@ function addCover(ws, covers, url, rowNo) {
   if (id !== undefined) ws.addImage(id, { tl: { col: 1.12, row: rowNo - 1 + 0.1 }, ext: { width: 46, height: 46 }, editAs: 'oneCell' });
 }
 
-const today = () => new Date().toLocaleDateString('de-DE');
+const today = () => new Date().toLocaleDateString(LOCALE);
 
 /* ---------- sheets ---------- */
 function songsSheet(wb, rows, covers) {

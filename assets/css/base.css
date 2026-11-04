@@ -6,8 +6,8 @@
   --skip:#fff3d6;--skip-text:#9a6a00;color-scheme:light;
   --hero-sub:#2d5b7c;--hero-em:#1d7fb0;--ink:#0f3554;--ink-hover:#16486f;--ink-card:#0f3554;--ink-score:#b5e6fd;
   --hero-btn2:rgba(255,255,255,.7);--hero-btn2-hover:#fff;--soft-track:#eef6fb;--shadow:rgba(15,53,84,.06);
-  --serif:"Newsreader",Georgia,"Times New Roman",serif;
-  --sans:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --serif:"Newsreader",Georgia,"Times New Roman","Songti SC","Noto Serif SC",serif;
+  --sans:"Instrument Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif;
 }
 /* dark colors: chosen in the settings (data-theme), or automatically when the device is in dark mode */
 :root[data-theme=dark]{--bg:#0e1a24;--card:#152532;--text:#e4f1fa;--muted:#8fa9bc;--line:#24394a;
@@ -52,6 +52,9 @@ header{background:var(--bg);border-bottom:1px solid var(--line)}
 .cloud{font-size:12px;font-weight:600;text-decoration:none;padding:3px 10px;border-radius:20px;
   background:var(--accent-soft);color:var(--text);white-space:nowrap}
 .cloud[hidden]{display:none}
+/* Deutsch ⇄ 中文 */
+.lang-btn{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;border:1px solid var(--line);background:var(--card);color:var(--text);white-space:nowrap}
+.lang-btn:hover{background:var(--accent-soft)}
 .cloud.warn{background:#fff3d6;color:#9a6a00}
 nav{display:flex;gap:28px;overflow-x:auto;max-width:100%}
 .tab{font-size:14px;font-weight:500;padding:6px 0;color:var(--muted);text-decoration:none;white-space:nowrap;

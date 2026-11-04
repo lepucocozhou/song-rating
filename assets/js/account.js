@@ -26,8 +26,8 @@ function renderAccount() {
     box.innerHTML = `
       <div class="account">
         <div class="signed">Angemeldet als <b>${esc(u.email)}</b></div>
-        <p>Status: ${esc(status)}${last ? ` · zuletzt synchronisiert ${new Date(last).toLocaleString('de-DE')}` : ''}</p>
-        ${counts ? `<p>In deinem Konto: <b>${counts.songs}</b> Songs, <b>${counts.albums}</b> Alben · auf diesem Gerät: <b>${Songs.all().length}</b> Songs, <b>${Albums.all().length}</b> Alben</p>` : ''}
+        <p>Status: ${esc(status)}${last ? ` · zuletzt synchronisiert ${new Date(last).toLocaleString(LOCALE)}` : ''}</p>
+        ${counts ? `<p>In deinem Konto: <b>${counts.songs} Songs, ${counts.albums} Alben</b> · auf diesem Gerät: <b>${Songs.all().length} Songs, ${Albums.all().length} Alben</b></p>` : ''}
         ${lastError && Cloud.status !== 'ok' ? `<div class="err">Letzter Fehler: ${esc(lastError)}</div>` : ''}
         <p>Deine Bewertungen werden automatisch in deinem Konto gespeichert. Auf jedem anderen Gerät einfach hier mit derselben E-Mail anmelden.</p>
         <form class="pw-box" id="pwForm">
@@ -61,7 +61,7 @@ function renderAccount() {
       accountMsg = accountOk = '';
       await Cloud.sync();
       const c = store.get('cloudCounts', null);
-      if (Cloud.status === 'ok') accountOk = `✓ Synchronisiert um ${new Date().toLocaleTimeString('de-DE')}` + (c ? ` – ${c.songs} Songs und ${c.albums} Alben in deinem Konto.` : '.');
+      if (Cloud.status === 'ok') accountOk = `✓ Synchronisiert um ${new Date().toLocaleTimeString(LOCALE)}` + (c ? ` – ${c.songs} Songs und ${c.albums} Alben in deinem Konto.` : '.');
       else accountMsg = 'Synchronisieren hat nicht geklappt: ' + (store.get('cloudLastError', null) || 'unbekannter Fehler');
       renderAccount();
     };

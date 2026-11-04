@@ -20,6 +20,7 @@ document.querySelectorAll('[data-lang-choice]').forEach(btn => {
   btn.onclick = () => {
     if (btn.dataset.langChoice === LANG) return;
     if (dirty && !confirm('Du hast ungespeicherte Änderungen an den Fragen. Trotzdem die Sprache wechseln?\nDie Änderungen gehen dabei verloren.')) return;
+    if (btn.dataset.langChoice === 'zh') store.set('langBeforeZh', LANG);
     store.set('lang', btn.dataset.langChoice);
     dirty = false;
     location.reload();

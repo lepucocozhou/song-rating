@@ -203,7 +203,8 @@ function download(name, data, type) {
   const active = { rate: 'songs', rateAlbum: 'albums' }[h.dataset.active] || h.dataset.active;
   h.innerHTML = `<div class="head">
     <div class="head-left">
-      <a class="logo" href="index.html">Song<em>Rating</em></a>
+      <a class="logo" href="index.html" translate="no">Song<em>Rating</em></a>
+      <button type="button" class="lang-btn" id="langBtn" translate="no" title="${LANG === 'zh' ? '切换到德语' : 'Auf Chinesisch umstellen'}">${LANG === 'zh' ? 'DE' : '中文'}</button>
       <a class="cloud" id="cloudChip" href="einstellungen.html#konto" hidden></a>
     </div>
     <nav>${tabs.map(([k, href, label]) => `<a class="tab ${active === k ? 'active' : ''}" href="${href}">${label}</a>`).join('')}</nav>
@@ -215,6 +216,7 @@ function download(name, data, type) {
       </div>
     </div>
   </div>`;
+  $('langBtn').onclick = switchLanguage;
   $('plusMenuBtn').onclick = e => { e.stopPropagation(); $('plusMenu').hidden = !$('plusMenu').hidden; };
   document.addEventListener('click', e => { if (!e.target.closest('#plusMenu')) $('plusMenu').hidden = true; });
   renderTabbar(h.dataset.active);
