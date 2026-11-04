@@ -73,3 +73,4 @@ button.excel{background:#e7f8ee;border-color:#9fdcb8;color:#14532d;font-weight:6
 .login-form{display:grid;gap:8px;max-width:360px}
 .login-form input{font-size:16px}
 .login-link{font-size:13px;color:var(--accent-strong)}
+.pw-box{background:var(--accent-soft);border-radius:10px;padding:12px 14px;font-size:14px;display:grid;gap:8px}

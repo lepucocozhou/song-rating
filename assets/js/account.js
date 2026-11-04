@@ -5,6 +5,7 @@ let loginMode = 'login';   // login | register | code
 let codeSent = false;
 let accountMsg = '';
 let accountOk = '';
+let pwMsg = '', pwOk = '', pwNonceNeeded = false;
 
 function renderAccount() {
   const box = $('account');
@@ -13,6 +14,9 @@ function renderAccount() {
     return;
   }
   const u = Cloud.user;
+  // Re-rendering (e.g. when the sync status changes) must not wipe what is being typed
+  const typedPw = $('newPw') ? $('newPw').value : '';
+  const typedNonce = $('pwNonce') ? $('pwNonce').value : '';
   if (u) {
     const last = store.get('cloudLastSync', null);
     const counts = store.get('cloudCounts', null);
@@ -26,10 +30,22 @@ function renderAccount() {
         ${counts ? `<p>In deinem Konto: <b>${counts.songs}</b> Songs, <b>${counts.albums}</b> Alben · auf diesem Gerät: <b>${Songs.all().length}</b> Songs, <b>${Albums.all().length}</b> Alben</p>` : ''}
         ${lastError && Cloud.status !== 'ok' ? `<div class="err">Letzter Fehler: ${esc(lastError)}</div>` : ''}
         <p>Deine Bewertungen werden automatisch in deinem Konto gespeichert. Auf jedem anderen Gerät einfach hier mit derselben E-Mail anmelden.</p>
-        <form class="login-row" id="pwForm">
+        <form class="pw-box" id="pwForm">
+          <b>🔑 Passwort</b>
+          <div class="muted">Leg ein Passwort fest, dann kannst du dich überall mit E-Mail und Passwort anmelden.</div>
           <input type="email" value="${esc(u.email)}" autocomplete="username" hidden>
-          <input type="password" id="newPw" placeholder="Neues Passwort (mind. 6 Zeichen)" autocomplete="new-password" minlength="6">
-          <button type="submit">🔑 Passwort festlegen</button>
+          <div class="login-row">
+            <input type="password" id="newPw" placeholder="Neues Passwort (mind. 6 Zeichen)" autocomplete="new-password">
+            ${pwNonceNeeded ? '' : '<button type="submit" class="primary" id="pwSave">Passwort festlegen</button>'}
+          </div>
+          ${pwNonceNeeded ? `
+            <div>📬 Zur Sicherheit haben wir dir einen Bestätigungscode an <b>${esc(u.email)}</b> geschickt. Gib ihn hier ein:</div>
+            <div class="login-row">
+              <input class="code" id="pwNonce" inputmode="numeric" autocomplete="one-time-code" placeholder="123456" maxlength="10">
+              <button type="submit" class="primary" id="pwSave">Bestätigen</button>
+            </div>` : ''}
+          ${pwOk ? `<div class="ok">${esc(pwOk)}</div>` : ''}
+          ${pwMsg ? `<div class="err">${esc(pwMsg)}</div>` : ''}
         </form>
         <div class="login-row">
           <button id="syncNow" ${Cloud.status === 'syncing' ? 'disabled' : ''}>${Cloud.status === 'syncing' ? '🔄 Synchronisiere …' : '🔄 Jetzt synchronisieren'}</button>
@@ -49,15 +65,28 @@ function renderAccount() {
       else accountMsg = 'Synchronisieren hat nicht geklappt: ' + (store.get('cloudLastError', null) || 'unbekannter Fehler');
       renderAccount();
     };
+    if (typedPw) $('newPw').value = typedPw;
+    if (typedNonce && $('pwNonce')) $('pwNonce').value = typedNonce;
     $('pwForm').onsubmit = async e => {
       e.preventDefault();
       const pw = $('newPw').value;
-      accountMsg = accountOk = '';
-      if (pw.length < 6) accountMsg = 'Das Passwort muss mindestens 6 Zeichen lang sein.';
+      const nonce = $('pwNonce') ? $('pwNonce').value.replace(/\s/g, '') : '';
+      pwMsg = pwOk = '';
+      if (pw.length < 6) { pwMsg = 'Das Passwort muss mindestens 6 Zeichen lang sein.'; return renderAccount(); }
+      if (pwNonceNeeded && !nonce) { pwMsg = 'Bitte gib den Code aus der E-Mail ein.'; return renderAccount(); }
+      $('pwSave').disabled = true;
+      $('pwSave').textContent = 'Speichere …';
+      let error;
+      try { ({ error } = await Cloud.setPassword(pw, nonce)); } catch (err) { error = err; }
+      if (error && !pwNonceNeeded && (error.code === 'reauthentication_needed' || /reauthenticat/i.test(error.message))) {
+        const { error: sendErr } = await Cloud.reauthenticate();
+        if (sendErr) pwMsg = loginError(sendErr);
+        else pwNonceNeeded = true;
+      } else if (error) pwMsg = passwordError(error);
       else {
-        const { error } = await Cloud.setPassword(pw);
-        if (error) accountMsg = 'Passwort konnte nicht gespeichert werden: ' + error.message;
-        else accountOk = '✓ Passwort gespeichert – ab jetzt kannst du dich mit E-Mail und Passwort anmelden.';
+        pwNonceNeeded = false;
+        pwOk = '✓ Passwort gespeichert – ab jetzt kannst du dich mit E-Mail und Passwort anmelden.';
+        $('newPw').value = '';
       }
       renderAccount();
     };
@@ -172,6 +201,14 @@ function renderAccount() {
     if (!error) { codeSent = false; loginMode = 'login'; }
     renderAccount();
   };
+}
+
+function passwordError(error) {
+  const m = error.message || String(error);
+  if (error.code === 'same_password' || /different from the old/i.test(m)) return 'Das ist schon dein aktuelles Passwort ✓';
+  if (error.code === 'weak_password' || /weak|at least/i.test(m)) return 'Das Passwort ist zu schwach – nimm ein längeres mit Buchstaben und Zahlen.';
+  if (/nonce|otp|expired|invalid/i.test(m)) return 'Der Code stimmt nicht oder ist abgelaufen.';
+  return 'Passwort konnte nicht gespeichert werden: ' + m;
 }
 
 function loginError(error) {
