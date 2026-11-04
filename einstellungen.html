@@ -21,7 +21,7 @@
 
 <main class="wrap">
   <div class="sec-nav">
-    <a href="#konto">Konto &amp; Cloud</a><a href="#look">Darstellung</a><a href="#songs">Song-Fragen</a><a href="#albums">Album-Fragen</a><a href="#rules">Album-Regeln</a><a href="#data">Daten &amp; Speicherung</a>
+    <a href="#konto">Konto &amp; Cloud</a><a href="#look">Darstellung &amp; Sprache</a><a href="#songs">Song-Fragen</a><a href="#albums">Album-Fragen</a><a href="#rules">Album-Regeln</a><a href="#data">Daten &amp; Speicherung</a>
   </div>
 
   <section id="konto">
@@ -30,12 +30,18 @@
   </section>
 
   <section id="look">
-    <h2>🌗 Darstellung</h2>
+    <h2>🌗 Darstellung &amp; Sprache</h2>
     <p class="intro">Wird auf diesem Gerät gespeichert. „Automatisch“ richtet sich nach der Einstellung deines Handys oder Computers.</p>
     <div class="theme-pick" id="themePick">
       <button type="button" data-theme-choice="auto">🌓 Automatisch</button>
       <button type="button" data-theme-choice="light">☀️ Hell</button>
       <button type="button" data-theme-choice="dark">🌙 Dunkel</button>
+    </div>
+    <h3 class="sub-h">Sprache der Fragen und Bewertungen</h3>
+    <p class="intro">Kategorien, Fragen, „Überlege“-Sätze und die Beschreibungen der Skala 1–10. Fragen, die du selbst umgeschrieben hast, bleiben so, wie du sie geschrieben hast.</p>
+    <div class="theme-pick" id="langPick">
+      <button type="button" data-lang-choice="de">🇩🇪 Deutsch</button>
+      <button type="button" data-lang-choice="en">🇬🇧 English</button>
     </div>
   </section>
 
@@ -90,6 +96,8 @@
 <div class="wrap reset-row"><button class="danger" id="resetCfg">Alle Fragen &amp; Gewichte auf Standard zurücksetzen</button></div>
 
 <script src="assets/js/defaults.js"></script>
+<script src="assets/js/texts-de.js"></script>
+<script src="assets/js/language.js"></script>
 <script src="assets/js/common.js"></script>
 <script src="assets/vendor/supabase.min.js"></script>
 <script src="assets/js/cloud-config.js"></script>

@@ -16,13 +16,15 @@ let onDataChanged = () => {};
 const now = () => new Date().toISOString();
 
 /* ---------- settings ---------- */
-// Stored with _updatedAt so the newest settings win when syncing devices; _reset = use the defaults
+// Stored with _updatedAt so the newest settings win when syncing devices; _reset = use the defaults.
+// Always stored in English; shown in the chosen language (language.js).
 const Config = {
   load() {
     const saved = store.get('songRatingConfig', null);
-    return saved && !saved._reset ? { ...clone(DEFAULT_CONFIG), ...saved } : clone(DEFAULT_CONFIG);
+    const cfg = saved && !saved._reset ? { ...clone(DEFAULT_CONFIG), ...saved } : clone(DEFAULT_CONFIG);
+    return translateConfig(cfg, 'en', LANG);
   },
-  save(cfg) { store.set('songRatingConfig', { ...cfg, _updatedAt: now() }); onDataChanged(); },
+  save(cfg) { store.set('songRatingConfig', { ...translateConfig(clone(cfg), LANG, 'en'), _updatedAt: now() }); onDataChanged(); },
   reset() { store.set('songRatingConfig', { _reset: true, _updatedAt: now() }); onDataChanged(); },
 };
 const CONFIG = Config.load();

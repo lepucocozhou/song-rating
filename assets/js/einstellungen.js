@@ -42,10 +42,10 @@ function renderEditor(kind) {
             <span class="no">${qi + 1}</span>
             <input class="qtext" value="${esc(q.q)}" data-f="q" placeholder="Frage">
             <span class="pct"><input type="number" min="0" max="100" step="0.5" value="${pct(q.w)}" data-f="w"> %</span>
-            <label class="na"><input type="checkbox" data-f="na" ${q.na ? 'checked' : ''}> N/A</label>
+            <label class="na"><input type="checkbox" data-f="na" ${q.na ? 'checked' : ''}> ${L('N/A', 'k.A.')}</label>
             <button class="icon" data-act="delQ" title="Frage löschen">✕</button>
           </div>
-          <input class="think" value="${esc(q.think || '')}" data-f="think" placeholder="Hilfssatz, z. B. „Think: …“">
+          <input class="think" value="${esc(q.think || '')}" data-f="think" placeholder="Hilfssatz, z. B. „${L('Think', 'Überlege')}: …“">
           <details>
             <summary>Skala 1–10 ${q.scale ? '' : '(Standard-Skala)'}</summary>
             <div class="scale">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `

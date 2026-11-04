@@ -3,6 +3,7 @@
 //      &back=album.html… shows a link back to the album.
 
 const params = new URLSearchParams(location.search);
+$('finalLbl').textContent = L('Final Score', 'Endwertung');
 const song = $('song'), artist = $('artist'), album = $('album');
 const META_KEYS = ['artwork', 'appleUrl', 'preview', 'year', 'trackId'];
 
