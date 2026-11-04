@@ -94,8 +94,8 @@ const ZH_WORDS = {
   'Album-Regeln': '专辑规则', 'Daten & Speicherung': '数据与存储', 'Sprache': '语言',
   'Wird auf diesem Gerät gespeichert. „Automatisch“ richtet sich nach der Einstellung deines Handys oder Computers.': '保存在本设备上。“自动”会跟随你手机或电脑的设置。',
   '🌓 Automatisch': '🌓 自动', '☀️ Hell': '☀️ 浅色', '🌙 Dunkel': '🌙 深色',
-  'Bei „中文“ ist die ganze App auf Chinesisch. Bei Deutsch und English sind Menüs und Knöpfe auf Deutsch, nur Kategorien, Fragen und die Skala 1–10 wechseln. Fragen, die du selbst umgeschrieben hast, bleiben so, wie du sie geschrieben hast. Oben neben dem Logo kannst du auch schnell zwischen Deutsch und 中文 wechseln.':
-    '选择“中文”时，整个应用都显示中文。选择 Deutsch 或 English 时，菜单和按钮为德语，只有类别、问题和 1–10 分说明会切换语言。你自己改写过的问题会保持原样。也可以用顶部标志旁边的按钮在 Deutsch 和中文之间快速切换。',
+  'Bei „中文“ ist die ganze App auf Chinesisch. Bei Deutsch und English sind Menüs und Knöpfe auf Deutsch, nur Kategorien, Fragen und die Skala 1–10 wechseln. Fragen, die du selbst umgeschrieben hast, bleiben so, wie du sie geschrieben hast.':
+    '选择“中文”时，整个应用都显示中文。选择 Deutsch 或 English 时，菜单和按钮为德语，只有类别、问题和 1–10 分说明会切换语言。你自己改写过的问题会保持原样。',
   'Kategorien und Fragen für Songs. Gewichte in Prozent – stimmt die Summe nicht genau, wird beim Rechnen automatisch auf 100 % umgerechnet.':
     '歌曲的类别和问题。权重以百分比表示——如果总和不正好是 100%，计算时会自动换算为 100%。',
   'Platzhalter': '占位', 'Die Album-Fragen sind noch Platzhalter – hier kannst du sie umbenennen, ergänzen oder löschen.': '专辑问题目前还是占位内容——你可以在这里重命名、添加或删除它们。',

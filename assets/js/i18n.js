@@ -61,12 +61,3 @@ if (LANG === 'zh') {
   window.confirm = msg => confirm0(t(String(msg)));
 }
 
-// Header button: switch between Deutsch and 中文 (English counts as German here)
-function switchLanguage() {
-  if (typeof dirty !== 'undefined' && dirty &&
-      !confirm('Du hast ungespeicherte Änderungen an den Fragen. Trotzdem die Sprache wechseln?\nDie Änderungen gehen dabei verloren.')) return;
-  store.set('lang', LANG === 'zh' ? (store.get('langBeforeZh', 'de')) : 'zh');
-  if (LANG !== 'zh') store.set('langBeforeZh', LANG);
-  if (typeof dirty !== 'undefined') dirty = false;
-  location.reload();
-}
