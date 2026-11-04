@@ -162,6 +162,8 @@ function coverHtml(rec, cls) {
 }
 
 const medal = r => ['🥇', '🥈', '🥉'][r - 1] || '#' + r;
+// Round rank badge on covers: gold / silver / bronze for the top 3, plain number otherwise ('A' = album)
+const medalHtml = r => `<span class="medal ${r <= 3 ? 'm' + r : ''}">${r}</span>`;
 
 function describe(q, v) {
   const text = n => esc((q.scale && q.scale[n]) || GENERIC_SCALE[n]);
@@ -193,45 +195,49 @@ function download(name, data, type) {
   if (!h) return;
   const tabs = [
     ['start', 'index.html', 'Start'],
-    ['songs', 'songs.html', 'Songs <span class="count" id="countSongs"></span>'],
-    ['rate', 'bewerten.html', '+ Song'],
-    ['albums', 'alben.html', 'Alben <span class="count" id="countAlbums"></span>'],
-    ['rateAlbum', 'album.html', '+ Album'],
-    ['settings', 'einstellungen.html', '⚙︎ Einstellungen'],
+    ['songs', 'songs.html', 'Songs<span class="count" id="countSongs"></span>'],
+    ['albums', 'alben.html', 'Alben<span class="count" id="countAlbums"></span>'],
+    ['settings', 'einstellungen.html', 'Einstellungen'],
   ];
-  h.innerHTML = `<div class="wrap head">
-    <a class="logo" href="index.html">🎵 Song Rating</a>
-    <a class="cloud" id="cloudChip" href="einstellungen.html#konto" hidden></a>
-    <nav>${tabs.map(([k, href, label]) => `<a class="tab ${h.dataset.active === k ? 'active' : ''}" href="${href}">${label}</a>`).join('')}</nav>
+  // Rating pages belong to their overview tab
+  const active = { rate: 'songs', rateAlbum: 'albums' }[h.dataset.active] || h.dataset.active;
+  h.innerHTML = `<div class="head">
+    <div class="head-left">
+      <a class="logo" href="index.html">Song<em>Rating</em></a>
+      <a class="cloud" id="cloudChip" href="einstellungen.html#konto" hidden></a>
+    </div>
+    <nav>${tabs.map(([k, href, label]) => `<a class="tab ${active === k ? 'active' : ''}" href="${href}">${label}</a>`).join('')}</nav>
+    <div class="head-right">
+      <button class="plus-btn" id="plusMenuBtn" aria-haspopup="true">+ Bewerten</button>
+      <div class="plus-menu" id="plusMenu" hidden>
+        <a href="bewerten.html">Song bewerten<small>${SONG_CATS.reduce((n, c) => n + c.qs.length, 0)} Fragen in ${SONG_CATS.length} Kategorien</small></a>
+        <a href="album.html">Album bewerten<small>Songs + Album-Fragen</small></a>
+      </div>
+    </div>
   </div>`;
+  $('plusMenuBtn').onclick = e => { e.stopPropagation(); $('plusMenu').hidden = !$('plusMenu').hidden; };
+  document.addEventListener('click', e => { if (!e.target.closest('#plusMenu')) $('plusMenu').hidden = true; });
   renderTabbar(h.dataset.active);
   refreshCounts();
 })();
 
 // Phones: app-like tab bar at the bottom; "+" opens a choice between rating a song or an album
 function renderTabbar(active) {
-  const icon = d => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
-  const ICONS = {
-    songs: icon('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
-    albums: icon('<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="2.5"/>'),
-    start: icon('<path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>'),
-    plus: icon('<path d="M12 5v14M5 12h14"/>'),
-    settings: icon('<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>'),
-  };
+  const plusIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>';
   const item = (key, href, label, isActive) =>
-    `<a class="${isActive ? 'active' : ''}" href="${href}">${ICONS[key]}<span>${label}</span></a>`;
+    `<a class="${isActive ? 'active' : ''}" href="${href}">${label}</a>`;
   const rating = active === 'rate' || active === 'rateAlbum';
   document.body.insertAdjacentHTML('beforeend', `
     <div class="plus-sheet" id="plusSheet" hidden>
-      <a href="bewerten.html">🎵 <span>Song bewerten</span></a>
-      <a href="album.html">💿 <span>Album bewerten</span></a>
+      <a href="bewerten.html">Song bewerten</a>
+      <a href="album.html">Album bewerten</a>
     </div>
     <nav class="tabbar">
       ${item('start', 'index.html', 'Start', active === 'start')}
       ${item('songs', 'songs.html', 'Songs', active === 'songs')}
-      <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${ICONS.plus}</button>
+      <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${plusIcon}</button>
       ${item('albums', 'alben.html', 'Alben', active === 'albums')}
-      ${item('settings', 'einstellungen.html', 'Einstellungen', active === 'settings')}
+      ${item('settings', 'einstellungen.html', 'Einst.', active === 'settings')}
     </nav>`);
   $('plusBtn').onclick = e => { e.stopPropagation(); $('plusSheet').hidden = !$('plusSheet').hidden; };
   document.addEventListener('click', e => { if (!e.target.closest('#plusSheet')) $('plusSheet').hidden = true; });

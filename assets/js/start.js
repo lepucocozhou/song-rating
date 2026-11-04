@@ -4,21 +4,21 @@ const NEW_DAYS = 60; // releases from the last two months count as "new"
 
 function greeting() {
   const h = new Date().getHours();
-  return h < 5 ? 'Gute Nacht 🌙' : h < 11 ? 'Guten Morgen ☀️' : h < 17 ? 'Hallo 👋' : h < 22 ? 'Guten Abend 🌆' : 'Gute Nacht 🌙';
+  return h < 5 ? 'Gute Nacht' : h < 11 ? 'Guten Morgen' : h < 17 ? 'Hallo' : h < 22 ? 'Guten Abend' : 'Gute Nacht';
 }
 
 function renderMine() {
   const songs = rankedSongs().filter(r => r.final !== null).sort((a, b) => a.rank - b.rank);
   const albums = rankedAlbums().filter(r => r.final !== null).sort((a, b) => a.rank - b.rank);
-  $('greeting').textContent = greeting();
+  $('greeting').innerHTML = greeting() + '<em>.</em>';
 
   if (!songs.length && !albums.length) {
     $('summary').textContent = 'Willkommen bei deinem persönlichen Song-Ranking!';
     $('mine').innerHTML = `
-      <section class="block intro">
-        <div class="step-card"><b>1</b><h3>Song suchen</h3><p>Tipp auf „Song bewerten“ und such deinen Lieblingssong – Cover und Infos kommen automatisch.</p></div>
-        <div class="step-card"><b>2</b><h3>Fragen beantworten</h3><p>Schieb die Regler für jede Frage. Nicht sicher? Einfach „Weiß nicht“.</p></div>
-        <div class="step-card"><b>3</b><h3>Ranking ansehen</h3><p>Deine Songs landen in einer Rangliste mit Cover-Galerie – auch Alben kannst du ranken.</p></div>
+      <section class="intro">
+        <div class="step-card"><b>1</b><div><h3>Song suchen</h3><p>Tipp auf „Song bewerten“ und such deinen Lieblingssong – Cover und Infos kommen automatisch.</p></div></div>
+        <div class="step-card"><b>2</b><div><h3>Fragen beantworten</h3><p>Schieb die Regler für jede Frage. Nicht sicher? Einfach „Weiß nicht“.</p></div></div>
+        <div class="step-card"><b>3</b><div><h3>Ranking ansehen</h3><p>Deine Songs landen in einer Rangliste mit Cover-Galerie – auch Alben kannst du ranken.</p></div></div>
       </section>`;
     return;
   }
@@ -41,13 +41,16 @@ function renderMine() {
   const fav = topArtists[0];
 
   const tile = (label, value, sub) => `<div class="tile"><div class="tile-label">${label}</div><div class="tile-value">${value}</div>${sub ? `<div class="tile-sub">${sub}</div>` : ''}</div>`;
-  const podium = songs.slice(0, 3).map(r => `
-    <a class="pod pod${r.rank}" href="bewerten.html?id=${encodeURIComponent(r.s.id)}">
-      <div class="pod-cover">${coverHtml(r.s, '')}<span class="pod-medal">${medal(r.rank)}</span></div>
-      <div class="pod-t">${esc(r.s.song)}</div>
-      <div class="pod-sub">${esc(r.s.artist)}</div>
-      <span class="chip" style="background:${scoreColor(r.final)}">${fmt(r.final)}</span>
-    </a>`).join('');
+  const pod = (href, rec, title, sub, final, badge, cls = '') => `
+    <a class="pod ${cls}" href="${href}">
+      <div class="pod-cover">${coverHtml(rec, '')}${badge}</div>
+      <div class="pod-info">
+        <div class="pod-text"><div class="pod-t">${esc(title)}</div><div class="pod-sub">${sub}</div></div>
+        <span class="chip" style="background:${scoreColor(final)}">${fmt(final)}</span>
+      </div>
+    </a>`;
+  const podium = songs.slice(0, 3).map(r =>
+    pod(`bewerten.html?id=${encodeURIComponent(r.s.id)}`, r.s, r.s.song, esc(r.s.artist), r.final, medalHtml(r.rank))).join('');
   const topAlbum = albums[0];
 
   $('mine').innerHTML = `
@@ -59,16 +62,11 @@ function renderMine() {
     </section>
 
     <section class="block">
-      <div class="block-head"><h2>🏆 Deine Top ${Math.min(3, songs.length)}</h2><a href="songs.html">Alle Songs →</a></div>
+      <div class="block-head"><h2>Deine Top ${Math.min(3, songs.length)}</h2><a href="songs.html">Alle Songs →</a></div>
       <div class="podium">
         ${podium}
-        ${topAlbum ? `
-          <a class="pod pod-album" href="album.html?id=${encodeURIComponent(topAlbum.a.id)}">
-            <div class="pod-cover">${coverHtml(topAlbum.a, '')}<span class="pod-medal">💿</span></div>
-            <div class="pod-t">${esc(topAlbum.a.album)}</div>
-            <div class="pod-sub">Dein Top-Album · ${esc(topAlbum.a.artist)}</div>
-            <span class="chip" style="background:${scoreColor(topAlbum.final)}">${fmt(topAlbum.final)}</span>
-          </a>` : ''}
+        ${topAlbum ? pod(`album.html?id=${encodeURIComponent(topAlbum.a.id)}`, topAlbum.a, topAlbum.a.album,
+          `Dein Top-Album · ${esc(topAlbum.a.artist)}`, topAlbum.final, '<span class="medal ma">A</span>', 'pod-album') : ''}
       </div>
     </section>
 

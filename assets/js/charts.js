@@ -2,15 +2,14 @@
 // hover / keyboard focus / tap; values are also in a screen-reader table.
 
 // Horizontal bars on a fixed 0–10 scale. rows: [{ label, sub?, value, color? }]
-function barChart(el, rows, { color = 'var(--accent-strong)', caption }) {
+function barChart(el, rows, { color = '#38bdf8', caption }) {
   el.innerHTML = `
     <div class="hbars">${rows.map(r => `
       <div class="hbar-row">
-        <div class="hbar-label"><span>${esc(r.label)}</span>${r.sub ? `<small>${esc(r.sub)}</small>` : ''}</div>
+        <div class="hbar-label"><span>${esc(r.label)}${r.sub ? ` <small>· ${esc(r.sub)}</small>` : ''}</span><b class="hbar-val">${fmt(r.value)}</b></div>
         <div class="hbar-track">
           <i class="mark" tabindex="0" style="width:${Math.max(0, r.value) * 10}%;background:${r.color || color}"
              data-tip-value="${fmt(r.value)}" data-tip-label="${esc(r.label)}${r.sub ? ' · ' + esc(r.sub) : ''}"></i>
-          <b class="hbar-val">${fmt(r.value)}</b>
         </div>
       </div>`).join('')}
     </div>
@@ -18,7 +17,7 @@ function barChart(el, rows, { color = 'var(--accent-strong)', caption }) {
 }
 
 // Vertical columns with a light grid. cols: [{ label, value, tip }]
-function columnChart(el, cols, { color = 'var(--accent-strong)', caption, unit = '' }) {
+function columnChart(el, cols, { color = '#38bdf8', caption, unit = '' }) {
   const max = Math.max(1, ...cols.map(c => c.value));
   const step = max <= 4 ? 1 : max <= 10 ? 2 : Math.ceil(max / 4 / 5) * 5;
   const top = Math.ceil(max / step) * step;

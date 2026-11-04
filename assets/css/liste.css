@@ -1,10 +1,27 @@
 /* Overview pages (songs + albums): tools, cover gallery, table */
-.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:18px 0 14px}
-.tools input,.tools select{padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--text);font:inherit}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 14px}
+.tools input,.tools select{padding:11px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--text);font:inherit}
 .tools input{flex:1;min-width:200px}
-.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
-.seg button{border:0;border-radius:0}
-.seg button.on{background:var(--accent);color:var(--on-accent);font-weight:600}
+.tools input:focus,.tools select:focus{outline:none;border-color:var(--accent-strong)}
+.seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{border:0;border-radius:9px;background:none;font-size:13px;font-weight:600;color:var(--muted);padding:8px 12px}
+.seg button.on{background:var(--accent-soft);color:var(--text)}
+
+/* list: compact ranking */
+.rows{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:60px}
+.row{display:grid;grid-template-columns:28px 52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 16px;text-decoration:none}
+.row + .row{border-top:1px solid var(--soft-track)}
+.row:hover{background:var(--bg)}
+.row-rank{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.row .cover{width:52px;border-radius:8px;font-size:12px}
+.row-text{min-width:0}
+.row .t{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .sub,.row .note{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .chip{font-size:14px;padding:3px 8px;border-radius:10px}
+@media (max-width:640px){
+  .row{grid-template-columns:22px 48px minmax(0,1fr) auto;gap:10px;padding:10px 12px}
+  .row .cover{width:48px}
+}
 .tools2{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:-4px 0 18px;font-size:13px}
 .tools2 button{font-size:13px;padding:6px 10px}
 
@@ -13,22 +30,17 @@
 .card{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:16px;
   overflow:hidden;transition:transform .15s,box-shadow .15s}
 .card:hover{transform:translateY(-3px);box-shadow:0 10px 24px rgba(15,53,84,.14)}
-.card.top1{border:3px solid #facc15}
-.card.top2{border:3px solid #cbd5e1}
-.card.top3{border:3px solid #f0a868}
 .cover-wrap{position:relative}
 .cover-wrap .cover{width:100%;font-size:28px}
-.rank-badge{position:absolute;left:8px;top:8px;background:rgba(255,255,255,.92);color:#0f3554;border-radius:20px;
-  padding:2px 9px;font-weight:700;font-size:17px}
-.cover-wrap .chip{position:absolute;right:8px;bottom:8px;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.cover-wrap .chip{position:absolute;right:8px;bottom:8px;font-size:15px;min-width:0;border-radius:10px;box-shadow:0 2px 8px rgba(0,0,0,.18)}
 .card-body{padding:10px 12px 12px}
-.card .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.card .t{font-family:var(--serif);font-weight:600;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .card .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .minibars{display:grid;grid-template-columns:repeat(6,1fr);gap:3px;margin-top:9px;height:30px;align-items:end}
 .minibars i{display:block;background:var(--c);border-radius:3px 3px 0 0;min-height:2px}
 
 /* table */
-.table-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:60px}
+.table-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:60px}
 table{border-collapse:collapse;width:100%;font-size:14px}
 th,td{padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
 th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;background:var(--accent-soft)}

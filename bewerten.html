@@ -12,6 +12,9 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <title>Song bewerten</title>
 <script src="assets/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/bewerten.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
@@ -19,27 +22,22 @@
 <body>
 <header id="top" data-active="rate"></header>
 
-<div class="score">
-  <div class="wrap">
-    <div class="score-top">
-      <div class="final">
-        <div id="barCover"></div>
-        <div class="final-badge" id="badge"><span id="final">–</span></div>
-        <div>
-          <div class="lbl" id="finalLbl">Final Score</div>
-          <div class="now" id="now"></div>
-          <div class="hint" id="finalHint"></div>
-        </div>
-      </div>
-      <div class="answered" id="answered"></div>
+<div class="rate">
+  <aside class="side">
+    <div class="side-head">
+      <div id="barCover"></div>
+      <div class="side-title"><div class="now" id="now"></div><div class="now-sub" id="nowSub"></div><div class="answered" id="answered"></div></div>
+    </div>
+    <div class="final">
+      <div class="final-badge" id="badge"><span id="final">–</span></div>
+      <div class="final-text"><div class="lbl" id="finalLbl">Final Score</div><div class="hint" id="finalHint"></div></div>
     </div>
     <div class="cats" id="catsMini"></div>
-  </div>
-</div>
+    <div class="steps" id="steps"></div>
+  </aside>
 
-<main class="wrap">
+  <main class="rate-main">
   <a class="backlink" id="backToAlbum" hidden>← Zurück zum Album</a>
-  <div class="steps" id="steps"></div>
   <div id="pages">
     <div class="page">
       <div class="page-title"><h2>Welcher Song?</h2></div>
@@ -58,16 +56,21 @@
     <!-- Kategorie-Seiten werden aus den Einstellungen erzeugt -->
     <div class="page">
       <div class="page-title"><h2 style="color:var(--accent-strong)">Ergebnis</h2></div>
+      <div class="result-card">
+        <div class="rc-text"><div class="rc-title" id="rcTitle"></div><div class="rc-hint" id="rcHint"></div></div>
+        <div class="rc-score" id="rcScore">–</div>
+      </div>
       <div class="sum" id="sum"></div>
       <div class="save-row">
-        <button class="primary" id="save">💾 In Übersicht speichern</button>
+        <button class="primary" id="save">In Übersicht speichern</button>
         <button id="newSong">Neuer Song</button>
-        <button class="danger" id="delete" hidden>🗑 Löschen</button>
+        <button class="danger" id="delete" hidden>Löschen</button>
         <span class="toast" id="toast"></span>
       </div>
     </div>
   </div>
 </main>
+</div>
 
 <script src="assets/js/defaults.js"></script>
 <script src="assets/js/texts-de.js"></script>

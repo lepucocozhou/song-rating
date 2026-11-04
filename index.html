@@ -12,6 +12,9 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <title>Song Rating</title>
 <script src="assets/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/start.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
@@ -19,40 +22,42 @@
 <body>
 <header id="top" data-active="start"></header>
 
-<main class="wrap start">
-  <section class="hero">
-    <div>
-      <h1 id="greeting"></h1>
-      <p id="summary"></p>
-    </div>
-    <div class="hero-actions">
-      <a class="btn primary" href="bewerten.html">🎵 Song bewerten</a>
-      <a class="btn" href="album.html">💿 Album bewerten</a>
-    </div>
-  </section>
-
-  <!-- filled by start.js: stats, top 3, charts – or a short intro when nothing is rated yet -->
-  <div id="mine"></div>
-
-  <section class="block">
-    <div class="block-head">
-      <h2>🆕 Neu &amp; angesagt</h2>
-      <span id="chartsSub">Neue Songs aus den Charts – antippen zum Bewerten</span>
-      <div class="region-pick" id="regionPick">
-        <button type="button" data-region="de">🇩🇪 Deutschland</button>
-        <button type="button" data-region="global">🌍 Global</button>
+<main class="start">
+  <div class="hero-wrap">
+    <section class="hero">
+      <div>
+        <h1 id="greeting"></h1>
+        <p id="summary"></p>
       </div>
-    </div>
-    <div class="rail" id="newSongs"><div class="rail-msg">Lade Charts …</div></div>
-  </section>
+      <div class="hero-actions">
+        <a class="btn hero-main" href="bewerten.html">Song bewerten</a>
+        <a class="btn hero-alt" href="album.html">Album bewerten</a>
+      </div>
+    </section>
+  </div>
 
-  <section class="block">
-    <div class="block-head">
-      <h2>💿 Neue Alben</h2>
-      <span>Frisch erschienen und gerade beliebt</span>
-    </div>
-    <div class="rail" id="newAlbums"><div class="rail-msg">Lade Charts …</div></div>
-  </section>
+  <div class="start-main">
+    <!-- filled by start.js: stats, top 3, charts – or a short intro when nothing is rated yet -->
+    <div id="mine"></div>
+
+    <section class="block">
+      <div class="block-head">
+        <div><h2>Neu &amp; angesagt</h2><span id="chartsSub">Neue Songs aus den Charts – antippen zum Bewerten</span></div>
+        <div class="region-pick" id="regionPick">
+          <button type="button" data-region="de">Deutschland</button>
+          <button type="button" data-region="global">Global</button>
+        </div>
+      </div>
+      <div class="rail" id="newSongs"><div class="rail-msg">Lade Charts …</div></div>
+    </section>
+
+    <section class="block">
+      <div class="block-head">
+        <div><h2>Neue Alben</h2><span>Frisch erschienen und gerade beliebt</span></div>
+      </div>
+      <div class="rail" id="newAlbums"><div class="rail-msg">Lade Charts …</div></div>
+    </section>
+  </div>
 </main>
 
 <script src="assets/js/defaults.js"></script>

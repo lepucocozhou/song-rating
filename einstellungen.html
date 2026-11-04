@@ -12,6 +12,9 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <title>Einstellungen – Song Rating</title>
 <script src="assets/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/einstellungen.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
@@ -19,18 +22,19 @@
 <body>
 <header id="top" data-active="settings"></header>
 
-<main class="wrap">
+<main class="wrap settings">
+  <div class="page-head"><h1>Einstellungen</h1></div>
   <div class="sec-nav">
     <a href="#konto">Konto &amp; Cloud</a><a href="#look">Darstellung &amp; Sprache</a><a href="#songs">Song-Fragen</a><a href="#albums">Album-Fragen</a><a href="#rules">Album-Regeln</a><a href="#data">Daten &amp; Speicherung</a>
   </div>
 
   <section id="konto">
-    <h2>☁︎ Konto &amp; Cloud</h2>
+    <h2>Konto &amp; Cloud</h2>
     <div id="account"></div>
   </section>
 
   <section id="look">
-    <h2>🌗 Darstellung &amp; Sprache</h2>
+    <h2>Darstellung &amp; Sprache</h2>
     <p class="intro">Wird auf diesem Gerät gespeichert. „Automatisch“ richtet sich nach der Einstellung deines Handys oder Computers.</p>
     <div class="theme-pick" id="themePick">
       <button type="button" data-theme-choice="auto">🌓 Automatisch</button>
@@ -90,7 +94,7 @@
   <div class="wrap">
     <span>Ungespeicherte Änderungen</span>
     <button id="discard">Verwerfen</button>
-    <button class="primary" id="saveCfg">💾 Einstellungen speichern</button>
+    <button class="primary" id="saveCfg">Einstellungen speichern</button>
   </div>
 </div>
 <div class="wrap reset-row"><button class="danger" id="resetCfg">Alle Fragen &amp; Gewichte auf Standard zurücksetzen</button></div>

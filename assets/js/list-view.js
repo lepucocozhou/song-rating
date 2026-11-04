@@ -1,5 +1,5 @@
 // Gallery / table overview with filter and sorting (used for songs and albums).
-// The page provides #filter, #sort, .seg buttons and #list.
+// The page provides #filter, #sort, .seg buttons (list / gallery / table) and #list.
 // opts: {
 //   getRows() → [{ id, href, rec, title, sub, note, final, rank, bars: [{ name, color, v }], text, sort: { key: value } }],
 //   sorts: [{ key, label, dir }], columns: [{ key, label, title, color, num, cell(row) }],
@@ -8,7 +8,7 @@
 
 function createListView(opts) {
   let sortKey = opts.sorts[0].key, sortDir = opts.sorts[0].dir;
-  let view = store.get(opts.viewKey, 'gallery');
+  let view = store.get(opts.viewKey, 'list');
 
   $('sort').innerHTML = opts.sorts.map(s => `<option value="${s.key}">${esc(s.label)}</option>`).join('');
   $('sort').onchange = () => { sortKey = $('sort').value; sortDir = opts.sorts.find(s => s.key === sortKey).dir; render(); };
@@ -30,18 +30,30 @@ function createListView(opts) {
     $('sort').value = sortKey;
     document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.view === view));
     if (!all.length) $('list').innerHTML = `<div class="empty">${opts.empty}</div>`;
-    else $('list').innerHTML = view === 'gallery' ? gallery(sorted(all)) : table(sorted(all));
+    else $('list').innerHTML = ({ list, gallery, table }[view] || list)(sorted(all));
     if (opts.afterRender) opts.afterRender(all);
   }
 
   const chip = v => `<span class="chip" style="background:${scoreColor(v)}">${v === null ? '–' : fmt(v)}</span>`;
+
+  // Compact ranking: rank · cover · title · score
+  function list(rows) {
+    return `<div class="rows">${rows.map(r => `
+      <a class="row" href="${esc(r.href)}">
+        <span class="row-rank">${r.rank}</span>
+        ${coverHtml(r.rec, '')}
+        <div class="row-text"><div class="t">${esc(r.title || 'Ohne Titel')}</div><div class="sub">${esc(r.sub)}</div>
+          ${r.note ? `<div class="note">${r.note}</div>` : ''}</div>
+        ${chip(r.final)}
+      </a>`).join('')}</div>`;
+  }
 
   function gallery(rows) {
     return `<div class="gallery">${rows.map(r => `
       <a class="card ${r.rank <= 3 && r.final !== null ? 'top' + r.rank : ''}" href="${esc(r.href)}">
         <div class="cover-wrap">
           ${coverHtml(r.rec, '')}
-          <span class="rank-badge">${medal(r.rank)}</span>
+          ${medalHtml(r.rank)}
           ${chip(r.final)}
         </div>
         <div class="card-body">

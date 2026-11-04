@@ -12,6 +12,9 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <title>Alben – Song Rating</title>
 <script src="assets/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/liste.css">
 <link rel="stylesheet" href="assets/css/mobile.css">
@@ -20,14 +23,18 @@
 <header id="top" data-active="albums"></header>
 
 <main class="wrap">
+  <div class="page-head">
+    <h1>Deine Alben</h1>
+    <a class="btn primary" href="album.html">+ Album bewerten</a>
+  </div>
   <div class="tools">
     <input id="filter" placeholder="Suchen nach Album oder Artist …">
     <select id="sort" aria-label="Sortieren"></select>
     <div class="seg">
-      <button data-view="gallery">▦ Galerie</button>
-      <button data-view="table">☰ Tabelle</button>
+      <button data-view="list">Liste</button>
+      <button data-view="gallery">Galerie</button>
+      <button data-view="table">Tabelle</button>
     </div>
-    <a class="btn primary" href="album.html">+ Album bewerten</a>
   </div>
   <div class="tools2">
     <button class="excel" id="exportExcel">📊 Excel exportieren</button>

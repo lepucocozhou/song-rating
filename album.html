@@ -12,6 +12,9 @@
 <link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
 <title>Album bewerten</title>
 <script src="assets/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css">
 <link rel="stylesheet" href="assets/css/bewerten.css">
 <link rel="stylesheet" href="assets/css/album.css">
@@ -20,19 +23,15 @@
 <body>
 <header id="top" data-active="rateAlbum"></header>
 
-<div class="score">
-  <div class="wrap">
-    <div class="score-top">
-      <div class="final">
-        <div id="barCover"></div>
-        <div class="final-badge" id="badge"><span id="final">–</span></div>
-        <div>
-          <div class="lbl">Album-Score</div>
-          <div class="now" id="now"></div>
-          <div class="hint" id="finalHint"></div>
-        </div>
-      </div>
-      <div class="answered" id="answered"></div>
+<div class="rate">
+  <aside class="side">
+    <div class="side-head">
+      <div id="barCover"></div>
+      <div class="side-title"><div class="now" id="now"></div><div class="now-sub" id="nowSub"></div><div class="answered" id="answered"></div></div>
+    </div>
+    <div class="final">
+      <div class="final-badge" id="badge"><span id="final">–</span></div>
+      <div class="final-text"><div class="lbl">Album-Score</div><div class="hint" id="finalHint"></div></div>
     </div>
     <div class="cats" id="catsMini">
       <div class="cat-mini" style="--c:#0ea5e9">
@@ -40,11 +39,10 @@
         <div class="bar"><i id="songAvgBar"></i></div>
       </div>
     </div>
-  </div>
-</div>
+    <div class="steps" id="steps"></div>
+  </aside>
 
-<main class="wrap">
-  <div class="steps" id="steps"></div>
+  <main class="rate-main">
   <div id="pages">
     <!-- Seite 1: Album auswählen + Modus -->
     <div class="page">
@@ -70,18 +68,23 @@
     <!-- Album-Fragen werden aus den Einstellungen erzeugt -->
     <div class="page">
       <div class="page-title"><h2 style="color:var(--accent-strong)">Ergebnis</h2></div>
+      <div class="result-card">
+        <div class="rc-text"><div class="rc-title" id="rcTitle"></div><div class="rc-hint" id="rcHint"></div></div>
+        <div class="rc-score" id="rcScore">–</div>
+      </div>
       <div id="formula"></div>
       <div class="sum" id="sum"></div>
       <div class="missing" id="missing"></div>
       <div class="save-row">
-        <button class="primary" id="save">💾 In Alben speichern</button>
+        <button class="primary" id="save">In Alben speichern</button>
         <button id="newAlbum">Neues Album</button>
-        <button class="danger" id="delete" hidden>🗑 Löschen</button>
+        <button class="danger" id="delete" hidden>Löschen</button>
         <span class="toast" id="toast"></span>
       </div>
     </div>
   </div>
 </main>
+</div>
 
 <script src="assets/js/defaults.js"></script>
 <script src="assets/js/texts-de.js"></script>

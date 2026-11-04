@@ -39,8 +39,9 @@ initSearchBox($('search'), $('suggest'), {
 
 function renderPicked() {
   const rec = { song: song.value, ...meta };
-  $('barCover').innerHTML = song.value || meta.artwork ? coverHtml(rec, 'bar-cover') : '';
-  $('now').textContent = song.value ? `${song.value}${artist.value ? ' – ' + artist.value : ''}` : '';
+  $('barCover').innerHTML = coverHtml(rec, 'bar-cover');
+  $('now').textContent = song.value || 'Neuer Song';
+  $('nowSub').textContent = [artist.value, album.value].filter(Boolean).join(' · ');
   if (!song.value && !meta.artwork) { $('picked').innerHTML = ''; return; }
   $('picked').innerHTML = `
     <div class="picked">
@@ -84,12 +85,13 @@ function update() {
     <div class="sum-card" style="--c:${cat.color}"><div class="s">${esc(cat.name)} · ${Math.round(cat.w * 100)}%</div>
     <div class="n">${sc.cats[ci] === null ? '–' : fmt(sc.cats[ci])}</div></div>`).join('');
   $('save').disabled = !sc.complete;
-  $('save').textContent = editingId ? '💾 Änderungen speichern' : '💾 In Übersicht speichern';
+  $('save').textContent = editingId ? 'Änderungen speichern' : 'In Übersicht speichern';
   $('delete').hidden = !editingId;
   $('toast').textContent = sc.complete ? '' : `Noch ${sc.total - sc.answered} Fragen offen – beantworten oder „Weiß nicht“ wählen.`;
 
   const key = [song.value, artist.value, album.value, meta.artwork].join('|');
   if (key !== pickedKey) { pickedKey = key; renderPicked(); }
+  fillResultCard();
   saveDraft();
 }
 

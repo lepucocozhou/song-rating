@@ -14,7 +14,7 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
     const b = document.createElement('button');
     b.className = 'step';
     b.style.setProperty('--c', s.color);
-    b.innerHTML = `${esc(s.name)}<small id="ss${si}"></small>`;
+    b.innerHTML = `<span class="full">${esc(s.name)}</span><span class="short">${esc(s.name.split(' ')[0])}</span><small id="ss${si}"></small>`;
     b.onclick = () => goto(si);
     $('steps').appendChild(b);
   });
@@ -29,7 +29,9 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
     page.className = 'page';
     page.style.setProperty('--c', cat.color);
     page.style.setProperty('--cs', cat.color + '22');
-    page.innerHTML = `<div class="page-title"><h2>${esc(cat.name)} <small>· Gewicht ${Math.round(cat.w * 100)}%</small></h2><b id="cs${ci}">–</b></div>`;
+    page.innerHTML = `<div class="page-title">
+      <div><div class="kicker">Schritt ${before.length + ci + 1} von ${steps.length} · Gewicht ${Math.round(cat.w * 100)} %</div><h2>${esc(cat.name)}</h2></div>
+      <b id="cs${ci}">–</b></div>`;
     cat.qs.forEach(q => page.appendChild(questionEl(q)));
     $('pages').insertBefore(page, anchor);
   });
@@ -49,7 +51,7 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
       <div class="desc"></div>
       <div class="q-opts">
         ${q.na ? `<button class="opt na">${L('N/A', 'k.A.')}</button>` : ''}
-        <button class="opt skip" title="Frage auslassen – zählt nicht in den Score">🤷 Weiß nicht</button>
+        <button class="opt skip" title="Frage auslassen – zählt nicht in den Score">Weiß nicht</button>
       </div>`;
     const range = el.querySelector('input[type=range]');
     const set = v => { answers[q.id] = v; onChange(); };
@@ -128,4 +130,11 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
     setAnswers, goto, render, stepNote,
     lastStep: steps.length - 1,
   };
+}
+
+// Dark score card on the result page: same title, score and hint as the sidebar
+function fillResultCard() {
+  $('rcTitle').textContent = $('now').textContent;
+  $('rcHint').textContent = $('finalHint').textContent;
+  $('rcScore').textContent = $('final').textContent;
 }

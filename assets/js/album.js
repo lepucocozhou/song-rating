@@ -52,8 +52,9 @@ async function loadTracks() {
 
 function renderPicked() {
   const rec = { album: albumIn.value, ...meta };
-  $('barCover').innerHTML = albumIn.value || meta.artwork ? coverHtml(rec, 'bar-cover') : '';
-  $('now').textContent = albumIn.value ? `${albumIn.value}${artistIn.value ? ' – ' + artistIn.value : ''}` : '';
+  $('barCover').innerHTML = coverHtml(rec, 'bar-cover');
+  $('now').textContent = albumIn.value || 'Neues Album';
+  $('nowSub').textContent = artistIn.value;
   if (!albumIn.value && !meta.artwork) { $('picked').innerHTML = ''; return; }
   $('picked').innerHTML = `
     <div class="picked">
@@ -173,13 +174,14 @@ function update() {
     <div class="n">${as.cats[ci] === null ? '–' : fmt(as.cats[ci])}</div></div>`).join('');
   $('missing').innerHTML = as.missing.map(m => `<div>⚠︎ ${esc(m)}</div>`).join('');
   $('save').disabled = !as.complete;
-  $('save').textContent = editingId ? '💾 Änderungen speichern' : '💾 In Alben speichern';
+  $('save').textContent = editingId ? 'Änderungen speichern' : 'In Alben speichern';
   $('delete').hidden = !editingId;
 
   renderModes();
   renderTracks(as);
   const key = [albumIn.value, artistIn.value, meta.artwork, tracks.length].join('|');
   if (key !== pickedKey) { pickedKey = key; renderPicked(); }
+  fillResultCard();
   saveDraft();
 }
 
