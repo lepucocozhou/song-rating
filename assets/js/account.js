@@ -1,6 +1,7 @@
 // Settings page: log in / out of the cloud account.
 
 let loginEmail = store.get('cloudLoginEmail', '');
+let loginMode = 'login';   // login | register | code
 let codeSent = false;
 let accountMsg = '';
 let accountOk = '';
@@ -25,6 +26,11 @@ function renderAccount() {
         ${counts ? `<p>In deinem Konto: <b>${counts.songs}</b> Songs, <b>${counts.albums}</b> Alben · auf diesem Gerät: <b>${Songs.all().length}</b> Songs, <b>${Albums.all().length}</b> Alben</p>` : ''}
         ${lastError && Cloud.status !== 'ok' ? `<div class="err">Letzter Fehler: ${esc(lastError)}</div>` : ''}
         <p>Deine Bewertungen werden automatisch in deinem Konto gespeichert. Auf jedem anderen Gerät einfach hier mit derselben E-Mail anmelden.</p>
+        <form class="login-row" id="pwForm">
+          <input type="email" value="${esc(u.email)}" autocomplete="username" hidden>
+          <input type="password" id="newPw" placeholder="Neues Passwort (mind. 6 Zeichen)" autocomplete="new-password" minlength="6">
+          <button type="submit">🔑 Passwort festlegen</button>
+        </form>
         <div class="login-row">
           <button id="syncNow" ${Cloud.status === 'syncing' ? 'disabled' : ''}>${Cloud.status === 'syncing' ? '🔄 Synchronisiere …' : '🔄 Jetzt synchronisieren'}</button>
           <button id="logout">Abmelden</button>
@@ -43,6 +49,18 @@ function renderAccount() {
       else accountMsg = 'Synchronisieren hat nicht geklappt: ' + (store.get('cloudLastError', null) || 'unbekannter Fehler');
       renderAccount();
     };
+    $('pwForm').onsubmit = async e => {
+      e.preventDefault();
+      const pw = $('newPw').value;
+      accountMsg = accountOk = '';
+      if (pw.length < 6) accountMsg = 'Das Passwort muss mindestens 6 Zeichen lang sein.';
+      else {
+        const { error } = await Cloud.setPassword(pw);
+        if (error) accountMsg = 'Passwort konnte nicht gespeichert werden: ' + error.message;
+        else accountOk = '✓ Passwort gespeichert – ab jetzt kannst du dich mit E-Mail und Passwort anmelden.';
+      }
+      renderAccount();
+    };
     $('logout').onclick = async () => { await Cloud.signOut(false); accountMsg = ''; renderAccount(); };
     $('logoutClear').onclick = async () => {
       if (!confirm('Abmelden und alle Bewertungen von diesem Gerät entfernen?\nIn deinem Cloud-Konto bleiben sie erhalten.')) return;
@@ -52,11 +70,16 @@ function renderAccount() {
     return;
   }
 
-  box.innerHTML = `
-    <div class="account">
-      <p>Melde dich an, damit deine Bewertungen in deinem Konto gespeichert werden und du sie auf allen Geräten siehst.
-         Kein Passwort nötig – du bekommst einen Login-Link per E-Mail. Beim ersten Anmelden werden die Bewertungen
-         auf diesem Gerät automatisch übernommen.</p>
+  const tabs = `
+    <div class="login-tabs">
+      <button type="button" data-mode="login" class="${loginMode === 'login' ? 'on' : ''}">Anmelden</button>
+      <button type="button" data-mode="register" class="${loginMode === 'register' ? 'on' : ''}">Registrieren</button>
+    </div>`;
+  let form;
+  if (loginMode === 'code') {
+    form = `
+      <p>Passwort vergessen oder noch keins festgelegt? Lass dir einen Login-Link mit Code per E-Mail schicken.
+         Danach kannst du hier ein (neues) Passwort festlegen.</p>
       <div class="login-row">
         <input type="email" id="loginEmail" placeholder="deine@email.de" autocomplete="email" value="${esc(loginEmail)}">
         <button class="primary" id="sendLink">${codeSent ? 'Neuen Link schicken' : 'Login-Link schicken'}</button>
@@ -70,14 +93,72 @@ function renderAccount() {
           </div>
           <div class="muted">Keine E-Mail? Schau im Spam-Ordner nach.</div>
         </div>` : ''}
+      <a href="#" class="login-link" data-mode="login">← Zurück zur Anmeldung mit Passwort</a>`;
+  } else {
+    const reg = loginMode === 'register';
+    form = `
+      <form class="login-form" id="pwLogin">
+        <input type="email" id="loginEmail" placeholder="deine@email.de" autocomplete="email" value="${esc(loginEmail)}" required>
+        <input type="password" id="loginPw" placeholder="${reg ? 'Passwort wählen (mind. 6 Zeichen)' : 'Passwort'}"
+               autocomplete="${reg ? 'new-password' : 'current-password'}" required>
+        ${reg ? '<input type="password" id="loginPw2" placeholder="Passwort wiederholen" autocomplete="new-password" required>' : ''}
+        <button class="primary" type="submit">${reg ? 'Konto erstellen' : 'Anmelden'}</button>
+      </form>
+      ${reg ? '' : '<a href="#" class="login-link" data-mode="code">Passwort vergessen? Per E-Mail-Code anmelden</a>'}`;
+  }
+
+  box.innerHTML = `
+    <div class="account">
+      <p>Melde dich an, damit deine Bewertungen in deinem Konto gespeichert werden und du sie auf allen Geräten siehst.
+         Beim ersten Anmelden werden die Bewertungen auf diesem Gerät automatisch übernommen.</p>
+      ${loginMode === 'code' ? '' : tabs}
+      ${form}
+      ${accountOk ? `<div class="ok">${esc(accountOk)}</div>` : ''}
       ${accountMsg ? `<div class="err">${esc(accountMsg)}</div>` : ''}
     </div>`;
 
-  $('sendLink').onclick = async () => {
+  box.querySelectorAll('[data-mode]').forEach(el => el.onclick = e => {
+    e.preventDefault();
+    loginEmail = ($('loginEmail') && $('loginEmail').value.trim()) || loginEmail;
+    loginMode = el.dataset.mode;
+    accountMsg = accountOk = '';
+    renderAccount();
+  });
+
+  const pwLogin = $('pwLogin');
+  if (pwLogin) pwLogin.onsubmit = async e => {
+    e.preventDefault();
+    loginEmail = $('loginEmail').value.trim();
+    const pw = $('loginPw').value;
+    accountMsg = accountOk = '';
+    if (!/^\S+@\S+\.\S+$/.test(loginEmail)) { accountMsg = 'Bitte gib eine gültige E-Mail-Adresse ein.'; return renderAccount(); }
+    if (loginMode === 'register') {
+      if (pw.length < 6) { accountMsg = 'Das Passwort muss mindestens 6 Zeichen lang sein.'; return renderAccount(); }
+      if (pw !== $('loginPw2').value) { accountMsg = 'Die beiden Passwörter sind nicht gleich.'; return renderAccount(); }
+    }
+    store.set('cloudLoginEmail', loginEmail);
+    pwLogin.querySelector('button').disabled = true;
+    if (loginMode === 'register') {
+      const { data, error } = await Cloud.signUp(loginEmail, pw);
+      if (error) accountMsg = /already/i.test(error.message)
+        ? 'Mit dieser E-Mail gibt es schon ein Konto – melde dich unter „Anmelden“ an.' : loginError(error);
+      else if (data.user && !data.user.identities?.length) accountMsg = 'Mit dieser E-Mail gibt es schon ein Konto – melde dich unter „Anmelden“ an.';
+      else if (!data.session) accountOk = `📬 Fast geschafft: Bitte bestätige noch einmal deine E-Mail – wir haben dir einen Link an ${loginEmail} geschickt. Danach kannst du dich hier mit deinem Passwort anmelden.`;
+    } else {
+      const { error } = await Cloud.signIn(loginEmail, pw);
+      if (error) accountMsg = /invalid/i.test(error.message)
+        ? 'E-Mail oder Passwort stimmt nicht. Hast du dich früher per E-Mail-Link angemeldet und noch kein Passwort? Dann klick auf „Passwort vergessen“.'
+        : /confirm/i.test(error.message) ? 'Bitte bestätige zuerst deine E-Mail über den Link, den wir dir geschickt haben.' : loginError(error);
+    }
+    renderAccount();
+  };
+
+  const sendLink = $('sendLink');
+  if (sendLink) sendLink.onclick = async () => {
     loginEmail = $('loginEmail').value.trim();
     if (!/^\S+@\S+\.\S+$/.test(loginEmail)) { accountMsg = 'Bitte gib eine gültige E-Mail-Adresse ein.'; return renderAccount(); }
     store.set('cloudLoginEmail', loginEmail);
-    $('sendLink').disabled = true;
+    sendLink.disabled = true;
     const { error } = await Cloud.sendLogin(loginEmail);
     accountMsg = error ? loginError(error) : '';
     codeSent = !error;
@@ -88,7 +169,7 @@ function renderAccount() {
     const code = $('loginCode').value.replace(/\s/g, '');
     const { error } = await Cloud.verifyCode(loginEmail, code);
     accountMsg = error ? 'Der Code stimmt nicht oder ist abgelaufen – lass dir einen neuen Link schicken.' : '';
-    if (!error) codeSent = false;
+    if (!error) { codeSent = false; loginMode = 'login'; }
     renderAccount();
   };
 }

@@ -126,6 +126,9 @@ const Cloud = (() => {
     get status() { return status; },
     onChange: fn => listeners.push(fn),
     sync,
+    signIn: (email, password) => sb.auth.signInWithPassword({ email, password }),
+    signUp: (email, password) => sb.auth.signUp({ email, password, options: { emailRedirectTo: location.href.split('#')[0] } }),
+    setPassword: password => sb.auth.updateUser({ password }),
     // Sends an e-mail with a login link (and a code, if the e-mail template contains it)
     sendLogin: email => sb.auth.signInWithOtp({ email, options: { emailRedirectTo: location.href.split('#')[0] } }),
     verifyCode: (email, token) => sb.auth.verifyOtp({ email, token, type: 'email' }),
