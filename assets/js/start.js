@@ -88,8 +88,8 @@ function renderMine() {
       </div>
     </section>`;
 
-  // Two-point steps over the whole scale (scores start at 1; 10 belongs to the last step)
-  const bins = [['1–2', 0, 2], ['2–4', 2, 4], ['4–6', 4, 6], ['6–8', 6, 8], ['8–10', 8, 10.01]];
+  // One-point steps over the whole scale (1–2 … 9–10; 10 belongs to the last step)
+  const bins = Array.from({ length: 9 }, (_, i) => [`${i + 1}–${i + 2}`, i ? i + 1 : 0, i === 8 ? 10.01 : i + 2]);
   columnChart($('chartDist'), bins.map(([label, lo, hi]) => {
     const n = songs.filter(r => r.final >= lo && r.final < hi).length;
     return { label, value: n, tip: `Score ${label} · ${n === 1 ? 'Song' : 'Songs'}` };
