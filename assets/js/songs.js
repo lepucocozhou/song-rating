@@ -11,9 +11,11 @@ const list = createListView({
     { key: 'artist', label: 'Artist A–Z', dir: 1 },
     { key: 'savedAt', label: 'Zuletzt bewertet', dir: -1 },
   ],
+  parts: SONG_CATS.map(c => ({ key: c.id, name: c.name, color: c.color })),
+  filters: [{ key: 'artist', label: 'Artist', all: 'Alle Artists' }, { key: 'album', label: 'Album', all: 'Alle Alben' }],
   columns: [
     { key: 'album', label: 'Album', cell: r => esc(r.rec.album) },
-    ...SONG_CATS.map((c, i) => ({ key: 'c' + i, label: c.name.split(' ')[0], title: c.name, color: c.color, num: true, cell: r => scoreCell(r.cats[i]) })),
+    ...SONG_CATS.map((c, i) => ({ key: 'c' + i, label: c.name.split(' ')[0], title: c.name, color: c.color, part: c.id, num: true, cell: r => scoreCell(r.cats[i]) })),
   ],
   getRows: () => rankedSongs().map(r => ({
     id: r.s.id,
@@ -22,7 +24,8 @@ const list = createListView({
     title: r.s.song,
     sub: [r.s.artist, r.s.album].filter(Boolean).join(' · '),
     final: r.final, rank: r.rank, cats: r.cats,
-    bars: SONG_CATS.map((c, i) => ({ name: c.name, color: c.color, v: r.cats[i] })),
+    bars: SONG_CATS.map((c, i) => ({ key: c.id, name: c.name, color: c.color, v: r.cats[i], w: c.w })),
+    filter: { artist: r.s.artist, album: r.s.album },
     text: [r.s.song, r.s.artist, r.s.album].join(' '),
     sort: {
       final: r.final, title: (r.s.song || '').toLowerCase(), artist: (r.s.artist || '').toLowerCase(),

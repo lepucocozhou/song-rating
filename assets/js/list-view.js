@@ -1,8 +1,11 @@
 // Gallery / table overview with filter and sorting (used for songs and albums).
 // The page provides #filter, #sort, .seg buttons (list / gallery / table) and #list.
 // opts: {
-//   getRows() → [{ id, href, rec, title, sub, note, final, rank, bars: [{ name, color, v }], text, sort: { key: value } }],
-//   sorts: [{ key, label, dir }], columns: [{ key, label, title, color, num, cell(row) }],
+//   getRows() → [{ id, href, rec, title, sub, note, final, rank, bars: [{ key, name, color, v, w }], filter: { key: value },
+//                 text, sort: { key: value } }],
+//   parts: [{ key, name, color }]   score parts that can be switched off for the ranking (bars use the same keys),
+//   filters: [{ key, label, all }]  drop-downs that show only one value (e.g. one artist),
+//   sorts: [{ key, label, dir }], columns: [{ key, label, title, color, num, part, cell(row) }],
 //   viewKey, empty (html), onDelete(id), afterRender(rows)
 // }
 
@@ -14,6 +17,69 @@ function createListView(opts) {
   $('sort').onchange = () => { sortKey = $('sort').value; sortDir = opts.sorts.find(s => s.key === sortKey).dir; render(); };
   document.querySelectorAll('.seg button').forEach(b => b.onclick = () => { view = b.dataset.view; store.set(opts.viewKey, view); render(); });
   $('filter').addEventListener('input', render);
+
+  // Filter panel: which parts count for the ranking + artist/album choice. Saved per page.
+  const filterKey = opts.viewKey + 'Filter';
+  let filt = { off: [], ...store.get(filterKey, {}) };
+  filt.off = filt.off.filter(k => opts.parts.some(p => p.key === k));
+  const activeCount = () => (filt.off.length ? 1 : 0) + opts.filters.filter(f => filt[f.key]).length;
+  const setFilt = f => { filt = f; store.set(filterKey, filt); render(); };
+
+  $('sort').insertAdjacentHTML('afterend', '<button type="button" class="filter-btn" id="filterBtn" aria-expanded="false">Filter</button>');
+  document.querySelector('.tools').insertAdjacentHTML('afterend', '<div class="filter-panel" id="filterPanel" hidden></div>');
+  $('list').insertAdjacentHTML('beforebegin', '<div class="filter-note" id="filterNote" hidden></div>');
+  $('filterBtn').onclick = () => {
+    $('filterPanel').hidden = !$('filterPanel').hidden;
+    $('filterBtn').setAttribute('aria-expanded', !$('filterPanel').hidden);
+  };
+  $('filterPanel').addEventListener('click', e => {
+    const chip = e.target.closest('[data-part]');
+    if (chip) {
+      const k = chip.dataset.part, off = filt.off.includes(k) ? filt.off.filter(x => x !== k) : [...filt.off, k];
+      if (off.length < opts.parts.length) setFilt({ ...filt, off });   // at least one part must count
+    }
+    if (e.target.closest('[data-reset]')) setFilt({ off: [] });
+  });
+  $('filterPanel').addEventListener('change', e => { if (e.target.dataset.f) setFilt({ ...filt, [e.target.dataset.f]: e.target.value }); });
+  $('filterNote').addEventListener('click', e => { if (e.target.closest('[data-reset]')) setFilt({ off: [] }); });
+
+  function renderFilter(all) {
+    const n = activeCount();
+    $('filterBtn').textContent = n ? `Filter · ${n}` : 'Filter';
+    $('filterBtn').classList.toggle('on', !!n);
+    const values = key => [...new Set(all.map(r => r.filter[key]).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+    $('filterPanel').innerHTML = `
+      <div class="fp-row">
+        <div class="fp-label">Was zählt in die Rangliste?</div>
+        <div class="fp-chips">${opts.parts.map(p => `
+          <button type="button" class="fp-chip ${filt.off.includes(p.key) ? '' : 'on'}" data-part="${esc(p.key)}" style="--c:${p.color}">${esc(p.name)}</button>`).join('')}
+        </div>
+      </div>
+      ${opts.filters.map(f => `
+        <label class="fp-row"><span class="fp-label">${esc(f.label)}</span>
+          <select data-f="${f.key}"><option value="">${esc(f.all)}</option>${values(f.key).map(v =>
+            `<option ${filt[f.key] === v ? 'selected' : ''}>${esc(v)}</option>`).join('')}</select></label>`).join('')}
+      ${n ? '<button type="button" class="linkbtn" data-reset>Alle Filter zurücksetzen</button>' : ''}`;
+    const parts = [
+      filt.off.length ? 'Rangliste ohne ' + opts.parts.filter(p => filt.off.includes(p.key)).map(p => p.name).join(', ') : '',
+      ...opts.filters.filter(f => filt[f.key]).map(f => `${f.label}: ${filt[f.key]}`),
+    ].filter(Boolean);
+    $('filterNote').hidden = !n;
+    $('filterNote').innerHTML = n ? `<span>${esc(parts.join(' · '))}</span><button type="button" class="linkbtn" data-reset>zurücksetzen</button>` : '';
+  }
+
+  // Score from the parts that still count (weights are scaled up to 100 %), ranks within the shown rows
+  function applyFilter(all) {
+    let rows = all.filter(r => opts.filters.every(f => !filt[f.key] || r.filter[f.key] === filt[f.key]));
+    if (filt.off.length) rows = rows.map(r => {
+      let s = 0, w = 0;
+      r.bars.forEach(b => { if (!filt.off.includes(b.key) && b.v !== null && b.v !== undefined) { s += b.v * b.w; w += b.w; } });
+      const final = w ? s / w : null;
+      return { ...r, final, sort: { ...r.sort, final } };
+    });
+    if (activeCount()) rank(rows);
+    return rows;
+  }
 
   function sorted(rows) {
     const q = $('filter').value.toLowerCase();
@@ -29,8 +95,11 @@ function createListView(opts) {
     const all = opts.getRows();
     $('sort').value = sortKey;
     document.querySelectorAll('.seg button').forEach(b => b.classList.toggle('on', b.dataset.view === view));
+    renderFilter(all);
+    const shown = applyFilter(all);
     if (!all.length) $('list').innerHTML = `<div class="empty">${opts.empty}</div>`;
-    else $('list').innerHTML = ({ list, gallery, table }[view] || list)(sorted(all));
+    else if (!shown.length) $('list').innerHTML = '<div class="empty">Nichts passt zu diesem Filter.</div>';
+    else $('list').innerHTML = ({ list, gallery, table }[view] || list)(sorted(shown));
     if (opts.afterRender) opts.afterRender(all);
   }
 
@@ -61,7 +130,7 @@ function createListView(opts) {
           <div class="sub">${esc(r.sub)}</div>
           ${r.note ? `<div class="note">${r.note}</div>` : ''}
           <div class="minibars" style="grid-template-columns:repeat(${r.bars.length},1fr)">${r.bars.map(b =>
-            `<i style="--c:${b.color};height:${(b.v ?? 0) * 10}%" title="${esc(b.name)}: ${b.v === null ? '–' : fmt(b.v)}"></i>`).join('')}</div>
+            `<i class="${filt.off.includes(b.key) ? 'off' : ''}" style="--c:${b.color};height:${(b.v ?? 0) * 10}%" title="${esc(b.name)}: ${b.v === null ? '–' : fmt(b.v)}"></i>`).join('')}</div>
         </div>
       </a>`).join('')}</div>`;
   }
@@ -72,8 +141,9 @@ function createListView(opts) {
       { key: 'final', label: '#', num: true, cls: 'c-rank', cell: r => `<span class="rank">${medal(r.rank)}</span>` },
       { label: '', cls: 'c-cover', cell: r => coverHtml(r.rec, '') },
       { key: 'title', label: opts.titleLabel || 'Titel', cls: 'c-title', cell: r => `<b>${esc(r.title)}</b><div class="sub">${esc(r.sub)}</div>` },
-      { key: 'final', label: 'Final', num: true, cls: 'c-final', cell: r => chip(r.final) },
-      ...opts.columns.map(c => ({ ...c, cls: c.color ? 'c-cat' : c.num ? 'c-num' : 'c-text' })),
+      { key: 'final', label: filt.off.length ? 'Score' : 'Final', title: filt.off.length ? 'Score ohne die abgewählten Bereiche' : '',
+        num: true, cls: 'c-final', cell: r => chip(r.final) },
+      ...opts.columns.map(c => ({ ...c, cls: (c.color ? 'c-cat' : c.num ? 'c-num' : 'c-text') + (filt.off.includes(c.part) ? ' off' : '') })),
       { label: '', cls: 'c-del', cell: r => `<button class="del" data-del="${esc(r.id)}" title="Löschen">✕</button>` },
     ];
     const head = cols.map(c => {

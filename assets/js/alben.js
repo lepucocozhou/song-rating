@@ -1,6 +1,7 @@
 // Albums overview page.
 
-const SONG_PART = { name: 'Songs Ø', color: '#0ea5e9' };
+const SONG_PART = { key: 'songs', name: 'Songs Ø', color: '#0ea5e9' };
+const catWeight = ALBUM_CATS.reduce((s, c) => s + c.w, 0) || 1;
 
 const list = createListView({
   viewKey: 'albumRatingView',
@@ -15,11 +16,13 @@ const list = createListView({
     { key: 'year', label: 'Erscheinungsjahr', dir: -1 },
     { key: 'savedAt', label: 'Zuletzt bewertet', dir: -1 },
   ],
+  parts: [SONG_PART, ...ALBUM_CATS.map(c => ({ key: c.id, name: c.name, color: c.color }))],
+  filters: [{ key: 'artist', label: 'Artist', all: 'Alle Artists' }],
   columns: [
     { key: 'year', label: 'Jahr', num: true, cell: r => esc(r.rec.year) },
-    { key: 'songAvg', label: 'Songs Ø', color: SONG_PART.color, num: true, cell: r => scoreCell(r.songAvg) },
+    { key: 'songAvg', label: 'Songs Ø', color: SONG_PART.color, part: SONG_PART.key, num: true, cell: r => scoreCell(r.songAvg) },
     { key: 'rated', label: 'Songs', num: true, cell: r => r.songsText },
-    ...ALBUM_CATS.map((c, i) => ({ key: 'c' + i, label: c.name.split(' ')[0], title: c.name, color: c.color, num: true, cell: r => scoreCell(r.cats[i]) })),
+    ...ALBUM_CATS.map((c, i) => ({ key: 'c' + i, label: c.name.split(' ')[0], title: c.name, color: c.color, part: c.id, num: true, cell: r => scoreCell(r.cats[i]) })),
   ],
   getRows: () => rankedAlbums().map(r => {
     const songsText = r.countedCount ? `${r.ratedCount}/${r.countedCount}` : '–';
@@ -31,7 +34,10 @@ const list = createListView({
       sub: [r.a.artist, r.a.year].filter(Boolean).join(' · '),
       note: `${songsText} Songs bewertet${r.a.mode === 'light' ? ' · <span class="badge">Schnell</span>' : ''}`,
       final: r.final, rank: r.rank, cats: r.cats, songAvg: r.songAvg, songsText,
-      bars: [{ ...SONG_PART, v: r.songAvg }, ...ALBUM_CATS.map((c, i) => ({ name: c.name, color: c.color, v: r.cats[i] }))],
+      // weights as in the album score: song part vs. album questions (split by their own weights)
+      bars: [{ ...SONG_PART, v: r.songAvg, w: r.songWeight },
+        ...ALBUM_CATS.map((c, i) => ({ key: c.id, name: c.name, color: c.color, v: r.cats[i], w: (1 - r.songWeight) * c.w / catWeight }))],
+      filter: { artist: r.a.artist },
       text: [r.a.album, r.a.artist, r.a.year].join(' '),
       sort: {
         final: r.final, songAvg: r.songAvg, rated: r.ratedCount, year: r.a.year || '',
