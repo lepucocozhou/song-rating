@@ -67,21 +67,22 @@ function createListView(opts) {
   }
 
   function table(rows) {
+    // cls sets the column width (liste.css): all category columns are equally wide
     const cols = [
-      { key: 'final', label: '#', num: true, cell: r => `<span class="rank">${medal(r.rank)}</span>` },
-      { label: '', cell: r => coverHtml(r.rec, '') },
-      { key: 'title', label: opts.titleLabel || 'Titel', cell: r => `<b>${esc(r.title)}</b><div class="sub">${esc(r.sub)}</div>` },
-      { key: 'final', label: 'Final', num: true, cell: r => chip(r.final) },
-      ...opts.columns,
-      { label: '', cell: r => `<button class="del" data-del="${esc(r.id)}" title="Löschen">✕</button>` },
+      { key: 'final', label: '#', num: true, cls: 'c-rank', cell: r => `<span class="rank">${medal(r.rank)}</span>` },
+      { label: '', cls: 'c-cover', cell: r => coverHtml(r.rec, '') },
+      { key: 'title', label: opts.titleLabel || 'Titel', cls: 'c-title', cell: r => `<b>${esc(r.title)}</b><div class="sub">${esc(r.sub)}</div>` },
+      { key: 'final', label: 'Final', num: true, cls: 'c-final', cell: r => chip(r.final) },
+      ...opts.columns.map(c => ({ ...c, cls: c.color ? 'c-cat' : c.num ? 'c-num' : 'c-text' })),
+      { label: '', cls: 'c-del', cell: r => `<button class="del" data-del="${esc(r.id)}" title="Löschen">✕</button>` },
     ];
     const head = cols.map(c => {
       const on = c.key && sortKey === c.key && c.label !== '#';
-      return `<th class="${c.num ? 'num' : ''} ${on ? 'sorted' : ''}" ${c.key ? `data-k="${c.key}"` : ''} title="${esc(c.title || '')}" style="--c:${c.color || ''}">` +
+      return `<th class="${c.cls} ${c.num ? 'num' : ''} ${on ? 'sorted' : ''}" ${c.key ? `data-k="${c.key}"` : ''} title="${esc(c.title || '')}" style="--c:${c.color || ''}">` +
         `${c.color ? '<span class="dot"></span>' : ''}${esc(c.label)}${on ? (sortDir < 0 ? ' ↓' : ' ↑') : ''}</th>`;
     }).join('');
     const body = rows.map(r => `<tr data-href="${esc(r.href)}">${cols.map(c =>
-      `<td class="${c.num ? 'num' : ''}" ${c.color ? `style="color:${c.color};font-weight:600"` : ''}>${c.cell(r)}</td>`).join('')}</tr>`).join('');
+      `<td class="${c.cls} ${c.num ? 'num' : ''}" ${c.color ? `style="color:${c.color};font-weight:600"` : ''}>${c.cell(r)}</td>`).join('')}</tr>`).join('');
     return `<div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>`;
   }
 

@@ -2,7 +2,7 @@
 .start{padding-bottom:64px}
 
 /* hero */
-.hero-wrap{max-width:1200px;margin:0 auto;padding:24px 32px 0}
+.hero-wrap{max-width:1400px;margin:0 auto;padding:24px 32px 0}
 .hero{background:var(--hero1);color:var(--hero-text);border-radius:24px;padding:40px;
   display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:18px}
 .hero h1{margin:0;font-size:64px;line-height:1}
@@ -15,7 +15,7 @@
 .hero-alt{background:var(--hero-btn2);color:var(--hero-text)}
 .hero-alt:hover{background:var(--hero-btn2-hover)}
 
-.start-main{max-width:1200px;margin:0 auto;padding:28px 32px 0}
+.start-main{max-width:1400px;margin:0 auto;padding:28px 32px 0}
 .block{margin:0 0 28px}
 .block-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
 .block-head h2{margin:0;font-size:30px;line-height:1.1}

@@ -41,7 +41,8 @@
 
 /* table */
 .table-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-bottom:60px}
-table{border-collapse:collapse;width:100%;font-size:14px}
+/* fixed column widths: everything fits on a normal laptop screen without scrolling sideways */
+table{border-collapse:collapse;width:100%;font-size:14px;table-layout:fixed;min-width:1180px}
 th,td{padding:8px 10px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
 th{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;cursor:pointer;user-select:none;background:var(--accent-soft)}
 th.sorted{color:var(--accent-strong)}
@@ -50,6 +51,17 @@ td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
 tbody tr{cursor:pointer}
 tbody tr:hover{background:var(--accent-soft)}
 td .cover{width:40px;border-radius:6px;font-size:9px}
+th,td{overflow:hidden;text-overflow:ellipsis}
+.c-rank{width:52px}
+.c-cover{width:60px}
+.c-final{width:80px}
+.c-text{width:15%}
+.c-num{width:72px}
+.c-cat{width:106px}
+th.c-cat{text-transform:none;letter-spacing:0;font-size:12.5px}
+th.c-cat,td.c-cat{padding-left:8px;padding-right:8px}
+.c-del{width:52px;text-overflow:clip}
+td.c-title b,td.c-title .sub{display:block;overflow:hidden;text-overflow:ellipsis}
 .rank{font-weight:700;color:var(--accent-strong)}
 td.song{font-weight:600}
 td .sub{color:var(--muted);font-weight:400}

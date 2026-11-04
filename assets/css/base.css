@@ -28,7 +28,7 @@
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.45 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:inherit}
 h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.02em}
-.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+.wrap{max-width:1400px;margin:0 auto;padding:0 16px}
 input::placeholder{color:#8fa9bc}
 
 button,.btn{font:inherit;font-size:14px;padding:8px 14px;border-radius:12px;border:1px solid var(--line);
