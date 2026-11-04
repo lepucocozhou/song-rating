@@ -60,6 +60,8 @@ th,td{overflow:hidden;text-overflow:ellipsis}
 .c-cat{width:8%}
 th.c-cat{text-transform:none;letter-spacing:0;font-size:12.5px}
 th.c-cat,td.c-cat{padding-left:8px;padding-right:8px}
+/* score columns (final + categories) are centred */
+th.c-final,td.c-final,th.c-cat,td.c-cat{text-align:center}
 .c-del{width:52px;text-overflow:clip}
 /* long song / album names wrap onto a second line instead of being cut off */
 td.c-title,td.c-text{white-space:normal;overflow-wrap:anywhere}
