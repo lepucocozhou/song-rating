@@ -133,3 +133,7 @@
   .rail{margin:0 -16px;padding:2px 16px 8px;scroll-padding:0 16px}
   .rail-card{width:128px}
 }
+
+/* daily suggestions */
+.rail-tag.rec{max-width:100%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:var(--accent-soft);border-color:var(--line);color:var(--text)}
+.recs-more{font-size:13px;font-weight:600;padding:8px 14px;border-radius:12px;color:var(--text)}

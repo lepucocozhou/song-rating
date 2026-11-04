@@ -173,5 +173,5 @@ function railCard(href, x, title, artist, score) {
 }
 
 // cloud.js calls list.render() when ratings arrive from another device
-const list = { render() { renderMine(); renderReleases(); } };
+const list = { render() { renderMine(); renderRecs(); renderReleases(); } };
 list.render();

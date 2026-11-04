@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css?v=5">
-<link rel="stylesheet" href="assets/css/start.css?v=5">
+<link rel="stylesheet" href="assets/css/start.css?v=9">
 <link rel="stylesheet" href="assets/css/mobile.css?v=7">
 </head>
 <body>
@@ -39,6 +39,14 @@
   <div class="start-main">
     <!-- filled by start.js: stats, top 3, charts – or a short intro when nothing is rated yet -->
     <div id="mine"></div>
+
+    <section class="block" id="recsBlock" hidden>
+      <div class="block-head">
+        <div><h2>Für dich heute</h2><span>Songs, die zu deinen Lieblings-Artists passen – jeden Tag neu</span></div>
+        <button type="button" class="recs-more" id="recsMore">Neue Vorschläge ↻</button>
+      </div>
+      <div class="rail" id="recs"></div>
+    </section>
 
     <section class="block">
       <div class="block-head">
@@ -69,6 +77,7 @@
 <script src="assets/js/cloud.js"></script>
 <script src="assets/js/itunes.js"></script>
 <script src="assets/js/charts.js"></script>
-<script src="assets/js/start.js?v=8"></script>
+<script src="assets/js/recommend.js?v=9"></script>
+<script src="assets/js/start.js?v=9"></script>
 </body>
 </html>
