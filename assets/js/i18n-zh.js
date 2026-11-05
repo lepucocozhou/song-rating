@@ -68,6 +68,7 @@ const ZH_WORDS = {
   'Ausgelassen – zählt nicht mit, das Gewicht geht an die anderen Fragen dieser Kategorie.': '已跳过——不计分，权重分给本类别的其他问题。',
   'In Apple Music öffnen ↗': '在 Apple Music 中打开 ↗', 'Cover entfernen': '移除封面',
   'diese Bewertung öffnen →': '打开这条评价 →', 'Schon bewertet –': '已评价过——',
+  'Diesen Song hast du schon bewertet – hier ist deine Bewertung. Du kannst sie ändern.': '这首歌你已经评价过了——这是你的评价，你可以修改。',
   'gespeicherter Song': '已保存的歌曲', 'gespeichertes Album': '已保存的专辑', 'fertig! 🎉': '完成！🎉',
   'erscheint, wenn alle Fragen beantwortet sind': '回答所有问题后显示',
   'Zurück zum Album →': '返回专辑 →', 'Zu deinen Songs →': '前往我的歌曲 →', 'Zu den Alben →': '前往专辑 →',

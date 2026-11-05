@@ -30,6 +30,7 @@ initSearchBox($('search'), $('suggest'), {
   title: r => r.song,
   sub: r => `${r.artist} · ${r.album}${r.year ? ' · ' + r.year : ''}`,
   onPick(r) {
+    if (openIfRated(r)) return;
     song.value = r.song; artist.value = r.artist; album.value = r.album;
     meta = Object.fromEntries(META_KEYS.map(k => [k, r[k]]));
     update();
@@ -61,7 +62,20 @@ function renderPicked() {
   if (drop) drop.onclick = () => { meta = {}; update(); };
 }
 
-// Hint when this song was already rated before (avoids rating it twice)
+// Each song is rated only once: picking a song that is already saved opens its filled-in form instead
+function savedSong(track) {
+  if (!track.song) return null;
+  return Songs.all().find(s => s.id !== editingId && trackMatches(track, s)) || null;
+}
+function openIfRated(track) {
+  const s = savedSong(track);
+  if (!s) return false;
+  if (!editingId) store.set('songRatingDraft', null);
+  location.replace('bewerten.html?' + new URLSearchParams({ id: s.id, ...(back ? { back } : {}), already: 1 }));
+  return true;
+}
+
+// Hint when the typed-in details match a song that was already rated
 function alreadyRated() {
   if (editingId || !song.value) return '';
   const row = rankedSongs().find(r => trackMatches({ song: song.value, artist: artist.value, trackId: meta.trackId }, r.s));
@@ -118,6 +132,7 @@ function saveDraft() { store.set('songRatingDraft', { ...currentRecord(), id: ed
 
 $('save').onclick = () => {
   if (!song.value.trim()) { form.goto(0); song.focus(); return; }
+  if (openIfRated({ song: song.value, artist: artist.value, trackId: meta.trackId })) return;
   const rec = currentRecord();
   Songs.upsert(rec);
   editingId = rec.id;
@@ -145,6 +160,8 @@ $('delete').onclick = () => {
 // ?id=… opens a saved song, ?prefill=1 starts a new one with given details, otherwise continue the draft
 const draft = store.get('songRatingDraft', null);
 const editId = params.get('id');
+// A song from the charts / suggestions / an album that is already rated: open the saved rating
+if (!editId && params.get('prefill')) openIfRated({ song: params.get('song'), artist: params.get('artist'), trackId: params.get('trackId') });
 const samePrefill = draft && !draft.id && draft.song === params.get('song') && draft.artist === params.get('artist');
 if (editId && draft && draft.id === editId) setForm(draft);
 else if (editId && Songs.get(editId)) setForm(Songs.get(editId));
@@ -152,3 +169,7 @@ else if (params.get('prefill') && samePrefill) setForm(draft);
 else if (params.get('prefill')) setForm(Object.fromEntries([...params].filter(([k]) => !['prefill', 'back'].includes(k))));
 else setForm(draft && !draft.id ? draft : {});
 form.goto(editId ? form.lastStep : params.get('prefill') ? 1 : 0);
+if (params.get('already') && editingId) {
+  $('toast').textContent = 'Diesen Song hast du schon bewertet – hier ist deine Bewertung. Du kannst sie ändern.';
+  history.replaceState(null, '', '?' + new URLSearchParams([...params].filter(([k]) => k !== 'already')));
+}
