@@ -9,6 +9,7 @@ const META_KEYS = ['artwork', 'appleUrl', 'preview', 'year', 'trackId'];
 
 let meta = {};       // artwork, appleUrl, preview, year, trackId from the song search
 let editingId = null;
+let separate = false;  // this version of a song gets its own rating (instead of counting as the original)
 
 const form = createQuestionnaire({
   cats: SONG_CATS,
@@ -62,23 +63,35 @@ function renderPicked() {
   if (drop) drop.onclick = () => { meta = {}; update(); };
 }
 
-// Each song is rated only once: picking a song that is already saved opens its filled-in form instead
+// Each song is rated only once: picking a song that is already saved opens its filled-in form instead.
+// Another version of it (Remix, Taylor's Version …) opens the same rating, with a button to rate it separately.
 function savedSong(track) {
   if (!track.song) return null;
-  return Songs.all().find(s => s.id !== editingId && trackMatches(track, s)) || null;
+  const others = Songs.all().filter(s => s.id !== editingId);
+  return separate ? others.find(s => trackMatches(track, s, true)) || null : findSong(track, others);
 }
 function openIfRated(track) {
   const s = savedSong(track);
   if (!s) return false;
   if (!editingId) store.set('songRatingDraft', null);
-  location.replace('bewerten.html?' + new URLSearchParams({ id: s.id, ...(back ? { back } : {}), already: 1 }));
+  const exact = trackMatches(track, s, true);
+  if (!exact) {
+    const pick = Object.fromEntries(['song', 'artist', 'album', ...META_KEYS].map(k => [k, track[k]]));
+    sessionStorage.setItem('songVersionPick', JSON.stringify({ ...pick, ...(back ? { back } : {}) }));
+  }
+  location.replace('bewerten.html?' + new URLSearchParams({ id: s.id, ...(back ? { back } : {}), already: exact ? 1 : 'version' }));
   return true;
+}
+function rateSeparately(track) {
+  store.set('songRatingDraft', null);
+  location.href = 'bewerten.html?' + new URLSearchParams(Object.entries({ prefill: 1, separate: 1, ...track }).filter(([, v]) => v));
 }
 
 // Hint when the typed-in details match a song that was already rated
 function alreadyRated() {
+  if (separate) return '<div class="already">Eigene Bewertung für diese Version</div>';
   if (editingId || !song.value) return '';
-  const row = rankedSongs().find(r => trackMatches({ song: song.value, artist: artist.value, trackId: meta.trackId }, r.s));
+  const row = findSong({ song: song.value, artist: artist.value, trackId: meta.trackId }, rankedSongs(), r => r.s);
   return row ? `<div class="already">Schon bewertet (${row.final === null ? '–' : fmt(row.final)}) – <a href="bewerten.html?id=${encodeURIComponent(row.s.id)}">diese Bewertung öffnen →</a></div>` : '';
 }
 
@@ -112,6 +125,7 @@ function update() {
 /* ---------- load / save ---------- */
 function setForm(rec) {
   editingId = rec.id || null;
+  separate = !!rec.separate && rec.separate !== '0';
   meta = Object.fromEntries(META_KEYS.map(k => [k, rec[k]]));
   song.value = rec.song || ''; artist.value = rec.artist || ''; album.value = rec.album || '';
   form.setAnswers(normAnswers(rec.answers));
@@ -122,6 +136,7 @@ function currentRecord() {
   return {
     id: editingId || newId(),
     song: song.value.trim(), artist: artist.value.trim(), album: album.value.trim(), ...meta,
+    ...(separate ? { separate: true } : {}),
     answers: form.answers,
     savedAt: new Date().toISOString(),
   };
@@ -132,7 +147,7 @@ function saveDraft() { store.set('songRatingDraft', { ...currentRecord(), id: ed
 
 $('save').onclick = () => {
   if (!song.value.trim()) { form.goto(0); song.focus(); return; }
-  if (openIfRated({ song: song.value, artist: artist.value, trackId: meta.trackId })) return;
+  if (!editingId && openIfRated({ song: song.value, artist: artist.value, album: album.value, ...meta })) return;
   const rec = currentRecord();
   Songs.upsert(rec);
   editingId = rec.id;
@@ -161,15 +176,24 @@ $('delete').onclick = () => {
 const draft = store.get('songRatingDraft', null);
 const editId = params.get('id');
 // A song from the charts / suggestions / an album that is already rated: open the saved rating
-if (!editId && params.get('prefill')) openIfRated({ song: params.get('song'), artist: params.get('artist'), trackId: params.get('trackId') });
-const samePrefill = draft && !draft.id && draft.song === params.get('song') && draft.artist === params.get('artist');
+separate = !!params.get('separate');
+if (!editId && params.get('prefill')) openIfRated(Object.fromEntries(params));
+const samePrefill = draft && !draft.id && !!draft.separate === separate && draft.song === params.get('song') && draft.artist === params.get('artist');
 if (editId && draft && draft.id === editId) setForm(draft);
 else if (editId && Songs.get(editId)) setForm(Songs.get(editId));
 else if (params.get('prefill') && samePrefill) setForm(draft);
 else if (params.get('prefill')) setForm(Object.fromEntries([...params].filter(([k]) => !['prefill', 'back'].includes(k))));
 else setForm(draft && !draft.id ? draft : {});
 form.goto(editId ? form.lastStep : params.get('prefill') ? 1 : 0);
-if (params.get('already') && editingId) {
+if (params.get('already') === 'version' && editingId) {
+  const pick = JSON.parse(sessionStorage.getItem('songVersionPick') || 'null');
+  $('toast').innerHTML = `<span>Das ist eine andere Version von „${esc(song.value)}“. Sie zählt als derselbe Song – hier ist deine Bewertung.</span>` +
+    (pick ? '<br><button class="btn own-version" id="ownVersion">Diese Version einzeln bewerten</button>' : '');
+  if (pick) $('ownVersion').onclick = () => rateSeparately(pick);
+} else if (params.get('already') && editingId) {
   $('toast').textContent = 'Diesen Song hast du schon bewertet – hier ist deine Bewertung. Du kannst sie ändern.';
+}
+if (params.get('already')) {
+  $('toast').scrollIntoView({ block: 'center' });
   history.replaceState(null, '', '?' + new URLSearchParams([...params].filter(([k]) => k !== 'already')));
 }

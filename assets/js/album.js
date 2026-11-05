@@ -119,7 +119,7 @@ function renderTracks(as) {
         <span class="tt">${esc(t.song)}${norm(t.artist) !== norm(artistIn.value) ? `<small>${esc(t.artist)}</small>` : ''}</span>
         ${row
           ? `<span class="chip" style="background:${scoreColor(row.final)}">${row.final === null ? '–' : fmt(row.final)}</span>
-             <a class="small" href="${esc('bewerten.html?' + new URLSearchParams({ id: row.s.id, back: backLink() }))}">ändern</a>`
+             <a class="small" href="${esc(trackMatches(t, row.s, true) ? 'bewerten.html?' + new URLSearchParams({ id: row.s.id, back: backLink() }) : rateHref(t))}">ändern</a>`
           : `<a class="btn small" href="${esc(rateHref(t))}">Bewerten →</a>`}
       </div>`).join('')}
     </div>`;

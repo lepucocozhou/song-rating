@@ -144,8 +144,9 @@ async function renderReleases() {
   const songRows = rankedSongs(), albumList = Albums.all();
 
   $('newSongs').innerHTML = freshFirst(charts.songs).map(x => {
-    const rated = songRows.find(r => trackMatches(x, r.s));
-    const href = rated ? 'bewerten.html?id=' + encodeURIComponent(rated.s.id) : 'bewerten.html?' + new URLSearchParams({
+    const rated = findSong(x, songRows, r => r.s);
+    // another version of a rated song goes through the rating page (it explains and offers to rate it separately)
+    const href = rated && trackMatches(x, rated.s, true) ? 'bewerten.html?id=' + encodeURIComponent(rated.s.id) : 'bewerten.html?' + new URLSearchParams({
       prefill: 1, song: x.song, artist: x.artist, album: x.album, artwork: x.artwork,
       appleUrl: x.appleUrl, preview: x.preview, year: x.year, trackId: x.trackId,
     });

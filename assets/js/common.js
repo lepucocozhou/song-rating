@@ -102,16 +102,26 @@ function rank(rows) {
   [...rows].sort((a, b) => (b.final ?? -1) - (a.final ?? -1)).forEach((r, i) => r.rank = i + 1);
 }
 
-// Album tracks are matched to rated songs by iTunes track id, or else by title + artist
+// Album tracks are matched to rated songs by iTunes track id, or else by title + artist.
+// Versions of a song (Taylor's Version, Remix, Live, Remaster …) count as the same song –
+// unless one of them was saved as its own rating ("separate"), then only the exact title matches.
+const VERSION_WORDS = /remix|version|live|remaster|edit|acoustic|akustik|mix|demo|mono|stereo|instrumental|deluxe|radio|extended|sped|slowed|re-?record|unplugged|session|reprise|orchestral|piano|bonus/i;
 const norm = s => {
-  const lower = (s || '').toLowerCase();
+  const lower = (s || '').toLowerCase().replace(/\s+-\s+([^-]*)$/, (m, tail) => VERSION_WORDS.test(tail) ? '' : m);
   return lower.replace(/\(.*?\)|\[.*?\]/g, '').replace(/\s(feat|ft)\..*$/, '').replace(/[^\p{L}\p{N}]+/gu, '') ||
     lower.replace(/[^\p{L}\p{N}]+/gu, '');
 };
-function trackMatches(track, song) {
+const exactTitle = s => (s || '').toLowerCase().replace(/[([]\s*(feat|ft|with)\b.*?[)\]]/g, '')
+  .replace(/\s(feat|ft)\..*$/, '').replace(/[^\p{L}\p{N}]+/gu, '');
+function trackMatches(track, song, exact = !!(track.separate || song.separate)) {
   if (track.trackId && song.trackId && String(track.trackId) === String(song.trackId)) return true;
   const a = norm(track.artist), b = norm(song.artist);
-  return norm(track.song) === norm(song.song) && (!a || !b || a.includes(b) || b.includes(a));
+  if (a && b && !a.includes(b) && !b.includes(a)) return false;
+  return exact ? exactTitle(track.song) === exactTitle(song.song) : norm(track.song) === norm(song.song);
+}
+// The saved song for a track: the exact version first, otherwise another version of it
+function findSong(track, list, get = x => x) {
+  return list.find(x => trackMatches(track, get(x), true)) || list.find(x => trackMatches(track, get(x))) || null;
 }
 
 // Album score = song part (average final score of its songs) + album questions, weighted by the album rules
@@ -119,7 +129,7 @@ function albumScores(album, songRows = rankedSongs()) {
   const q = scores(album.answers, ALBUM_CATS);
   const excluded = new Set(album.excluded || []);
   const tracks = (album.tracks || []).map(t => ({
-    t, row: songRows.find(r => trackMatches(t, r.s)) || null, counted: !excluded.has(t.trackId),
+    t, row: findSong(t, songRows, r => r.s), counted: !excluded.has(t.trackId),
   }));
   const counted = tracks.filter(x => x.counted);
   const rated = counted.filter(x => x.row && x.row.final !== null);
