@@ -64,7 +64,8 @@ function makeCollection(key) {
   };
   return c;
 }
-// Song: { id, song, artist, album, artwork, appleUrl, preview, year, trackId, answers, savedAt }
+// Song: { id, song, artist, album, artwork, appleUrl, preview, year, trackId, answers, savedAt,
+//        separate?, ownCover?, albumCover?, albumCoverAt? }
 const Songs = makeCollection('songRatings');
 // Album: { id, album, artist, artwork, appleUrl, year, collectionId, tracks[], excluded[], mode, answers, savedAt }
 const Albums = makeCollection('albumRatings');
@@ -169,6 +170,52 @@ function coverHtml(rec, cls) {
   if (rec.artwork) return `<img class="cover ${cls}" src="${esc(rec.artwork)}" alt="" loading="lazy">`;
   const letter = (rec.song || rec.album || '♪').trim()[0] || '♪';
   return `<div class="cover cover-ph ${cls}"><span>${esc(letter)}</span></div>`;
+}
+
+/* ---------- one cover per album ---------- */
+// Songs of the same album (also Deluxe, Taylor's Version …) show one cover: the one picked for the album
+// (stored as albumCover + albumCoverAt on its songs, so it syncs and is in backups), else the cover of a
+// rated album, else the most common one. A song with ownCover keeps its own cover.
+const albumKey = rec => {
+  const a = norm(rec.album), artist = norm((rec.artist || '').split(/,|&|\s(?:feat|ft|with|x)\.?\s/i)[0]);
+  return a ? a + '|' + artist : '';
+};
+let coverCache = null;
+function albumCoverGroups() {
+  const sig = localStorage.getItem('songRatings') + '|' + localStorage.getItem('albumRatings');
+  if (coverCache && coverCache.sig === sig) return coverCache.groups;
+  const groups = new Map();
+  const add = (rec, isAlbum) => {
+    const k = albumKey(rec);
+    if (!k) return;
+    if (!groups.has(k)) groups.set(k, { name: rec.album, counts: new Map(), album: null, pick: null });
+    const g = groups.get(k);
+    if (rec.artwork) g.counts.set(rec.artwork, (g.counts.get(rec.artwork) || 0) + (isAlbum ? 0 : 1));
+    if (isAlbum && rec.artwork && !g.album) g.album = rec.artwork;
+    if (rec.albumCover && (!g.pick || rec.albumCoverAt > g.pick.at)) g.pick = { url: rec.albumCover, at: rec.albumCoverAt };
+  };
+  Songs.all().forEach(s => add(s, false));
+  Albums.all().forEach(a => add(a, true));
+  groups.forEach(g => {
+    const common = [...g.counts].sort((a, b) => b[1] - a[1])[0];
+    g.cover = g.pick?.url || g.album || common?.[0] || '';
+    if (g.pick) g.counts.set(g.pick.url, g.counts.get(g.pick.url) || 0);
+    g.choices = [...g.counts.keys()];
+  });
+  coverCache = { sig, groups };
+  return groups;
+}
+const albumGroup = rec => albumCoverGroups().get(albumKey(rec)) || null;
+function songCover(s) {
+  const g = !s.ownCover && albumGroup(s);
+  return (g && g.cover) || s.artwork || '';
+}
+const withCover = s => ({ ...s, artwork: songCover(s) });
+// Pick the cover for all songs (and rated albums) of an album
+function setAlbumCover(rec, url) {
+  const k = albumKey(rec), at = now();
+  [Songs, Albums].forEach(c => c.all().filter(r => albumKey(r) === k)
+    .forEach(r => c.upsert({ ...r, albumCover: url, albumCoverAt: at })));
 }
 
 const medal = r => ['🥇', '🥈', '🥉'][r - 1] || '#' + r;

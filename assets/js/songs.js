@@ -20,7 +20,7 @@ const list = createListView({
   getRows: () => rankedSongs().map(r => ({
     id: r.s.id,
     href: 'bewerten.html?id=' + encodeURIComponent(r.s.id),
-    rec: r.s,
+    rec: withCover(r.s),
     title: r.s.song,
     sub: [r.s.artist, r.s.album].filter(Boolean).join(' · '),
     final: r.final, rank: r.rank, cats: r.cats,

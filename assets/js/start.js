@@ -50,7 +50,7 @@ function renderMine() {
       </div>
     </a>`;
   const podium = songs.slice(0, 3).map(r =>
-    pod(`bewerten.html?id=${encodeURIComponent(r.s.id)}`, r.s, r.s.song, esc(r.s.artist), r.final, medalHtml(r.rank))).join('');
+    pod(`bewerten.html?id=${encodeURIComponent(r.s.id)}`, withCover(r.s), r.s.song, esc(r.s.artist), r.final, medalHtml(r.rank))).join('');
   const topAlbum = albums[0];
 
   $('mine').innerHTML = `

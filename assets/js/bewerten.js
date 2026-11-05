@@ -9,6 +9,7 @@ const META_KEYS = ['artwork', 'appleUrl', 'preview', 'year', 'trackId'];
 
 let meta = {};       // artwork, appleUrl, preview, year, trackId from the song search
 let editingId = null;
+let ownCover = false;  // keep this song's own cover instead of the album cover
 let separate = false;  // this version of a song gets its own rating (instead of counting as the original)
 
 const form = createQuestionnaire({
@@ -41,6 +42,7 @@ initSearchBox($('search'), $('suggest'), {
 
 function renderPicked() {
   const rec = { song: song.value, ...meta };
+  if (!ownCover) rec.artwork = albumGroup({ album: album.value, artist: artist.value })?.cover || meta.artwork;
   $('barCover').innerHTML = coverHtml(rec, 'bar-cover');
   $('now').textContent = song.value || 'Neuer Song';
   $('nowSub').textContent = [artist.value, album.value].filter(Boolean).join(' · ');
@@ -58,9 +60,39 @@ function renderPicked() {
         </div>
         ${alreadyRated()}
       </div>
-    </div>`;
+    </div>
+    ${coverPicker(rec.artwork)}`;
   const drop = $('dropCover');
   if (drop) drop.onclick = () => { meta = {}; update(); };
+  document.querySelectorAll('[data-cover]').forEach(b => b.onclick = () => {
+    setAlbumCover({ album: album.value, artist: artist.value }, b.dataset.cover);
+    setOwnCover(false);
+  });
+  const own = $('ownCover');
+  if (own) own.onchange = () => setOwnCover(own.checked);
+}
+
+// One cover for all songs of an album: choose between the covers its songs came with
+function coverPicker(shown) {
+  const g = albumGroup({ album: album.value, artist: artist.value });
+  const choices = [...new Set([...(g ? g.choices : []), meta.artwork].filter(Boolean))];
+  if (choices.length < 2) return '';
+  return `
+    <div class="cover-pick">
+      <div class="cover-pick-t">Cover für alle Songs von „${esc(album.value.replace(/\s*[([].*?[)\]]|\s+-\s.*$/g, '').trim() || album.value)}“</div>
+      <div class="cover-opts">${choices.map(url => `
+        <button class="cover-opt ${!ownCover && url === g?.cover ? 'on' : ''}" data-cover="${esc(url)}" title="Dieses Cover für das ganze Album">
+          <img src="${esc(Itunes.artwork(url, 200))}" alt=""></button>`).join('')}
+      </div>
+      ${meta.artwork ? `<label class="cover-own"><input type="checkbox" id="ownCover" ${ownCover ? 'checked' : ''}>
+        Dieser Song behält sein eigenes Cover</label>` : ''}
+    </div>`;
+}
+function setOwnCover(on) {
+  ownCover = on;
+  if (editingId && Songs.get(editingId)) Songs.upsert({ ...Songs.get(editingId), ownCover: on || undefined });
+  pickedKey = '';
+  update();
 }
 
 // Each song is rated only once: picking a song that is already saved opens its filled-in form instead.
@@ -116,7 +148,7 @@ function update() {
   $('delete').hidden = !editingId;
   $('toast').textContent = sc.complete ? '' : `Noch ${sc.total - sc.answered} Fragen offen – beantworten oder „Weiß nicht“ wählen.`;
 
-  const key = [song.value, artist.value, album.value, meta.artwork].join('|');
+  const key = [song.value, artist.value, album.value, meta.artwork, ownCover, albumGroup({ album: album.value, artist: artist.value })?.cover].join('|');
   if (key !== pickedKey) { pickedKey = key; renderPicked(); }
   fillResultCard();
   saveDraft();
@@ -126,6 +158,7 @@ function update() {
 function setForm(rec) {
   editingId = rec.id || null;
   separate = !!rec.separate && rec.separate !== '0';
+  ownCover = !!rec.ownCover;
   meta = Object.fromEntries(META_KEYS.map(k => [k, rec[k]]));
   song.value = rec.song || ''; artist.value = rec.artist || ''; album.value = rec.album || '';
   form.setAnswers(normAnswers(rec.answers));
@@ -137,10 +170,14 @@ function currentRecord() {
     id: editingId || newId(),
     song: song.value.trim(), artist: artist.value.trim(), album: album.value.trim(), ...meta,
     ...(separate ? { separate: true } : {}),
+    ...(ownCover ? { ownCover: true } : {}),
+    ...pickKeys(editingId && Songs.get(editingId), ['albumCover', 'albumCoverAt']),
     answers: form.answers,
     savedAt: new Date().toISOString(),
   };
 }
+
+const pickKeys = (rec, keys) => Object.fromEntries(keys.filter(k => rec && rec[k]).map(k => [k, rec[k]]));
 
 // Unsaved progress survives a reload (one draft at a time)
 function saveDraft() { store.set('songRatingDraft', { ...currentRecord(), id: editingId }); }

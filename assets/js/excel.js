@@ -22,7 +22,7 @@ async function exportExcel(toast) {
     wb.creator = 'Song Rating';
 
     say('Lade Cover …');
-    const covers = await loadCovers(wb, [...songs.map(r => r.s.artwork), ...albums.map(r => r.a.artwork)]);
+    const covers = await loadCovers(wb, [...songs.map(r => songCover(r.s)), ...albums.map(r => r.a.artwork)]);
 
     songsSheet(wb, songs, covers);
     if (albums.length) albumsSheet(wb, albums, covers);
@@ -166,7 +166,7 @@ function songsSheet(wb, rows, covers) {
     scoreCellStyle(row.getCell(6), r.final);
     SONG_CATS.forEach((c, ci) => catCell(row.getCell(7 + ci), r.cats[ci], c.color));
     styleDataRow(row, i, cols.length, 40);
-    addCover(ws, covers, r.s.artwork, rowNo);
+    addCover(ws, covers, songCover(r.s), rowNo);
   });
   ws.views = [{ state: 'frozen', xSplit: 3, ySplit: 4 }];
   ws.autoFilter = { from: { row: 4, column: 1 }, to: { row: 4, column: cols.length } };

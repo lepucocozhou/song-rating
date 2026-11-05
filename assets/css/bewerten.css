@@ -153,3 +153,12 @@
 @media (max-width:600px){.search input{scroll-margin-top:120px}}
 .sug-head{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:10px 12px 4px}
 .own-version{margin-top:8px;font-size:13px;font-weight:600;padding:7px 14px;border-radius:10px}
+
+/* one cover for the whole album */
+.cover-pick{max-width:620px;box-sizing:border-box;margin:-6px 0 18px;padding:12px 14px;background:var(--card);border:1px solid var(--line);border-radius:14px}
+.cover-pick-t{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:8px}
+.cover-opts{display:flex;gap:10px;flex-wrap:wrap}
+.cover-opt{padding:0;border:2px solid transparent;border-radius:12px;background:none;cursor:pointer;line-height:0}
+.cover-opt img{width:64px;height:64px;border-radius:9px;object-fit:cover}
+.cover-opt.on{border-color:var(--accent-strong);box-shadow:0 0 0 2px var(--accent-soft)}
+.cover-own{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13px;cursor:pointer}
