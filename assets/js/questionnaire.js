@@ -1,4 +1,7 @@
 // Step-by-step questionnaire with sliders, used for songs and albums.
+// Per-device preferences from the settings page: slider steps (0.5 or 1) and the "Think" hint sentences.
+const SLIDER_STEP = store.get('sliderStep', 0.5) === 1 ? 1 : 0.5;
+const SHOW_THINK = store.get('showThink', true) !== false;
 // The page provides #steps, #pages, #catsMini and its own first/last pages (.page elements in #pages).
 // opts: { cats, before: [{ name, color }], after: [{ name, color }], onChange() }
 
@@ -42,10 +45,10 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
     el.dataset.q = q.id;
     el.innerHTML = `
       <div class="q-head">
-        <div><div class="q-title">${L('Q', 'F', '')}${++qNo}. ${esc(q.q)}</div><div class="q-think">${esc(q.think || '')}</div></div>
+        <div><div class="q-title">${L('Q', 'F', '')}${++qNo}. ${esc(q.q)}</div>${SHOW_THINK ? `<div class="q-think">${esc(q.think || '')}</div>` : ''}</div>
         <div class="q-val">–</div>
       </div>
-      <input type="range" min="1" max="10" step="0.5" value="5.5" aria-label="${L('Q', 'F', '问题 ')}${qNo}">
+      <input type="range" min="1" max="10" step="${SLIDER_STEP}" value="${SLIDER_STEP === 1 ? 5 : 5.5}" aria-label="${L('Q', 'F', '问题 ')}${qNo}">
       <div class="ticks">${[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(n =>
         `<span style="left:calc(13px + (100% - 26px) * ${(n - 1) / 9})">${n}</span>`).join('')}</div>
       <div class="desc"></div>
@@ -121,7 +124,7 @@ function createQuestionnaire({ cats, before = [], after = [], onChange }) {
     answers = { ...(a || {}) };
     $('pages').querySelectorAll('.q').forEach(el => {
       const v = answers[el.dataset.q];
-      el.querySelector('input[type=range]').value = typeof v === 'number' ? v : 5.5;
+      el.querySelector('input[type=range]').value = typeof v === 'number' ? v : (SLIDER_STEP === 1 ? 5 : 5.5);
     });
   }
 

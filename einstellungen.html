@@ -16,95 +16,171 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css?v=7">
-<link rel="stylesheet" href="assets/css/einstellungen.css?v=5">
-<link rel="stylesheet" href="assets/css/mobile.css?v=9">
+<link rel="stylesheet" href="assets/css/einstellungen.css?v=7">
+<link rel="stylesheet" href="assets/css/mobile.css?v=10">
 </head>
 <body>
 <header id="top" data-active="settings"></header>
 
 <main class="wrap settings">
   <div class="page-head"><h1>Einstellungen</h1></div>
-  <div class="sec-nav">
-    <a href="#konto">Konto &amp; Cloud</a><a href="#look">Darstellung &amp; Sprache</a><a href="#songs">Song-Fragen</a><a href="#albums">Album-Fragen</a><a href="#rules">Album-Regeln</a><a href="#data">Daten &amp; Speicherung</a>
+
+  <div class="set-layout">
+    <aside class="set-nav" id="setNav" aria-label="Bereiche der Einstellungen">
+      <div class="set-group">Konto</div>
+      <a href="#konto" data-sec="konto"><span class="ic">☁️</span><span>Konto &amp; Sync<small id="navAccount">Anmeldung, Passwort</small></span></a>
+      <div class="set-group">App</div>
+      <a href="#look" data-sec="look"><span class="ic">🎨</span><span>Darstellung &amp; Sprache<small>Hell / Dunkel, Deutsch / English / 中文</small></span></a>
+      <a href="#rating" data-sec="rating"><span class="ic">🎚️</span><span>Bewerten &amp; Start<small>Regler, Hilfssätze, Charts</small></span></a>
+      <div class="set-group">Fragebogen</div>
+      <a href="#songs" data-sec="songs"><span class="ic">🎵</span><span>Song-Fragen<small id="navSongs"></small></span></a>
+      <a href="#albums" data-sec="albums"><span class="ic">💿</span><span>Album-Fragen &amp; Regeln<small id="navAlbums"></small></span></a>
+      <div class="set-group">Daten</div>
+      <a href="#data" data-sec="data"><span class="ic">💾</span><span>Daten &amp; Backup<small id="navData"></small></span></a>
+    </aside>
+
+    <div class="set-main">
+      <section id="konto">
+        <div class="sec-head"><h2>Konto &amp; Sync</h2>
+          <p class="intro">Mit Konto werden deine Bewertungen automatisch gesichert und auf all deinen Geräten angezeigt.</p></div>
+        <div id="account"></div>
+      </section>
+
+      <section id="look">
+        <div class="sec-head"><h2>Darstellung &amp; Sprache</h2>
+          <p class="intro">Gilt nur für dieses Gerät.</p></div>
+        <div class="set-card">
+          <div class="set-row">
+            <div class="set-label"><b>Farbschema</b><span>„Automatisch“ richtet sich nach deinem Handy oder Computer.</span></div>
+            <div class="theme-pick" id="themePick">
+              <button type="button" data-theme-choice="auto">🌓 Auto</button>
+              <button type="button" data-theme-choice="light">☀️ Hell</button>
+              <button type="button" data-theme-choice="dark">🌙 Dunkel</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-label"><b>Sprache</b><span>Bei „中文“ ist die ganze App auf Chinesisch. Bei Deutsch und English wechseln nur Kategorien, Fragen und Skalen-Texte. Selbst umgeschriebene Fragen bleiben, wie du sie geschrieben hast.</span></div>
+            <div class="theme-pick" id="langPick" translate="no">
+              <button type="button" data-lang-choice="de">🇩🇪 Deutsch</button>
+              <button type="button" data-lang-choice="en">🇬🇧 English</button>
+              <button type="button" data-lang-choice="zh">🇨🇳 中文</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="rating">
+        <div class="sec-head"><h2>Bewerten &amp; Start</h2>
+          <p class="intro">Wie sich das Bewerten anfühlt und was die Startseite zeigt. Gilt nur für dieses Gerät und wird sofort übernommen.</p></div>
+        <div class="set-card">
+          <div class="set-row">
+            <div class="set-label"><b>Schritte der Regler</b><span>Halbe Punkte erlauben feinere Abstufungen, ganze Punkte gehen schneller.</span></div>
+            <div class="theme-pick" data-pref="sliderStep">
+              <button type="button" data-val="0.5">½ Punkte</button>
+              <button type="button" data-val="1">Ganze Punkte</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-label"><b>„Überlege“-Sätze beim Bewerten</b><span>Die kleinen Hilfssätze unter jeder Frage.</span></div>
+            <div class="theme-pick" data-pref="showThink">
+              <button type="button" data-val="true">Anzeigen</button>
+              <button type="button" data-val="false">Ausblenden</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-label"><b>Charts auf der Startseite</b><span>Welche Top-Liste standardmäßig angezeigt wird.</span></div>
+            <div class="theme-pick" data-pref="chartRegion">
+              <button type="button" data-val="de">🇩🇪 Deutschland</button>
+              <button type="button" data-val="global">🌍 Global</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="songs">
+        <div class="sec-head"><h2>Song-Fragen</h2>
+          <p class="intro">Kategorien und Fragen für Songs. Gewichte in Prozent – stimmt die Summe nicht genau, wird beim Rechnen automatisch auf 100&nbsp;% umgerechnet. Tipp auf eine Kategorie, um ihre Fragen zu bearbeiten.</p></div>
+        <div class="weight-bar" id="songBar"></div>
+        <div id="songEditor"></div>
+      </section>
+
+      <section id="albums">
+        <div class="sec-head"><h2>Album-Fragen &amp; Regeln <span class="badge">Platzhalter</span></h2>
+          <p class="intro">Wie der Album-Score entsteht – und die Fragen, die zusätzlich zu den Songs gestellt werden.</p></div>
+        <h3 class="sub-h">Album-Regeln</h3>
+        <p class="intro">Wie stark die Song-Bewertungen in den Album-Score eingehen. Der Rest kommt aus den Album-Fragen.</p>
+        <div class="rules">
+          <label class="rule"><b>🎯 Vollständig</b><span>Alle Songs müssen bewertet sein.</span>
+            <span class="rule-split"><span class="pct"><input type="number" min="0" max="100" step="1" data-rule="songWeight"> % Songs</span>
+            <span class="split-bar"><i data-split="songWeight"></i></span></span></label>
+          <label class="rule"><b>⚡ Schnell</b><span>Nur bewertete Songs zählen.</span>
+            <span class="rule-split"><span class="pct"><input type="number" min="0" max="100" step="1" data-rule="songWeightLight"> % Songs</span>
+            <span class="split-bar"><i data-split="songWeightLight"></i></span></span></label>
+        </div>
+        <h3 class="sub-h">Album-Fragen</h3>
+        <p class="intro">Noch Platzhalter – benenne sie um, ergänze oder lösche sie.</p>
+        <div class="weight-bar" id="albumBar"></div>
+        <div id="albumEditor"></div>
+      </section>
+
+      <section id="data">
+        <div class="sec-head"><h2>Daten &amp; Backup</h2>
+          <p class="intro">Auf diesem Gerät liegen <b id="stats"></b>. Wenn du angemeldet bist, ist alles zusätzlich in deinem Konto gesichert.</p></div>
+        <div class="set-card">
+          <div class="set-row">
+            <div class="set-label"><b>Exportieren</b><span>Alle Bewertungen als Excel-Tabelle oder als Backup-Datei.</span></div>
+            <div class="data-btns">
+              <button class="excel" id="exportExcel">📊 Excel</button>
+              <button id="exportBackup">💾 Backup speichern</button>
+            </div>
+          </div>
+          <div class="set-row">
+            <div class="set-label"><b>Backup laden</b><span>Wird mit den vorhandenen Bewertungen zusammengeführt – nichts geht verloren.</span></div>
+            <div class="data-btns">
+              <button id="importBackup">📂 Backup laden</button>
+              <input type="file" id="importFile" accept=".json" hidden>
+            </div>
+          </div>
+          <div class="toast" id="toast"></div>
+        </div>
+
+        <h3 class="sub-h">Aufräumen</h3>
+        <div class="set-card">
+          <div class="set-row">
+            <div class="set-label"><b>Angefangene Bewertungen</b><span id="draftInfo"></span></div>
+            <button id="clearDrafts">Verwerfen</button>
+          </div>
+          <div class="set-row">
+            <div class="set-label"><b>Zwischenspeicher</b><span>Charts und Song-Vorschläge werden beim nächsten Öffnen der Startseite neu geladen.</span></div>
+            <button id="clearCache">Leeren</button>
+          </div>
+        </div>
+
+        <h3 class="sub-h danger-h">Zurücksetzen</h3>
+        <div class="set-card danger-card">
+          <div class="set-row">
+            <div class="set-label"><b>Fragen &amp; Gewichte auf Standard</b><span>Alle Kategorien, Fragen, Gewichte und Album-Regeln. Deine Bewertungen bleiben erhalten.</span></div>
+            <button class="danger" id="resetCfg">Zurücksetzen</button>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
-
-  <section id="konto">
-    <h2>Konto &amp; Cloud</h2>
-    <div id="account"></div>
-  </section>
-
-  <section id="look">
-    <h2>Darstellung &amp; Sprache</h2>
-    <p class="intro">Wird auf diesem Gerät gespeichert. „Automatisch“ richtet sich nach der Einstellung deines Handys oder Computers.</p>
-    <div class="theme-pick" id="themePick">
-      <button type="button" data-theme-choice="auto">🌓 Automatisch</button>
-      <button type="button" data-theme-choice="light">☀️ Hell</button>
-      <button type="button" data-theme-choice="dark">🌙 Dunkel</button>
-    </div>
-    <h3 class="sub-h">Sprache</h3>
-    <p class="intro">Bei „中文“ ist die ganze App auf Chinesisch. Bei Deutsch und English sind Menüs und Knöpfe auf Deutsch, nur Kategorien, Fragen und die Skala 1–10 wechseln. Fragen, die du selbst umgeschrieben hast, bleiben so, wie du sie geschrieben hast.</p>
-    <div class="theme-pick" id="langPick" translate="no">
-      <button type="button" data-lang-choice="de">🇩🇪 Deutsch</button>
-      <button type="button" data-lang-choice="en">🇬🇧 English</button>
-      <button type="button" data-lang-choice="zh">🇨🇳 中文</button>
-    </div>
-  </section>
-
-  <section id="songs">
-    <h2>Song-Fragen</h2>
-    <p class="intro">Kategorien und Fragen für Songs. Gewichte in Prozent – stimmt die Summe nicht genau, wird beim Rechnen automatisch auf 100&nbsp;% umgerechnet.</p>
-    <div id="songEditor"></div>
-  </section>
-
-  <section id="albums">
-    <h2>Album-Fragen <span class="badge">Platzhalter</span></h2>
-    <p class="intro">Die Album-Fragen sind noch Platzhalter – hier kannst du sie umbenennen, ergänzen oder löschen.</p>
-    <div id="albumEditor"></div>
-  </section>
-
-  <section id="rules">
-    <h2>Album-Regeln</h2>
-    <p class="intro">Wie stark die Song-Bewertungen in den Album-Score eingehen. Der Rest kommt aus den Album-Fragen.</p>
-    <div class="rules">
-      <label class="rule"><b>🎯 Vollständig</b><span>Alle Songs müssen bewertet sein. Anteil der Songs:</span>
-        <span class="pct"><input type="number" min="0" max="100" step="1" data-rule="songWeight"> %</span></label>
-      <label class="rule"><b>⚡ Schnell</b><span>Nur bewertete Songs zählen. Anteil der Songs:</span>
-        <span class="pct"><input type="number" min="0" max="100" step="1" data-rule="songWeightLight"> %</span></label>
-    </div>
-  </section>
-
-  <section id="data">
-    <h2>Daten &amp; Speicherung</h2>
-    <div class="info">
-      <b>Wo sind meine Bewertungen gespeichert?</b>
-      Auf diesem Gerät liegen <span id="stats"></span>. Wenn du oben angemeldet bist, wird alles zusätzlich
-      in deinem Cloud-Konto gespeichert und auf deinen anderen Geräten angezeigt. Ein Backup als Datei
-      kannst du trotzdem jederzeit speichern.
-    </div>
-    <div class="data-btns">
-      <button class="excel" id="exportExcel">📊 Excel exportieren</button>
-      <button id="exportBackup">💾 Backup speichern</button>
-      <button id="importBackup">📂 Backup laden</button>
-      <input type="file" id="importFile" accept=".json" hidden>
-      <span class="toast" id="toast"></span>
-    </div>
-  </section>
 </main>
 
 <div class="savebar" id="savebar" hidden>
   <div class="wrap">
     <span>Ungespeicherte Änderungen</span>
     <button id="discard">Verwerfen</button>
-    <button class="primary" id="saveCfg">Einstellungen speichern</button>
+    <button class="primary" id="saveCfg">Speichern</button>
   </div>
 </div>
-<div class="wrap reset-row"><button class="danger" id="resetCfg">Alle Fragen &amp; Gewichte auf Standard zurücksetzen</button></div>
 
 <script src="assets/js/defaults.js"></script>
 <script src="assets/js/texts-de.js"></script>
 <script src="assets/js/texts-zh.js"></script>
 <script src="assets/js/language.js?v=2"></script>
-<script src="assets/js/i18n-zh.js?v=2"></script>
+<script src="assets/js/i18n-zh.js?v=3"></script>
 <script src="assets/js/i18n.js?v=2"></script>
 <script src="assets/js/common.js?v=12"></script>
 <script src="assets/vendor/supabase.min.js"></script>
@@ -113,7 +189,7 @@
 <script src="assets/js/excel.js?v=11"></script>
 <script src="assets/js/backup.js"></script>
 <script src="assets/js/account.js?v=11"></script>
-<script src="assets/js/theme-pick.js?v=2"></script>
-<script src="assets/js/einstellungen.js?v=11"></script>
+<script src="assets/js/theme-pick.js?v=7"></script>
+<script src="assets/js/einstellungen.js?v=7"></script>
 </body>
 </html>

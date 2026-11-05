@@ -99,7 +99,10 @@
   .q-edit .think,details{margin-left:0}
   .cat-head .name{flex:1 1 100%;order:-1}
   .savebar{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom))}
-  .reset-row{margin-bottom:30px}
+  .set-nav{top:calc(env(safe-area-inset-top) + 6px);margin:0 -14px;border-radius:0;border-left:0;border-right:0}
+  .set-row{padding:14px}
+  .set-card .theme-pick{flex:1 1 100%;min-width:0}
+  section h2{font-size:28px}
   .flash{bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 16px)}
 }
 
