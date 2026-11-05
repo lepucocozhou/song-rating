@@ -146,6 +146,7 @@ function update() {
   $('save').disabled = !sc.complete;
   $('save').textContent = editingId ? 'Änderungen speichern' : 'In Übersicht speichern';
   $('delete').hidden = !editingId;
+  $('share').hidden = !(editingId && sc.complete && Songs.get(editingId));
   $('toast').textContent = sc.complete ? '' : `Noch ${sc.total - sc.answered} Fragen offen – beantworten oder „Weiß nicht“ wählen.`;
 
   const key = [song.value, artist.value, album.value, meta.artwork, ownCover, albumGroup({ album: album.value, artist: artist.value })?.cover].join('|');
@@ -195,6 +196,8 @@ $('save').onclick = () => {
   $('toast').innerHTML = `„${esc(rec.song)}“ gespeichert ✓ ` +
     (back ? `<a href="${esc(back)}">Zurück zum Album →</a>` : '<a href="songs.html">Zu deinen Songs →</a>');
 };
+
+$('share').onclick = () => shareSong(editingId);
 
 $('newSong').onclick = () => {
   if (!editingId && scores(form.answers).answered && !confirm('Aktuelle Bewertung verwerfen und neuen Song beginnen?')) return;

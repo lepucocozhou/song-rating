@@ -42,7 +42,7 @@ const ZH_WORDS = {
   'Deine Songs': '我的歌曲', 'Deine Alben': '我的专辑', '+ Song bewerten': '+ 评价歌曲', '+ Album bewerten': '+ 评价专辑',
   'Suchen nach Song, Artist, Album …': '搜索歌曲、艺人、专辑…', 'Suchen nach Album oder Artist …': '搜索专辑或艺人…',
   'Sortieren': '排序', 'Liste': '列表', 'Galerie': '画廊', 'Tabelle': '表格',
-  '🖼 Fehlende Cover suchen': '🖼 查找缺失的封面', '📊 Excel exportieren': '📊 导出 Excel',
+  '🖼 Fehlende Cover suchen': '🖼 查找缺失的封面', '📊 Excel exportieren': '📊 导出 Excel', '📤 Teilen': '📤 分享', '📤 Top 10 teilen': '📤 分享前 10 名',
   'Noch keine Songs bewertet.': '还没有评价任何歌曲。', '+ Ersten Song bewerten': '+ 评价第一首歌',
   'Noch keine Alben bewertet.': '还没有评价任何专辑。', '+ Erstes Album bewerten': '+ 评价第一张专辑',
   'Rangliste (Final Score)': '排名（最终得分）', 'Song A–Z': '歌曲 A–Z', 'Artist A–Z': '艺人 A–Z', 'Album A–Z': '专辑 A–Z',

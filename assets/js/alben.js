@@ -55,3 +55,5 @@ const list = createListView({
 $('exportExcel').onclick = () => exportExcel($('toast'));
 
 list.render();
+
+$('shareTop').onclick = () => shareTop('albums');

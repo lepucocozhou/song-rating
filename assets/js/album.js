@@ -176,6 +176,7 @@ function update() {
   $('save').disabled = !as.complete;
   $('save').textContent = editingId ? 'Änderungen speichern' : 'In Alben speichern';
   $('delete').hidden = !editingId;
+  $('share').hidden = !(editingId && as.complete && Albums.get(editingId));
 
   renderModes();
   renderTracks(as);
@@ -219,6 +220,8 @@ $('save').onclick = () => {
   update();
   $('toast').innerHTML = `„${esc(rec.album)}“ gespeichert ✓ <a href="alben.html">Zu den Alben →</a>`;
 };
+
+$('share').onclick = () => shareAlbum(editingId);
 
 $('newAlbum').onclick = () => {
   if (!editingId && (albumIn.value || scores(form.answers, ALBUM_CATS).answered) && !confirm('Aktuelle Album-Bewertung verwerfen und neu beginnen?')) return;
