@@ -22,11 +22,22 @@ const Config = {
   load() {
     const saved = store.get('songRatingConfig', null);
     const cfg = saved && !saved._reset ? { ...clone(DEFAULT_CONFIG), ...saved } : clone(DEFAULT_CONFIG);
+    upgradeAlbumHints(cfg);
     return translateConfig(cfg, 'en', LANG);
   },
   save(cfg) { store.set('songRatingConfig', { ...translateConfig(clone(cfg), LANG, 'en'), _updatedAt: now() }); onDataChanged(); },
   reset() { store.set('songRatingConfig', { _reset: true, _updatedAt: now() }); onDataChanged(); },
 };
+// Saved settings from before the album scales: unchanged album hints get the new hint, missing scales the new scale
+function upgradeAlbumHints(cfg) {
+  const defaults = Object.fromEntries(DEFAULT_CONFIG.albums.flatMap(c => c.qs).map(q => [q.id, q]));
+  (cfg.albums || []).forEach(c => c.qs.forEach(q => {
+    const d = defaults[q.id];
+    if (!d) return;
+    if (q.think === OLD_ALBUM_THINKS[q.id]) q.think = d.think;
+    if (!q.scale) q.scale = clone(d.scale);
+  }));
+}
 const CONFIG = Config.load();
 const SONG_CATS = CONFIG.songs;
 const ALBUM_CATS = CONFIG.albums;

@@ -1,6 +1,6 @@
 // Standard-Einstellungen. Was du im Tab "Einstellungen" änderst, wird im Browser gespeichert
 // und überschreibt diese Werte ("Auf Standard zurücksetzen" holt sie wieder).
-// Songs: Fragen, Skalen und Gewichte aus "Song Ratings.xlsx" (Tabs Scale + Weights).
+// Songs: Fragen, Skalen und Gewichte aus "Song Ratings.xlsx" (Tabs Scale + Weights), Alben: Tab Album-Raster.
 // id = feste Kennung einer Frage (Antworten werden darunter gespeichert), w = Gewicht, na = N/A erlaubt.
 
 // Fallback-Skala für Fragen ohne eigene Beschreibungen (aus dem Guide-Tab der Tabelle)
@@ -132,23 +132,30 @@ const DEFAULT_CONFIG = {
     {
       id: 'a1', name: 'Album as a Whole', w: 0.5, color: '#38bdf8',
       qs: [
-        { id: 'aq1', q: 'How well does the album work as one complete body of work?', w: 0.4, na: false, think: 'Think: is it more than just a collection of songs?' },
-        { id: 'aq2', q: 'How good are the tracklist order and flow?', w: 0.3, na: false, think: 'Think: do the songs lead into each other naturally?' },
-        { id: 'aq3', q: 'How consistent is the quality across all songs?', w: 0.3, na: false, think: 'Think: are there weak spots or skips?' },
+        { id: 'aq1', q: 'How well does the album work as one complete body of work?', w: 0.4, na: false, think: "Think: does it feel like ONE work or like a collection of separate songs?",
+          scale: {"1": "A random collection of songs; nothing connects the tracks.", "2": "Barely connected; the songs feel like they're from different projects.", "3": "A few songs belong together, the rest feels arbitrary.", "4": "A loose common thread that often gets lost.", "5": "Recognisably an album, but the songs work just as well on their own.", "6": "A clear shared sound or mood, with some outliers.", "7": "Feels like a whole; the songs complement each other.", "8": "A strong body of work; the songs are stronger together than alone.", "9": "Almost inseparable; single songs lose something outside the album.", "10": "A perfect body of work; more than the sum of its parts."} },
+        { id: 'aq2', q: 'How good are the tracklist order and flow?', w: 0.3, na: false, think: "Think: does the order make sense? How are the transitions, opener, closer and the arc?",
+          scale: {"1": "Chaotic; harsh breaks, the order actively gets in the way.", "2": "Very poorly placed; the mood jumps around constantly for no reason.", "3": "Many bumpy transitions; the opener or closer doesn't work.", "4": "Some spots where the order disrupts or the album drags.", "5": "It works, but the order feels arbitrary.", "6": "Good flow with a few bumpy spots.", "7": "A thought-through order with a good opener and closer.", "8": "A strong arc; the transitions feel natural.", "9": "Excellent flow; every song is in the right place.", "10": "Perfect; no song could be moved without making it worse."} },
+        { id: 'aq3', q: 'How consistent is the quality across all songs?', w: 0.3, na: false, think: "Think: how many songs would I skip, and how big is the gap between the best and the weakest song? (If you've already rated the songs, look at their scores.)",
+          scale: {"1": "Almost all filler; one good song at most.", "2": "Only a few good songs, most of it is weak.", "3": "I'd skip about half or more.", "4": "Several weak songs clearly drag the album down.", "5": "Mixed: good songs, but noticeable filler too.", "6": "Mostly good, with 2–3 weaker songs.", "7": "Good almost throughout; only one or two weaker moments.", "8": "No real filler; the weakest song is still good.", "9": "Consistently strong; hardly any difference between the best and weakest song.", "10": "Not a single skip; every song could be a highlight."} },
       ],
     },
     {
       id: 'a2', name: 'Concept & Era', w: 0.3, color: '#8b5cf6',
       qs: [
-        { id: 'aq4', q: 'How strong is the album concept or era?', w: 0.5, na: false, think: 'Think: is there a clear idea or world behind it?' },
-        { id: 'aq5', q: 'How well do the visuals, cover and aesthetic fit?', w: 0.5, na: false, think: 'Think: does everything around the music tell the same story?' },
+        { id: 'aq4', q: 'How strong is the album concept or era?', w: 0.5, na: false, think: "Think: does the album have a clear idea or identity, and how convincing is it? It doesn't need a story; a clearly recognisable era counts just as much.",
+          scale: {"1": "No concept, no recognisable identity.", "2": "A very weak or confusing idea.", "3": "A vague idea that barely comes through.", "4": "A basic theme, but nothing special.", "5": "A clear, solid idea or era, but rather ordinary.", "6": "An interesting concept that comes through well.", "7": "A strong concept or era with its own identity.", "8": "Very convincing; the era is clearly defined and memorable.", "9": "Outstanding; the concept makes the album something special.", "10": "Iconic; the era is legendary or defines the artist."} },
+        { id: 'aq5', q: 'How well do the visuals, cover and aesthetic fit?', w: 0.5, na: false, think: "Think: do the cover, photos, music videos, outfits and stage design fit the sound and the concept?",
+          scale: {"1": "The visuals contradict the music or feel careless.", "2": "Unfitting or cheap; nothing connects them to the album.", "3": "Weak; generic and hardly related to the music.", "4": "Okay, but interchangeable.", "5": "Fits, without standing out.", "6": "A good aesthetic clearly tied to the album.", "7": "A coherent overall picture; visuals and music complement each other.", "8": "A strong, recognisable aesthetic that reinforces the concept.", "9": "Outstanding; visuals and music feel all of a piece.", "10": "Iconic; the cover and aesthetic are inseparable from the album."} },
       ],
     },
     {
       id: 'a3', name: 'Personal', w: 0.2, color: '#ec4899',
       qs: [
-        { id: 'aq6', q: 'How much do I enjoy listening to the album start to finish?', w: 0.5, na: false, think: 'Think: would I put on the whole album?' },
-        { id: 'aq7', q: 'How much has this album shaped me?', w: 0.5, na: false, think: 'Think: is it tied to a phase of my life?' },
+        { id: 'aq6', q: 'How much do I enjoy listening to the album start to finish?', w: 0.5, na: false, think: "Think: do I feel like listening to it all the way through without skipping?",
+          scale: {"1": "I never listen to it in full; even the thought annoys me.", "2": "Listening in full is a struggle; I give up.", "3": "I only get through it with lots of skipping.", "4": "I can listen through, but I never choose it on purpose.", "5": "Fine now and then, but without much desire.", "6": "I like listening to it in full when the mood fits.", "7": "I deliberately put it on from start to finish.", "8": "I often listen to it in full and hardly skip.", "9": "One of my favourite albums to listen to all the way through.", "10": "I could listen to it in full again and again without ever thinking of skipping."} },
+        { id: 'aq7', q: 'How much has this album shaped me?', w: 0.5, na: false, think: "Think: has it changed something in my life, my taste or my outlook? (Not just: do I like it?) New albums can't score high here yet; re-rate later.",
+          scale: {"1": "No influence on me at all.", "2": "Listened briefly, quickly forgotten.", "3": "Listened for a while, but left no trace.", "4": "Reminds me of a time, but nothing more.", "5": "Stays with me a little; some songs mean something to me.", "6": "Noticeably part of a phase of my life.", "7": "Accompanied an important chapter of my life.", "8": "Clearly shaped my music taste or my feelings.", "9": "One of the albums that have shaped me the most.", "10": "Changed me fundamentally; part of who I am."} },
       ],
     },
   ],
@@ -158,4 +165,15 @@ const DEFAULT_CONFIG = {
     songWeight: 0.5,       // Modus "Vollständig": alle Songs müssen bewertet sein
     songWeightLight: 0.25, // Modus "Schnell": nur bewertete Songs zählen, mit weniger Gewicht
   },
+};
+
+// Album hints before the Album-Raster update: saved settings that still have them get the new hints + scales
+const OLD_ALBUM_THINKS = {
+ "aq1": "Think: is it more than just a collection of songs?",
+ "aq2": "Think: do the songs lead into each other naturally?",
+ "aq3": "Think: are there weak spots or skips?",
+ "aq4": "Think: is there a clear idea or world behind it?",
+ "aq5": "Think: does everything around the music tell the same story?",
+ "aq6": "Think: would I put on the whole album?",
+ "aq7": "Think: is it tied to a phase of my life?"
 };
