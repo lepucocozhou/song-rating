@@ -23,6 +23,7 @@ const Config = {
     const saved = store.get('songRatingConfig', null);
     const cfg = saved && !saved._reset ? { ...clone(DEFAULT_CONFIG), ...saved } : clone(DEFAULT_CONFIG);
     upgradeAlbumHints(cfg);
+    addNewAlbumCats(cfg);
     return translateConfig(cfg, 'en', LANG);
   },
   save(cfg) { store.set('songRatingConfig', { ...translateConfig(clone(cfg), LANG, 'en'), _updatedAt: now() }); onDataChanged(); },
@@ -37,6 +38,20 @@ function upgradeAlbumHints(cfg) {
     if (q.think === OLD_ALBUM_THINKS[q.id]) q.think = d.think;
     if (!q.scale) q.scale = clone(d.scale);
   }));
+}
+// Album categories added after release: saved settings get them once (the other weights shrink so the
+// total stays 100 %). Remembered in _addedAlbumCats, so a category you delete yourself stays deleted.
+const NEW_ALBUM_CATS = ['a4'];
+function addNewAlbumCats(cfg) {
+  if (!Array.isArray(cfg.albums)) return;
+  const done = cfg._addedAlbumCats || [];
+  NEW_ALBUM_CATS.forEach(id => {
+    if (done.includes(id) || cfg.albums.some(c => c.id === id)) return;
+    const cat = clone(DEFAULT_CONFIG.albums.find(c => c.id === id));
+    cfg.albums.forEach(c => { c.w = Math.round((+c.w || 0) * (1 - cat.w) * 10000) / 10000; });
+    cfg.albums.push(cat);
+  });
+  cfg._addedAlbumCats = [...NEW_ALBUM_CATS];
 }
 const CONFIG = Config.load();
 const SONG_CATS = CONFIG.songs;

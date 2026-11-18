@@ -130,7 +130,7 @@ const DEFAULT_CONFIG = {
   // Album-Fragen: Platzhalter – in den Einstellungen umbenennen, ergänzen oder löschen.
   albums: [
     {
-      id: 'a1', name: 'Album as a Whole', w: 0.5, color: '#38bdf8',
+      id: 'a1', name: 'Album as a Whole', w: 0.4, color: '#38bdf8',
       qs: [
         { id: 'aq1', q: 'How well does the album work as one complete body of work?', w: 0.4, na: false, think: "Think: does it feel like ONE work or like a collection of separate songs?",
           scale: {"1": "A random collection of songs; nothing connects the tracks.", "2": "Barely connected; the songs feel like they're from different projects.", "3": "A few songs belong together, the rest feels arbitrary.", "4": "A loose common thread that often gets lost.", "5": "Recognisably an album, but the songs work just as well on their own.", "6": "A clear shared sound or mood, with some outliers.", "7": "Feels like a whole; the songs complement each other.", "8": "A strong body of work; the songs are stronger together than alone.", "9": "Almost inseparable; single songs lose something outside the album.", "10": "A perfect body of work; more than the sum of its parts."} },
@@ -141,7 +141,7 @@ const DEFAULT_CONFIG = {
       ],
     },
     {
-      id: 'a2', name: 'Concept & Era', w: 0.3, color: '#8b5cf6',
+      id: 'a2', name: 'Concept & Era', w: 0.25, color: '#8b5cf6',
       qs: [
         { id: 'aq4', q: 'How strong is the album concept or era?', w: 0.5, na: false, think: "Think: does the album have a clear idea or identity, and how convincing is it? It doesn't need a story; a clearly recognisable era counts just as much.",
           scale: {"1": "No concept, no recognisable identity.", "2": "A very weak or confusing idea.", "3": "A vague idea that barely comes through.", "4": "A basic theme, but nothing special.", "5": "A clear, solid idea or era, but rather ordinary.", "6": "An interesting concept that comes through well.", "7": "A strong concept or era with its own identity.", "8": "Very convincing; the era is clearly defined and memorable.", "9": "Outstanding; the concept makes the album something special.", "10": "Iconic; the era is legendary or defines the artist."} },
@@ -156,6 +156,17 @@ const DEFAULT_CONFIG = {
           scale: {"1": "I never listen to it in full; even the thought annoys me.", "2": "Listening in full is a struggle; I give up.", "3": "I only get through it with lots of skipping.", "4": "I can listen through, but I never choose it on purpose.", "5": "Fine now and then, but without much desire.", "6": "I like listening to it in full when the mood fits.", "7": "I deliberately put it on from start to finish.", "8": "I often listen to it in full and hardly skip.", "9": "One of my favourite albums to listen to all the way through.", "10": "I could listen to it in full again and again without ever thinking of skipping."} },
         { id: 'aq7', q: 'How much has this album shaped me?', w: 0.5, na: false, think: "Think: has it changed something in my life, my taste or my outlook? (Not just: do I like it?) New albums can't score high here yet; re-rate later.",
           scale: {"1": "No influence on me at all.", "2": "Listened briefly, quickly forgotten.", "3": "Listened for a while, but left no trace.", "4": "Reminds me of a time, but nothing more.", "5": "Stays with me a little; some songs mean something to me.", "6": "Noticeably part of a phase of my life.", "7": "Accompanied an important chapter of my life.", "8": "Clearly shaped my music taste or my feelings.", "9": "One of the albums that have shaped me the most.", "10": "Changed me fundamentally; part of who I am."} },
+      ],
+    },
+    {
+      id: 'a4', name: 'Artist Identity & Persona', w: 0.15, color: '#6366f1',
+      qs: [
+        { id: 'aq8', q: "How distinctive and recognizable is the artist's identity on this album?", w: 0.3, na: false, think: "Think: would I know it's THEM after a few songs, without being told? (At the time of release.)",
+          scale: {"1": "Anonymous; it could be anyone's album.", "2": "Very generic; it blends into the trends of the time.", "3": "Hard to recognise; few personal traits.", "4": "Some traits, but mostly interchangeable.", "5": "Recognisable if I know the artist well.", "6": "A clear style with some unique traits.", "7": "A recognisable identity throughout.", "8": "Very distinctive; I'd recognise them within seconds.", "9": "Instantly unmistakable from start to finish.", "10": "Iconic; nobody else could have made this album."} },
+        { id: 'aq9', q: "How convincing and authentic does the artist's persona on this album feel?", w: 0.3, na: false, think: "Think: do I BELIEVE the person behind this album, and does the persona feel deliberate rather than forced? (Understated can score 10 too.)",
+          scale: {"1": "Feels fake, forced or like a cash grab.", "2": "Unconvincing; I don't believe it.", "3": "Often feels unsure or try-hard.", "4": "Somewhat convincing, but uneven.", "5": "Believable enough.", "6": "Convincing, with clear intention.", "7": "Confident and intentional.", "8": "Very convincing; I fully buy it.", "9": "Totally committed; the persona feels completely real.", "10": "Completely authentic and intentional on every level."} },
+        { id: 'aq10', q: "How meaningfully does the album develop or define the artist's identity?", w: 0.4, na: false, think: "Think: compared to their other work, does this album show me something new about who they are, or a step in their development? (For a debut: how strongly does it introduce them?)",
+          scale: {"1": "Says nothing about the artist, or even undermines who they are.", "2": "Very little expression of identity.", "3": "Hints at an identity, but only shallowly.", "4": "Repeats old ground without adding anything.", "5": "Expresses their identity adequately.", "6": "Shows a meaningful side of them.", "7": "Clearly develops who they are.", "8": "Adds a new, meaningful layer to their identity.", "9": "A major turning point in their development.", "10": "A defining statement; the album that shows who the artist is."} },
       ],
     },
   ],
