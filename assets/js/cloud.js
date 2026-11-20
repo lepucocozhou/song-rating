@@ -41,12 +41,17 @@ const Cloud = (() => {
 
   function setStatus(s) { status = s; listeners.forEach(fn => fn()); renderChip(); }
 
+  // The table has no own column for artists: they travel in the albums column, marked with kind: 'artist'
+  const packAlbums = () => [...Albums.raw(), ...Artists.raw().map(r => ({ ...r, kind: 'artist' }))];
+  const isArtist = r => r.kind === 'artist';
+  const unpackArtists = list => list.filter(isArtist).map(({ kind, ...r }) => r);
+
   // Download, merge with this device, upload the result
   async function syncOnce() {
     setStatus('syncing');
     const { data: row, error } = await sb.from('user_data').select('songs, albums, config').eq('user_id', user.id).maybeSingle();
     if (error) throw error;
-    const local = { songs: Songs.raw(), albums: Albums.raw(), config: store.get('songRatingConfig', null) };
+    const local = { songs: Songs.raw(), albums: packAlbums(), config: store.get('songRatingConfig', null) };
     const merged = {
       songs: mergeRecords(local.songs, row?.songs || []),
       albums: mergeRecords(local.albums, row?.albums || []),
@@ -59,14 +64,16 @@ const Cloud = (() => {
     const configChanged = !same(merged.config, local.config);
     if (!same(merged.songs, local.songs) || !same(merged.albums, local.albums) || configChanged) {
       Songs.setRaw(merged.songs, true);
-      Albums.setRaw(merged.albums, true);
+      Albums.setRaw(merged.albums.filter(r => !isArtist(r)), true);
+      Artists.setRaw(unpackArtists(merged.albums), true);
       store.set('songRatingConfig', merged.config);
       refreshCounts();
       window.dispatchEvent(new CustomEvent('cloud-updated', { detail: { configChanged } }));
     }
     store.set('cloudPending', false);
     store.set('cloudLastSync', now());
-    store.set('cloudCounts', { songs: merged.songs.filter(r => !r.deleted).length, albums: merged.albums.filter(r => !r.deleted).length });
+    store.set('cloudCounts', { songs: merged.songs.filter(r => !r.deleted).length,
+      albums: merged.albums.filter(r => !r.deleted && !isArtist(r)).length, artists: merged.albums.filter(r => !r.deleted && isArtist(r)).length });
   }
 
   async function sync() {
@@ -138,7 +145,7 @@ const Cloud = (() => {
       if (store.get('cloudPending', false)) await sync();
       await sb.auth.signOut();
       if (clearDevice) {
-        ['songRatings', 'albumRatings', 'songRatingConfig', 'songRatingDraft', 'albumRatingDraft', 'cloudPending', 'cloudLastSync']
+        ['songRatings', 'albumRatings', 'artistRatings', 'songRatingConfig', 'songRatingDraft', 'albumRatingDraft', 'artistRatingDraft', 'cloudPending', 'cloudLastSync']
           .forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
       }
     },
@@ -147,6 +154,6 @@ const Cloud = (() => {
 
 // Overview pages: show data that arrived from another device
 window.addEventListener('cloud-updated', e => {
-  if (e.detail.configChanged && /(index|songs|alben)\.html|\/$/.test(location.pathname)) location.reload();
+  if (e.detail.configChanged && /(index|songs|alben|kuenstler)\.html|\/$/.test(location.pathname)) location.reload();
   else if (typeof list !== 'undefined' && list.render) list.render();
 });

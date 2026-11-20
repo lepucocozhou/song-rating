@@ -109,3 +109,8 @@ th.off,td.off{opacity:.3}
   .fp-label{min-width:0;flex:1 1 100%}
   .fp-row select{flex:1}
 }
+
+/* artists overview: round pictures, short explanation */
+.artists .row .cover,.artists td .cover{border-radius:50%}
+.artist-info{margin:-6px 0 16px;font-size:13.5px;color:var(--muted);max-width:780px}
+.artist-info a{color:var(--accent-strong);font-weight:600}

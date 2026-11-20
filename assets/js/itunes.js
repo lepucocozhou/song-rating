@@ -33,6 +33,27 @@ const Itunes = {
     return Itunes.rank(found, term).slice(0, limit);
   },
 
+  // Artists: Apple has no artist photos, so the cover of one of their albums stands in for it
+  async searchArtists(term, limit = 8) {
+    const [artists, albums] = await Promise.all([
+      Itunes.request('search', { term, entity: 'musicArtist', limit: 15 }),
+      Itunes.request('search', { term, entity: 'album', attribute: 'artistTerm', limit: 50 }),
+    ]);
+    const cover = new Map();
+    albums.forEach(a => { if (!cover.has(a.artistId)) cover.set(a.artistId, Itunes.artwork(a.artworkUrl100, 600)); });
+    const found = artists.map(r => ({ ...Itunes.toArtist(r), artwork: cover.get(r.artistId) || '' }));
+    // well-known artists (with albums in the results) first, otherwise Apple's order
+    return found.sort((a, b) => !!b.artwork - !!a.artwork).slice(0, limit);
+  },
+
+  async artistArtwork(artistId) {
+    const res = await Itunes.request('lookup', { id: artistId, entity: 'album', limit: 5 });
+    const al = res.find(r => r.wrapperType === 'collection' && r.artworkUrl100);
+    return al ? Itunes.artwork(al.artworkUrl100, 600) : '';
+  },
+
+  toArtist: r => ({ artist: r.artistName, artistId: r.artistId, genre: r.primaryGenreName || '', appleUrl: r.artistLinkUrl || '' }),
+
   async lookupAlbum(collectionId) {
     const [r] = await Itunes.request('lookup', { id: collectionId });
     return r ? Itunes.toAlbum(r) : null;
@@ -40,7 +61,7 @@ const Itunes = {
 
   rank(items, term) {
     const trending = Itunes.trendingArtists();
-    const rated = new Set([...Songs.all(), ...Albums.all()].flatMap(r => Itunes.artistNames(r.artist)));
+    const rated = new Set([...Songs.all(), ...Albums.all(), ...Artists.all()].flatMap(r => Itunes.artistNames(r.artist)));
     const words = term.toLowerCase();
     const knockoff = /karaoke|tribute|made famous|in the style of|originally performed|instrumental|lullaby|music box|8[- ]?bit|string quartet|piano (cover|version)|cover version|workout|kids/i;
     const hits = new Map();

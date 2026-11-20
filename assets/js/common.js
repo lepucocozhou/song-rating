@@ -56,6 +56,9 @@ function addNewAlbumCats(cfg) {
 const CONFIG = Config.load();
 const SONG_CATS = CONFIG.songs;
 const ALBUM_CATS = CONFIG.albums;
+const ARTIST_CATS = CONFIG.artists;
+// How much an artist's score counts in their songs' and albums' scores
+const ARTIST_RULES = { ...DEFAULT_CONFIG.artistRules, ...(CONFIG.artistRules || {}) };
 
 /* ---------- saved songs + albums ---------- */
 // Answers are stored as { questionId: value }. The first versions stored an array in question order.
@@ -95,6 +98,8 @@ function makeCollection(key) {
 const Songs = makeCollection('songRatings');
 // Album: { id, album, artist, artwork, appleUrl, year, collectionId, tracks[], excluded[], mode, answers, savedAt }
 const Albums = makeCollection('albumRatings');
+// Artist: { id, artist, artistId, genre, appleUrl, artwork, answers, savedAt }
+const Artists = makeCollection('artistRatings');
 
 /* ---------- scoring ---------- */
 // Values: undefined/null = open, number = rating, 'N/A' or 'skip' = left out.
@@ -120,9 +125,68 @@ function scores(answers, cats = SONG_CATS) {
 }
 
 function rankedSongs() {
-  const rows = Songs.all().map(s => ({ s, ...scores(s.answers) }));
+  const rows = Songs.all().map(s => ({ s, ...songScores(s.answers, s.artist) }));
   rank(rows);
   return rows;
+}
+
+/* ---------- artists ---------- */
+// "Taylor Swift & Ed Sheeran, Future" → ['taylorswift', 'edsheeran', 'future']
+const splitArtists = s => (s || '').split(/,|&| feat\.? | ft\.? | x | und | with /i).map(norm).filter(Boolean);
+
+// Rated artists by normalised name (cached until the saved artists change)
+let artistCache = null;
+function artistIndex() {
+  const sig = localStorage.getItem('artistRatings');
+  if (artistCache && artistCache.sig === sig) return artistCache.map;
+  const map = new Map();
+  Artists.all().forEach(a => {
+    const sc = scores(a.answers, ARTIST_CATS);
+    if (sc.final !== null) map.set(norm(a.artist), { a, final: sc.final });
+  });
+  artistCache = { sig, map };
+  return map;
+}
+// Artist score for a song or album: the rated artist; with several artists (feat., &) their average.
+// null when none of them is rated – then the artist doesn't change the score.
+function artistInfo(artistText) {
+  const idx = artistIndex();
+  const found = [...new Set(splitArtists(artistText))].map(n => idx.get(n)).filter(Boolean);
+  if (!found.length) return { score: null, artists: [] };
+  return { score: found.reduce((s, x) => s + x.final, 0) / found.length, artists: found.map(x => x.a) };
+}
+// Own score (questions) blended with the artist score
+const blendArtist = (own, artistScore, w) => own === null || artistScore === null ? own : (1 - w) * own + w * artistScore;
+
+// Song: own = score from the song questions, final = own + artist part
+function songScores(answers, artistText) {
+  const sc = scores(answers);
+  const ar = artistInfo(artistText);
+  const w = ARTIST_RULES.songWeight;
+  return { ...sc, own: sc.final, artistScore: ar.score, artistMatches: ar.artists,
+    artistWeight: ar.score === null || sc.final === null ? 0 : w, final: blendArtist(sc.final, ar.score, w) };
+}
+
+// Artists ranking, with their rated songs and albums
+function rankedArtists(songRows = rankedSongs(), albumRows = rankedAlbums()) {
+  const of = (list, get) => key => list.filter(r => splitArtists(get(r)).includes(key));
+  const songsOf = of(songRows, r => r.s.artist), albumsOf = of(albumRows, r => r.a.artist);
+  const avg = (list, k) => { const v = list.map(r => r[k]).filter(x => x !== null); return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+  const rows = Artists.all().map(a => {
+    const key = norm(a.artist), songs = songsOf(key), albums = albumsOf(key);
+    return { a, ...scores(a.answers, ARTIST_CATS), songs, albums, songAvg: avg(songs, 'own'), albumAvg: avg(albums, 'core') };
+  });
+  rank(rows);
+  return rows;
+}
+// Picture for an artist: their own (from Apple), else the cover of their best album or song
+function artistArtwork(a, songRows, albumRows) {
+  if (a.artwork) return a.artwork;
+  const key = norm(a.artist);
+  const al = (albumRows || []).find(r => r.a.artwork && splitArtists(r.a.artist).includes(key));
+  if (al) return al.a.artwork;
+  const so = (songRows || []).find(r => splitArtists(r.s.artist).includes(key));
+  return so ? songCover(so.s) : '';
 }
 
 function rank(rows) {
@@ -160,17 +224,21 @@ function albumScores(album, songRows = rankedSongs()) {
   }));
   const counted = tracks.filter(x => x.counted);
   const rated = counted.filter(x => x.row && x.row.final !== null);
-  const songAvg = rated.length ? rated.reduce((s, x) => s + x.row.final, 0) / rated.length : null;
+  const songAvg = rated.length ? rated.reduce((s, x) => s + (x.row.own ?? x.row.final), 0) / rated.length : null;
   const full = album.mode !== 'light';
   const w = full ? CONFIG.albumRules.songWeight : CONFIG.albumRules.songWeightLight;
-  const final = q.final !== null && songAvg !== null ? w * songAvg + (1 - w) * q.final : (q.final ?? songAvg);
+  const core = q.final !== null && songAvg !== null ? w * songAvg + (1 - w) * q.final : (q.final ?? songAvg);
+  const ar = artistInfo(album.artist);
+  const aw = ARTIST_RULES.albumWeight;
+  const final = blendArtist(core, ar.score, aw);
 
   const missing = [];
   if (q.answered < q.total) missing.push(`${q.total - q.answered} Album-Fragen offen`);
   if (full && !counted.length) missing.push('keine Trackliste – wähle das Album über die Suche oder nimm den Modus „Schnell“');
   else if (full && rated.length < counted.length) missing.push(`${counted.length - rated.length} Songs noch nicht bewertet`);
   return {
-    ...q, questionScore: q.final, songAvg, songWeight: songAvg === null ? 0 : w, final, tracks,
+    ...q, questionScore: q.final, songAvg, songWeight: songAvg === null ? 0 : w, core, final, tracks,
+    artistScore: ar.score, artistMatches: ar.artists, artistWeight: ar.score === null || core === null ? 0 : aw,
     countedCount: counted.length, ratedCount: rated.length, missing, complete: !missing.length && final !== null,
   };
 }
@@ -194,7 +262,7 @@ function scoreColor(v) {
 
 function coverHtml(rec, cls) {
   if (rec.artwork) return `<img class="cover ${cls}" src="${esc(rec.artwork)}" alt="" loading="lazy">`;
-  const letter = (rec.song || rec.album || '♪').trim()[0] || '♪';
+  const letter = (rec.song || rec.album || rec.artist || '♪').trim()[0] || '♪';
   return `<div class="cover cover-ph ${cls}"><span>${esc(letter)}</span></div>`;
 }
 
@@ -280,10 +348,11 @@ function download(name, data, type) {
     ['start', 'index.html', 'Start'],
     ['songs', 'songs.html', 'Songs<span class="count" id="countSongs"></span>'],
     ['albums', 'alben.html', 'Alben<span class="count" id="countAlbums"></span>'],
+    ['artists', 'kuenstler.html', 'Artists<span class="count" id="countArtists"></span>'],
     ['settings', 'einstellungen.html', 'Einstellungen'],
   ];
   // Rating pages belong to their overview tab
-  const active = { rate: 'songs', rateAlbum: 'albums' }[h.dataset.active] || h.dataset.active;
+  const active = { rate: 'songs', rateAlbum: 'albums', rateArtist: 'artists' }[h.dataset.active] || h.dataset.active;
   h.innerHTML = `<div class="head">
     <div class="head-left">
       <a class="logo" href="index.html" translate="no">Song<em>Rating</em></a>
@@ -295,6 +364,7 @@ function download(name, data, type) {
       <div class="plus-menu" id="plusMenu" hidden>
         <a href="bewerten.html">Song bewerten<small>${SONG_CATS.reduce((n, c) => n + c.qs.length, 0)} Fragen in ${SONG_CATS.length} Kategorien</small></a>
         <a href="album.html">Album bewerten<small>Songs + Album-Fragen</small></a>
+        <a href="artist.html">Artist bewerten<small>zählt ${Math.round(ARTIST_RULES.songWeight * 100)} % in Songs und ${Math.round(ARTIST_RULES.albumWeight * 100)} % in Alben</small></a>
       </div>
     </div>
   </div>`;
@@ -312,22 +382,25 @@ function renderTabbar(active) {
     songs: icon('<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>'),
     plus: icon('<path d="M12 5v14M5 12h14"/>'),
     albums: icon('<circle cx="12" cy="12" r="9.5"/><circle cx="12" cy="12" r="2.5"/>'),
+    artists: icon('<rect x="9" y="2.5" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21.5M8.5 21.5h7"/>'),
     settings: icon('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'),
   };
   // Icons only; the name is read out by screen readers and shown as tooltip
   const item = (key, href, label, isActive) =>
     `<a class="${isActive ? 'active' : ''}" href="${href}" aria-label="${label}" title="${label}">${ICONS[key]}</a>`;
-  const rating = active === 'rate' || active === 'rateAlbum';
+  const rating = active === 'rate' || active === 'rateAlbum' || active === 'rateArtist';
   document.body.insertAdjacentHTML('beforeend', `
     <div class="plus-sheet" id="plusSheet" hidden>
       <a href="bewerten.html">Song bewerten</a>
       <a href="album.html">Album bewerten</a>
+      <a href="artist.html">Artist bewerten</a>
     </div>
     <nav class="tabbar">
       ${item('start', 'index.html', 'Start', active === 'start')}
       ${item('songs', 'songs.html', 'Songs', active === 'songs')}
       <button class="plus ${rating ? 'active' : ''}" id="plusBtn" aria-label="Bewerten">${ICONS.plus}</button>
       ${item('albums', 'alben.html', 'Alben', active === 'albums')}
+      ${item('artists', 'kuenstler.html', 'Artists', active === 'artists' || active === 'rateArtist')}
       ${item('settings', 'einstellungen.html', 'Einstellungen', active === 'settings')}
     </nav>`);
   $('plusBtn').onclick = e => { e.stopPropagation(); $('plusSheet').hidden = !$('plusSheet').hidden; };
@@ -338,4 +411,5 @@ function refreshCounts() {
   if (!$('countSongs')) return;
   $('countSongs').textContent = Songs.all().length;
   $('countAlbums').textContent = Albums.all().length;
+  $('countArtists').textContent = Artists.all().length;
 }

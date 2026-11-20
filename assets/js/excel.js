@@ -18,16 +18,20 @@ async function exportExcel(toast) {
     if (!window.ExcelJS) await loadScript('assets/vendor/exceljs.min.js');
     const songs = rankedSongs().sort((a, b) => a.rank - b.rank);
     const albums = rankedAlbums().sort((a, b) => a.rank - b.rank);
+    const artists = rankedArtists(songs, albums).sort((a, b) => a.rank - b.rank);
     const wb = new ExcelJS.Workbook();
     wb.creator = 'Song Rating';
 
     say('Lade Cover …');
-    const covers = await loadCovers(wb, [...songs.map(r => songCover(r.s)), ...albums.map(r => r.a.artwork)]);
+    const artistPics = new Map(artists.map(r => [r.a.id, artistArtwork(r.a, songs, albums)]));
+    const covers = await loadCovers(wb, [...songs.map(r => songCover(r.s)), ...albums.map(r => r.a.artwork), ...artistPics.values()]);
 
     songsSheet(wb, songs, covers);
     if (albums.length) albumsSheet(wb, albums, covers);
+    if (artists.length) artistsSheet(wb, artists, covers, artistPics);
     answersSheet(wb, 'Song-Antworten', 'Alle Antworten – Songs', songs.map(r => [r.s.song, r.s.artist, r.s.answers]), SONG_CATS);
     if (albums.length) answersSheet(wb, 'Album-Antworten', 'Alle Antworten – Alben', albums.map(r => [r.a.album, r.a.artist, r.a.answers]), ALBUM_CATS);
+    if (artists.length) answersSheet(wb, 'Artist-Antworten', 'Alle Antworten – Artists', artists.map(r => [r.a.artist, r.a.genre || '', r.a.answers]), ARTIST_CATS);
     weightsSheet(wb);
 
     if (LANG === 'zh') translateWorkbook(wb);
@@ -154,6 +158,7 @@ function songsSheet(wb, rows, covers) {
     { label: 'Rang', width: 8 }, { label: 'Cover', width: 9 }, { label: 'Song', width: 32 }, { label: 'Artist', width: 22 },
     { label: 'Album', width: 26 }, { label: 'Final Score', width: 12, num: true },
     ...SONG_CATS.map(c => ({ label: c.name, width: 14, color: c.color, num: true })),
+    { label: 'Artist-Score', width: 12, color: '#f97316', num: true },
   ];
   titleRows(ws, '🎵 Song Rating – Songs', `Exportiert am ${today()} · ${rows.length} Songs · sortiert nach Final Score`, cols.length);
   headerRow(ws, 4, cols);
@@ -165,6 +170,7 @@ function songsSheet(wb, rows, covers) {
     row.getCell(5).value = r.s.album;
     scoreCellStyle(row.getCell(6), r.final);
     SONG_CATS.forEach((c, ci) => catCell(row.getCell(7 + ci), r.cats[ci], c.color));
+    catCell(row.getCell(7 + SONG_CATS.length), r.artistScore, '#f97316');
     styleDataRow(row, i, cols.length, 40);
     addCover(ws, covers, songCover(r.s), rowNo);
   });
@@ -180,6 +186,7 @@ function albumsSheet(wb, rows, covers) {
     { label: 'Songs Ø', width: 11, color: '#0ea5e9', num: true }, { label: 'Songs bewertet', width: 11, num: true },
     { label: 'Modus', width: 12 },
     ...ALBUM_CATS.map(c => ({ label: c.name, width: 14, color: c.color, num: true })),
+    { label: 'Artist-Score', width: 12, color: '#f97316', num: true },
   ];
   titleRows(ws, '💿 Song Rating – Alben', `Exportiert am ${today()} · ${rows.length} Alben · sortiert nach Album-Score`, cols.length);
   headerRow(ws, 4, cols);
@@ -196,8 +203,39 @@ function albumsSheet(wb, rows, covers) {
     row.getCell(8).alignment = { horizontal: 'center' };
     row.getCell(9).value = r.a.mode === 'light' ? '⚡ Schnell' : '🎯 Vollständig';
     ALBUM_CATS.forEach((c, ci) => catCell(row.getCell(10 + ci), r.cats[ci], c.color));
+    catCell(row.getCell(10 + ALBUM_CATS.length), r.artistScore, '#f97316');
     styleDataRow(row, i, cols.length, 40);
     addCover(ws, covers, r.a.artwork, rowNo);
+  });
+  ws.views = [{ state: 'frozen', xSplit: 3, ySplit: 4 }];
+  ws.autoFilter = { from: { row: 4, column: 1 }, to: { row: 4, column: cols.length } };
+}
+
+function artistsSheet(wb, rows, covers, pics) {
+  const ws = wb.addWorksheet('Artists', { properties: { tabColor: { argb: 'FFF97316' } } });
+  const cols = [
+    { label: 'Rang', width: 8 }, { label: 'Bild', width: 9 }, { label: 'Artist', width: 28 }, { label: 'Genre', width: 16 },
+    { label: 'Artist-Score', width: 12, num: true },
+    { label: 'Songs Ø', width: 11, color: '#0ea5e9', num: true }, { label: 'Alben Ø', width: 11, color: '#8b5cf6', num: true },
+    { label: 'Songs', width: 9, num: true }, { label: 'Alben', width: 9, num: true },
+    ...ARTIST_CATS.map(c => ({ label: c.name, width: 14, color: c.color, num: true })),
+  ];
+  titleRows(ws, '🎤 Song Rating – Artists', `Exportiert am ${today()} · ${rows.length} Artists · Songs Ø / Alben Ø ohne Artist-Anteil`, cols.length);
+  headerRow(ws, 4, cols);
+  rows.forEach((r, i) => {
+    const rowNo = 5 + i, row = ws.getRow(rowNo);
+    rankCell(row.getCell(1), r.rank);
+    linkCell(row.getCell(3), r.a.artist, r.a.appleUrl);
+    row.getCell(4).value = r.a.genre || '';
+    scoreCellStyle(row.getCell(5), r.final);
+    catCell(row.getCell(6), r.songAvg, '#0ea5e9');
+    catCell(row.getCell(7), r.albumAvg, '#8b5cf6');
+    row.getCell(8).value = r.songs.length;
+    row.getCell(9).value = r.albums.length;
+    [8, 9].forEach(c => { row.getCell(c).alignment = { horizontal: 'center' }; });
+    ARTIST_CATS.forEach((c, ci) => catCell(row.getCell(10 + ci), r.cats[ci], c.color));
+    styleDataRow(row, i, cols.length, 40);
+    addCover(ws, covers, pics.get(r.a.id), rowNo);
   });
   ws.views = [{ state: 'frozen', xSplit: 3, ySplit: 4 }];
   ws.autoFilter = { from: { row: 4, column: 1 }, to: { row: 4, column: cols.length } };
@@ -305,11 +343,14 @@ function weightsSheet(wb) {
   };
   section('🎵 Songs', SONG_CATS);
   section('💿 Alben (Album-Fragen)', ALBUM_CATS);
+  section('🎤 Artists', ARTIST_CATS);
   const rules = ws.getRow(r++);
   rules.getCell(1).value = 'Album-Score: Anteil der Songs';
   rules.getCell(1).font = { bold: true, size: 13, color: { argb: XL.title } };
   [['🎯 Modus „Vollständig“ (alle Songs bewertet)', CONFIG.albumRules.songWeight],
-   ['⚡ Modus „Schnell“ (nur bewertete Songs)', CONFIG.albumRules.songWeightLight]].forEach(([label, v]) => {
+   ['⚡ Modus „Schnell“ (nur bewertete Songs)', CONFIG.albumRules.songWeightLight],
+   ['🎤 Artist-Anteil im Song-Score', ARTIST_RULES.songWeight],
+   ['🎤 Artist-Anteil im Album-Score', ARTIST_RULES.albumWeight]].forEach(([label, v]) => {
     const row = ws.getRow(r++);
     row.getCell(1).value = label;
     row.getCell(1).alignment = { indent: 2 };

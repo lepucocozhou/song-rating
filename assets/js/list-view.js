@@ -175,3 +175,8 @@ function createListView(opts) {
 
 // Column/sort helpers for score values
 const scoreCell = v => v === null || v === undefined ? '–' : fmt(v);
+
+// Artist part of song and album scores (Settings → Artist-Fragen)
+const ARTIST_PART = { key: 'artist', name: 'Artist', color: '#f97316' };
+const artistColumn = { key: 'artistScore', label: 'Artist', title: 'Artist-Score – zählt anteilig in den Final Score', color: ARTIST_PART.color,
+  part: ARTIST_PART.key, num: true, cell: r => scoreCell(r.artistScore) };

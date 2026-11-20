@@ -1,8 +1,8 @@
-// Backup file: all songs, albums and settings in one JSON file. Restoring merges by id.
+// Backup file: all songs, albums, artists and settings in one JSON file. Restoring merges by id.
 
 function backupData() {
-  return { app: 'song-rating', version: 2, exportedAt: new Date().toISOString(),
-    songs: Songs.all(), albums: Albums.all(), config: store.get('songRatingConfig', null) };
+  return { app: 'song-rating', version: 3, exportedAt: new Date().toISOString(),
+    songs: Songs.all(), albums: Albums.all(), artists: Artists.all(), config: store.get('songRatingConfig', null) };
 }
 
 function mergeById(current, incoming) {
@@ -23,10 +23,12 @@ function initBackupButtons(saveBtn, loadBtn, fileInput, toast, onDone) {
       // Backups of the first version were just a list of songs
       const songs = Array.isArray(data) ? data : data.songs || [];
       const albums = Array.isArray(data) ? [] : data.albums || [];
-      if (!Array.isArray(songs) || !Array.isArray(albums)) throw new Error('unknown format');
+      const artists = Array.isArray(data) ? [] : data.artists || [];
+      if (!Array.isArray(songs) || !Array.isArray(albums) || !Array.isArray(artists)) throw new Error('unknown format');
       Songs.saveAll(mergeById(Songs.all(), songs));
       Albums.saveAll(mergeById(Albums.all(), albums));
-      let msg = `${songs.length} Songs und ${albums.length} Alben geladen.`;
+      Artists.saveAll(mergeById(Artists.all(), artists));
+      let msg = `${songs.length} Songs, ${albums.length} Alben und ${artists.length} Artists geladen.`;
       if (data.config && confirm('Das Backup enthält auch Einstellungen (Fragen, Gewichte). Diese ebenfalls übernehmen?')) {
         Config.save(data.config);
         msg += ' Einstellungen übernommen – die Seite lädt neu.';

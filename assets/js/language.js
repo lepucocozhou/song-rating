@@ -10,7 +10,7 @@ if (LANG === 'de') Object.assign(GENERIC_SCALE, GENERIC_SCALE_DE);
 if (LANG === 'zh') Object.assign(GENERIC_SCALE, GENERIC_SCALE_ZH);
 
 const ORIGINAL_TEXTS = {};
-[...DEFAULT_CONFIG.songs, ...DEFAULT_CONFIG.albums].forEach(c => {
+[...DEFAULT_CONFIG.songs, ...DEFAULT_CONFIG.albums, ...DEFAULT_CONFIG.artists].forEach(c => {
   ORIGINAL_TEXTS[c.id] = c;
   c.qs.forEach(q => { ORIGINAL_TEXTS[q.id] = q; });
 });
@@ -32,7 +32,7 @@ function translateItem(item, from, to) {
 
 function translateConfig(cfg, from, to) {
   if (from === to) return cfg;
-  ['songs', 'albums'].forEach(kind => (cfg[kind] || []).forEach(c => {
+  ['songs', 'albums', 'artists'].forEach(kind => (cfg[kind] || []).forEach(c => {
     translateItem(c, from, to);
     c.qs.forEach(q => translateItem(q, from, to));
   }));

@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#b5e6fd">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Song Rating">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="assets/icons/icon-192.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<title>Artist bewerten</title>
+<script src="assets/js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
+<link rel="stylesheet" href="assets/css/base.css?v=7">
+<link rel="stylesheet" href="assets/css/bewerten.css?v=9">
+<link rel="stylesheet" href="assets/css/artist.css?v=1">
+<link rel="stylesheet" href="assets/css/mobile.css?v=11">
+</head>
+<body>
+<header id="top" data-active="rateArtist"></header>
+
+<div class="rate">
+  <aside class="side">
+    <div class="side-head">
+      <div id="barCover"></div>
+      <div class="side-title"><div class="now" id="now"></div><div class="now-sub" id="nowSub"></div><div class="answered" id="answered"></div></div>
+    </div>
+    <div class="final">
+      <div class="final-badge" id="badge"><span id="final">–</span></div>
+      <div class="final-text"><div class="lbl">Artist-Score</div><div class="hint" id="finalHint"></div></div>
+    </div>
+    <div class="cats" id="catsMini"></div>
+    <div class="steps" id="steps"></div>
+  </aside>
+
+  <main class="rate-main">
+  <div id="pages">
+    <div class="page">
+      <div class="page-title"><h2>Welcher Artist?</h2></div>
+      <div class="search">
+        <input id="search" placeholder="Artist suchen …" type="search" enterkeyhint="search" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+        <div class="suggest" id="suggest" hidden></div>
+      </div>
+      <div id="picked"></div>
+      <div class="meta-title">Name – wird durch die Suche ausgefüllt, du kannst ihn aber auch selbst eintragen:</div>
+      <div class="meta one">
+        <label>Artist<input id="artist"></label>
+      </div>
+      <div id="mine"></div>
+    </div>
+    <!-- Artist-Fragen werden aus den Einstellungen erzeugt -->
+    <div class="page">
+      <div class="page-title"><h2 style="color:var(--accent-strong)">Ergebnis</h2></div>
+      <div class="result-card">
+        <div class="rc-text"><div class="rc-title" id="rcTitle"></div><div class="rc-hint" id="rcHint"></div></div>
+        <div class="rc-score" id="rcScore">–</div>
+      </div>
+      <div class="artist-note" id="influence"></div>
+      <div class="sum" id="sum"></div>
+      <div class="save-row">
+        <button class="primary" id="save">In Artists speichern</button>
+        <button id="newArtist">Neuer Artist</button>
+        <button class="danger" id="delete" hidden>Löschen</button>
+        <span class="toast" id="toast"></span>
+      </div>
+    </div>
+  </div>
+  </main>
+</div>
+
+<script src="assets/js/defaults.js?v=4"></script>
+<script src="assets/js/texts-de.js?v=4"></script>
+<script src="assets/js/texts-zh.js?v=4"></script>
+<script src="assets/js/language.js?v=3"></script>
+<script src="assets/js/i18n-zh.js?v=8"></script>
+<script src="assets/js/i18n.js?v=2"></script>
+<script src="assets/js/common.js?v=17"></script>
+<script src="assets/vendor/supabase.min.js"></script>
+<script src="assets/js/cloud-config.js"></script>
+<script src="assets/js/cloud.js?v=2"></script>
+<script src="assets/js/itunes.js?v=2"></script>
+<script src="assets/js/search-box.js?v=2"></script>
+<script src="assets/js/questionnaire.js?v=12"></script>
+<script src="assets/js/artist.js?v=1"></script>
+</body>
+</html>

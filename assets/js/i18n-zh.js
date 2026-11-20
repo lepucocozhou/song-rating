@@ -203,9 +203,40 @@ const ZH_WORDS = {
   'Kategorie / Frage': '类别 / 问题', 'Gewicht': '权重', 'Anteil am Score': '占总分比例', 'N/A erlaubt': '允许 N/A',
   '🎵 Songs': '🎵 歌曲', '💿 Alben (Album-Fragen)': '💿 专辑（专辑问题）', 'Album-Score: Anteil der Songs': '专辑得分：歌曲占比',
   '🎯 Modus „Vollständig“ (alle Songs bewertet)': '🎯 “完整”模式（所有歌曲已评分）', '⚡ Modus „Schnell“ (nur bewertete Songs)': '⚡ “快速”模式（只计已评分歌曲）',
+  // artists
+  'Artists': '艺人', 'Artist bewerten': '评价艺人', '+ Artist bewerten': '+ 评价艺人', 'Artist-Score': '艺人得分',
+  'Artists – Song Rating': '艺人 – Song Rating', 'Deine Artists': '我的艺人', 'Artist suchen …': '搜索艺人…',
+  'Welcher Artist?': '哪位艺人？', 'Neuer Artist': '新艺人', 'In Artists speichern': '保存到艺人', 'gespeicherter Artist': '已保存的艺人',
+  'Name – wird durch die Suche ausgefüllt, du kannst ihn aber auch selbst eintragen:': '名字——搜索后自动填写，也可以自己输入：',
+  'Du hast noch keine Songs oder Alben von diesem Artist bewertet.': '你还没有评价过这位艺人的歌曲或专辑。',
+  'Deine Bewertungen von diesem Artist (ohne Artist-Anteil) – als Hilfe für die Fragen zur Diskografie:': '你对这位艺人的评价（不含艺人部分）——回答作品序列问题时可以参考：',
+  'Noch keine Artists bewertet.': '还没有评价任何艺人。', '+ Ersten Artist bewerten': '+ 评价第一位艺人',
+  'Rangliste (Artist-Score)': '排名（艺人得分）', 'Ø deiner Songs': '你的歌曲平均分', 'Ø deiner Alben': '你的专辑平均分',
+  'Meiste Bewertungen': '评价最多', 'Genre': '曲风', 'Alle Genres': '所有曲风', 'Alben Ø': '专辑均分',
+  'Durchschnitt deiner Songs (nur Song-Fragen)': '你的歌曲平均分（仅歌曲问题）', 'Durchschnitt deiner Alben (ohne Artist-Anteil)': '你的专辑平均分（不含艺人部分）',
+  'noch keine Songs oder Alben bewertet': '还没有评价歌曲或专辑', 'Song-Fragen': '歌曲问题',
+  'Artist-Score – zählt anteilig in den Final Score': '艺人得分——按比例计入最终得分',
+  'Score aus den Song-Fragen (ohne Artist-Anteil)': '歌曲问题得分（不含艺人部分）',
+  'Artist-Fragen & Einfluss': '艺人问题与影响', 'Artist-Fragen': '艺人问题', 'Einfluss des Artists': '艺人的影响',
+  '🎵 In Songs': '🎵 在歌曲中', '💿 In Alben': '💿 在专辑中', 'Rest: die Song-Fragen.': '其余：歌曲问题。',
+  'Rest: Songs + Album-Fragen wie oben eingestellt.': '其余：按上面设置的歌曲 + 专辑问题。', '% Artist': '% 艺人',
+  'Artists bekommen einen eigenen Score. Er zählt anteilig in die Scores ihrer Songs und Alben – nur wenn der Artist bewertet ist. Bei mehreren Artists (feat., &) zählt der Durchschnitt der bewerteten.':
+    '艺人有自己的得分，并按比例计入其歌曲和专辑的得分——前提是该艺人已被评价。多位艺人合作（feat.、&）时，取已评价艺人的平均分。',
+  'Fragen & Einfluss ändern': '修改问题与影响', 'jetzt bewerten': '现在评价', 'Ändern': '修改', 'Bild': '图片',
+  '🎤 Artists': '🎤 艺人', 'Artist-Antworten': '艺人答案', 'Alle Antworten – Artists': '所有答案 – 艺人',
+  '🎤 Artist-Anteil im Song-Score': '🎤 歌曲得分中的艺人占比', '🎤 Artist-Anteil im Album-Score': '🎤 专辑得分中的艺人占比',
 };
 
+
 const ZH_PATTERNS = [
+  // artists
+  [/^„(.+)“ gespeichert ✓$/, (m, n) => `“${n}”已保存 ✓`],
+  [/^(\d+) Songs?, (\d+) Alben und (\d+) Artists geladen\.$/, (m, s, a, r) => `已载入 ${s} 首歌曲、${a} 张专辑和 ${r} 位艺人。`],
+  [/^„(.+)“ löschen\? Seine Songs und Alben zählen dann ohne Artist-Anteil\.$/, (m, n) => `删除“${n}”？他们的歌曲和专辑将不再计入艺人部分。`],
+  [/^„(.+)“ ist schon bewertet\. Die alte Bewertung durch diese ersetzen\?$/, (m, n) => `“${n}”已经评价过了。用这次的评价替换旧的吗？`],
+  [/^Song-Fragen · (\d+)%$/, (m, p) => `歌曲问题 · ${p}%`],
+  [/^Artist · (\d+)%$/, (m, p) => `艺人 · ${p}%`],
+  [/^(\d+) Kategorien · (\d+) Fragen$/, (m, c, q) => `${c} 个类别 · ${q} 个问题`],
   // start page
   [/^Du hast (\d+) Songs?(?: und (\d+) (?:Album|Alben))? bewertet\.$/, (m, s, a) => `你已评价 ${s} 首歌曲` + (a ? `和 ${a} 张专辑` : '') + '。'],
   [/^Ø ([\d.]+) · (\d+) Songs?$/, (m, v, n) => `均分 ${v} · ${n} 首歌曲`],

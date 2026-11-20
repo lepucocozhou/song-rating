@@ -1,0 +1,12 @@
+/* Artist rating page: round picture, your songs + albums of this artist */
+.meta.one{grid-template-columns:minmax(0,1fr);max-width:420px}
+.picked .artist-pic{border-radius:50%}
+#barCover .bar-cover{border-radius:50%}
+.mine{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px;max-width:780px}
+.mine-col{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px;display:grid;gap:2px;align-content:start}
+.mine-h{font-weight:600;font-size:14px;margin-bottom:4px}
+.mine-item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:5px 6px;border-radius:8px;text-decoration:none;font-size:14px}
+.mine-item:hover{background:var(--accent-soft)}
+.mine-item span:first-child{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mine-item .chip{min-width:44px;font-size:13px;padding:2px 6px;flex:none}
+.mine-empty{margin-top:14px}

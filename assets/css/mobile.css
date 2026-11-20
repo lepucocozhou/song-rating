@@ -21,11 +21,11 @@
   header[data-active=start] .cloud{background:rgba(255,255,255,.55);color:var(--hero-text)}
 
   /* bottom tab bar */
-  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);align-items:center;position:fixed;left:0;right:0;bottom:0;z-index:40;
+  .tabbar{display:grid;grid-template-columns:repeat(6,1fr);align-items:center;position:fixed;left:0;right:0;bottom:0;z-index:40;
     height:calc(var(--tabbar) + env(safe-area-inset-bottom));padding:0 6px env(safe-area-inset-bottom);
     background:color-mix(in srgb,var(--card) 95%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
     border-top:1px solid var(--line)}
-  .tabbar a{justify-self:center;display:grid;place-items:center;width:56px;height:44px;border-radius:12px;
+  .tabbar a{justify-self:center;display:grid;place-items:center;width:50px;height:44px;border-radius:12px;
     color:var(--muted);text-decoration:none;-webkit-tap-highlight-color:transparent}
   .tabbar a svg{width:24px;height:24px}
   .tabbar a.active{background:var(--accent-soft);color:var(--accent-strong)}

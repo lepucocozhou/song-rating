@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,600&display=swap">
 <link rel="stylesheet" href="assets/css/base.css?v=7">
 <link rel="stylesheet" href="assets/css/einstellungen.css?v=7">
-<link rel="stylesheet" href="assets/css/mobile.css?v=10">
+<link rel="stylesheet" href="assets/css/mobile.css?v=11">
 </head>
 <body>
 <header id="top" data-active="settings"></header>
@@ -35,6 +35,7 @@
       <div class="set-group">Fragebogen</div>
       <a href="#songs" data-sec="songs"><span class="ic">🎵</span><span>Song-Fragen<small id="navSongs"></small></span></a>
       <a href="#albums" data-sec="albums"><span class="ic">💿</span><span>Album-Fragen &amp; Regeln<small id="navAlbums"></small></span></a>
+      <a href="#artists" data-sec="artists"><span class="ic">🎤</span><span>Artist-Fragen &amp; Einfluss<small id="navArtists"></small></span></a>
       <div class="set-group">Daten</div>
       <a href="#data" data-sec="data"><span class="ic">💾</span><span>Daten &amp; Backup<small id="navData"></small></span></a>
     </aside>
@@ -123,6 +124,23 @@
         <div id="albumEditor"></div>
       </section>
 
+      <section id="artists">
+        <div class="sec-head"><h2>Artist-Fragen &amp; Einfluss</h2>
+          <p class="intro">Artists bekommen einen eigenen Score. Er zählt anteilig in die Scores ihrer Songs und Alben – nur wenn der Artist bewertet ist. Bei mehreren Artists (feat., &amp;) zählt der Durchschnitt der bewerteten.</p></div>
+        <h3 class="sub-h">Einfluss des Artists</h3>
+        <div class="rules">
+          <label class="rule"><b>🎵 In Songs</b><span>Rest: die Song-Fragen.</span>
+            <span class="rule-split"><span class="pct"><input type="number" min="0" max="100" step="1" data-artist-rule="songWeight"> % Artist</span>
+            <span class="split-bar"><i data-artist-split="songWeight"></i></span></span></label>
+          <label class="rule"><b>💿 In Alben</b><span>Rest: Songs + Album-Fragen wie oben eingestellt.</span>
+            <span class="rule-split"><span class="pct"><input type="number" min="0" max="100" step="1" data-artist-rule="albumWeight"> % Artist</span>
+            <span class="split-bar"><i data-artist-split="albumWeight"></i></span></span></label>
+        </div>
+        <h3 class="sub-h">Artist-Fragen</h3>
+        <div class="weight-bar" id="artistBar"></div>
+        <div id="artistEditor"></div>
+      </section>
+
       <section id="data">
         <div class="sec-head"><h2>Daten &amp; Backup</h2>
           <p class="intro">Auf diesem Gerät liegen <b id="stats"></b>. Wenn du angemeldet bist, ist alles zusätzlich in deinem Konto gesichert.</p></div>
@@ -159,7 +177,7 @@
         <h3 class="sub-h danger-h">Zurücksetzen</h3>
         <div class="set-card danger-card">
           <div class="set-row">
-            <div class="set-label"><b>Fragen &amp; Gewichte auf Standard</b><span>Alle Kategorien, Fragen, Gewichte und Album-Regeln. Deine Bewertungen bleiben erhalten.</span></div>
+            <div class="set-label"><b>Fragen &amp; Gewichte auf Standard</b><span>Alle Kategorien, Fragen, Gewichte, Album-Regeln und den Artist-Einfluss. Deine Bewertungen bleiben erhalten.</span></div>
             <button class="danger" id="resetCfg">Zurücksetzen</button>
           </div>
         </div>
@@ -176,20 +194,20 @@
   </div>
 </div>
 
-<script src="assets/js/defaults.js?v=3"></script>
-<script src="assets/js/texts-de.js?v=3"></script>
-<script src="assets/js/texts-zh.js?v=3"></script>
-<script src="assets/js/language.js?v=2"></script>
-<script src="assets/js/i18n-zh.js?v=7"></script>
+<script src="assets/js/defaults.js?v=4"></script>
+<script src="assets/js/texts-de.js?v=4"></script>
+<script src="assets/js/texts-zh.js?v=4"></script>
+<script src="assets/js/language.js?v=3"></script>
+<script src="assets/js/i18n-zh.js?v=8"></script>
 <script src="assets/js/i18n.js?v=2"></script>
-<script src="assets/js/common.js?v=16"></script>
+<script src="assets/js/common.js?v=17"></script>
 <script src="assets/vendor/supabase.min.js"></script>
 <script src="assets/js/cloud-config.js"></script>
-<script src="assets/js/cloud.js"></script>
-<script src="assets/js/excel.js?v=12"></script>
-<script src="assets/js/backup.js"></script>
-<script src="assets/js/account.js?v=11"></script>
+<script src="assets/js/cloud.js?v=2"></script>
+<script src="assets/js/excel.js?v=13"></script>
+<script src="assets/js/backup.js?v=2"></script>
+<script src="assets/js/account.js?v=12"></script>
 <script src="assets/js/theme-pick.js?v=7"></script>
-<script src="assets/js/einstellungen.js?v=7"></script>
+<script src="assets/js/einstellungen.js?v=8"></script>
 </body>
 </html>

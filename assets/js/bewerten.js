@@ -131,14 +131,18 @@ function alreadyRated() {
 let pickedKey = '';
 function update() {
   const sc = form.render();
+  // final score = song questions + artist part (if the artist is rated)
+  const ss = songScores(form.answers, artist.value);
+  const fin = ss.final;
   form.stepNote(0, song.value ? '✓' : '', !!song.value);
-  form.stepNote(form.lastStep, sc.complete ? fmt(sc.final) : '');
+  form.stepNote(form.lastStep, sc.complete ? fmt(fin) : '');
 
   $('answered').textContent = `${sc.answered}/${sc.total} beantwortet`;
-  $('final').textContent = sc.complete ? fmt(sc.final) : '–';
-  $('badge').style.setProperty('--p', sc.complete ? sc.final * 10 : 0);
+  $('final').textContent = sc.complete ? fmt(fin) : '–';
+  $('badge').style.setProperty('--p', sc.complete ? fin * 10 : 0);
   $('finalHint').textContent = sc.complete ? (editingId ? 'gespeicherter Song' : 'fertig! 🎉') :
-    sc.final !== null ? `vorläufig ${fmt(sc.final)} · noch ${sc.total - sc.answered} offen` : 'erscheint, wenn alle Fragen beantwortet sind';
+    fin !== null ? `vorläufig ${fmt(fin)} · noch ${sc.total - sc.answered} offen` : 'erscheint, wenn alle Fragen beantwortet sind';
+  renderArtistPart(ss, sc.complete);
 
   $('sum').innerHTML = SONG_CATS.map((cat, ci) => `
     <div class="sum-card" style="--c:${cat.color}"><div class="s">${esc(cat.name)} · ${Math.round(cat.w * 100)}%</div>
@@ -153,6 +157,26 @@ function update() {
   if (key !== pickedKey) { pickedKey = key; renderPicked(); }
   fillResultCard();
   saveDraft();
+}
+
+// Result page: how the artist counts in. Not rated yet → link to rate the artist.
+function renderArtistPart(ss, complete) {
+  const pct = v => Math.round(v * 100) + '%';
+  if (ss.artistScore === null) {
+    const first = (artist.value.split(/,|&| feat\.? | ft\.? | x /i)[0] || '').trim();
+    $('formula').innerHTML = first ? `<div class="artist-note">🎤 „${esc(first)}“ ist noch nicht als Artist bewertet – ` +
+      `<a href="artist.html?${new URLSearchParams({ name: first })}">jetzt bewerten</a>. Dann zählt der Artist-Score ${pct(ARTIST_RULES.songWeight)} in diesen Song.</div>` : '';
+    return;
+  }
+  const part = (label, v, extra, color) => `
+    <div class="part" style="--c:${color}"><div class="s">${label}</div><div class="n">${v === null ? '–' : fmt(v)}</div>${extra ? `<div class="s">${extra}</div>` : ''}</div>`;
+  $('formula').innerHTML = `<div class="formula">
+    ${part(`Song-Fragen · ${pct(1 - ss.artistWeight)}`, ss.own, '', 'var(--accent-strong)')}
+    <div class="op">+</div>
+    ${part(`Artist · ${pct(ss.artistWeight || ARTIST_RULES.songWeight)}`, ss.artistScore, ss.artistMatches.map(a => `<a href="artist.html?id=${encodeURIComponent(a.id)}">${esc(a.artist)}</a>`).join(' & '), '#f97316')}
+    <div class="op">=</div>
+    ${part('Final Score', complete ? ss.final : null, complete ? '' : 'noch nicht fertig', 'var(--text)')}
+  </div>`;
 }
 
 /* ---------- load / save ---------- */

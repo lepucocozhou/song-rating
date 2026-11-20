@@ -171,6 +171,49 @@ const DEFAULT_CONFIG = {
     },
   ],
 
+  // Artist questions: an artist's score counts into the scores of their songs and albums (artistRules).
+  artists: [
+    {
+      id: 'ar1', name: "Artistry & Skills", w: 0.35, color: '#f59e0b',
+      qs: [
+        { id: 'arq1', q: "How strong are the artist's vocal or performance skills?", w: 0.5, na: false, think: "Think: voice, technique, live performance, stage presence. Judge them by their genre.",
+          scale: {"1": "No skill noticeable; it doesn't work even in the studio.", "2": "Very weak; it only works with heavy help.", "3": "Clearly limited; often falls short.", "4": "Okay, but nothing special.", "5": "Solid; does the job well.", "6": "Good, with a few standout moments.", "7": "Clearly skilled; convincing on record and live.", "8": "Very strong; regularly impressive.", "9": "Outstanding; among the best in their genre.", "10": "Exceptional; a once-in-a-generation talent."} },
+        { id: 'arq2', q: "How good is the artist as a songwriter and creator?", w: 0.5, na: false, think: "Think: do they write or shape their own music, and how good is it? If they don't write, judge their creative choices (songs, producers, direction).",
+          scale: {"1": "No creative input, or only bad choices.", "2": "Very weak; generic and interchangeable.", "3": "Weak; few own ideas.", "4": "Some own ideas, but mostly standard.", "5": "Solid; a recognisable own touch.", "6": "Good; several really well-made songs.", "7": "Clearly creative; makes strong choices.", "8": "Very good; a consistently high level.", "9": "Outstanding; their writing is a highlight.", "10": "A master of their craft; writes songs others measure themselves against."} },
+      ],
+    },
+    {
+      id: 'ar2', name: "Discography", w: 0.3, color: '#16a34a',
+      qs: [
+        { id: 'arq3', q: "How consistent is the quality across their discography?", w: 0.5, na: false, think: "Think: across all their albums and singles, how often do they deliver? (If you've rated their songs and albums, look at those scores.)",
+          scale: {"1": "Almost everything is weak.", "2": "Mostly weak, with a rare good release.", "3": "Many misses; good work is the exception.", "4": "Very uneven; as many misses as hits.", "5": "Mixed, but more good than bad.", "6": "Mostly good, with a few weaker releases.", "7": "Reliably good; hardly any real misses.", "8": "Very consistent; almost everything is strong.", "9": "Excellent throughout; no weak era.", "10": "Flawless; every release is a highlight."} },
+        { id: 'arq4', q: "How strong are their best works?", w: 0.5, na: false, think: "Think: their peak – the best songs and albums they have ever made.",
+          scale: {"1": "Even their best is weak.", "2": "Their best is just okay.", "3": "A few decent songs, nothing more.", "4": "Some good songs, but no real highlight.", "5": "Solid highlights, but nothing that stays.", "6": "A few really good songs.", "7": "Clearly strong highlights; songs I keep coming back to.", "8": "Some excellent songs or a great album.", "9": "Outstanding works that stand above their genre.", "10": "All-time classics; their best is among the best ever."} },
+      ],
+    },
+    {
+      id: 'ar3', name: "Identity & Impact", w: 0.15, color: '#6366f1',
+      qs: [
+        { id: 'arq5', q: "How distinctive and recognizable is the artist's identity?", w: 0.5, na: false, think: "Think: would I know it's THEM from a few seconds of music, a photo or a lyric?",
+          scale: {"1": "Anonymous; could be anyone.", "2": "Very generic; blends into the trends.", "3": "Hard to recognise; few personal traits.", "4": "Some traits, but mostly interchangeable.", "5": "Recognisable if I know them well.", "6": "A clear style with some unique traits.", "7": "A recognisable identity.", "8": "Very distinctive; I'd recognise them in seconds.", "9": "Instantly unmistakable.", "10": "Iconic; a one-of-a-kind identity."} },
+        { id: 'arq6', q: "How much has the artist shaped music or culture?", w: 0.5, na: false, think: "Think: influence on other artists, their genre, trends, fans and culture – not just sales.",
+          scale: {"1": "No influence at all.", "2": "Barely noticed outside their fans.", "3": "A small niche impact.", "4": "Known, but left little trace.", "5": "Some influence within their genre.", "6": "A clear mark on their genre or scene.", "7": "Influential; other artists clearly follow them.", "8": "Shaped a whole era or genre.", "9": "A major influence on music as a whole.", "10": "Legendary; changed music or culture for good."} },
+      ],
+    },
+    {
+      id: 'ar4', name: "Personal", w: 0.2, color: '#ec4899',
+      qs: [
+        { id: 'arq7', q: "How much do I personally connect with the artist?", w: 0.5, na: false, think: "Think: do I like them as a person and artist, their values, how they present themselves? Do I follow what they do?",
+          scale: {"1": "I actively dislike them.", "2": "They leave me cold or put me off.", "3": "Hardly any connection.", "4": "I like some of their music, but not them as an artist.", "5": "Neutral; I like them okay.", "6": "I like them; I'd listen to new releases.", "7": "A real connection; I follow what they do.", "8": "One of my favourite artists.", "9": "Very close; they mean a lot to me.", "10": "My absolute favourite; a deep personal connection."} },
+        { id: 'arq8', q: "How much has the artist shaped me?", w: 0.5, na: false, think: "Think: has this artist changed my taste, my outlook or accompanied important phases of my life? (Not just: do I like them?)",
+          scale: {"1": "No influence on me at all.", "2": "Heard them, quickly forgot them.", "3": "A short phase, without a trace.", "4": "Reminds me of a time, but nothing more.", "5": "Stays with me a little; some songs mean something.", "6": "Noticeably part of a phase of my life.", "7": "Accompanied an important chapter of my life.", "8": "Clearly shaped my music taste or my feelings.", "9": "One of the artists that shaped me the most.", "10": "Changed me fundamentally; part of who I am."} },
+      ],
+    },
+  ],
+
+  // How much an artist's score counts in the scores of their songs and albums (0 = not at all)
+  artistRules: { songWeight: 0.1, albumWeight: 0.1 },
+
   // Wie stark die Song-Bewertungen in den Album-Score eingehen
   albumRules: {
     songWeight: 0.5,       // Modus "Vollständig": alle Songs müssen bewertet sein

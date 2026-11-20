@@ -11,7 +11,7 @@ function initSearchBox(input, list, opts) {
     if (!results.length) return show('<div class="sug-msg">Nichts gefunden – du kannst die Details unten auch selbst eintragen.</div>');
     show((heading ? `<div class="sug-head">${heading}</div>` : '') + results.map((r, i) => `
       <div class="sug ${i === hl ? 'hl' : ''}" data-i="${i}">
-        <img src="${esc(Itunes.artwork(r.artwork, 100))}" alt="">
+        ${r.artwork ? `<img src="${esc(Itunes.artwork(r.artwork, 100))}" alt="">` : `<span class="sug-ph">${esc((opts.title(r) || '?').trim()[0] || '?')}</span>`}
         <div><div class="t">${esc(opts.title(r))}</div><div class="sub">${esc(opts.sub(r))}</div></div>
       </div>`).join(''));
   }

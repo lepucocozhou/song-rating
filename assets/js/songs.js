@@ -1,5 +1,7 @@
 // Songs overview page.
 
+const songCatWeight = SONG_CATS.reduce((s, c) => s + c.w, 0) || 1;
+
 const list = createListView({
   viewKey: 'songRatingView',
   titleLabel: 'Song',
@@ -7,15 +9,17 @@ const list = createListView({
   sorts: [
     { key: 'final', label: 'Rangliste (Final Score)', dir: -1 },
     ...SONG_CATS.map((c, i) => ({ key: 'c' + i, label: c.name, dir: -1 })),
+    { key: 'artistScore', label: 'Artist-Score', dir: -1 },
     { key: 'title', label: 'Song A–Z', dir: 1 },
     { key: 'artist', label: 'Artist A–Z', dir: 1 },
     { key: 'savedAt', label: 'Zuletzt bewertet', dir: -1 },
   ],
-  parts: SONG_CATS.map(c => ({ key: c.id, name: c.name, color: c.color })),
+  parts: [...SONG_CATS.map(c => ({ key: c.id, name: c.name, color: c.color })), ARTIST_PART],
   filters: [{ key: 'artist', label: 'Artist', all: 'Alle Artists' }, { key: 'album', label: 'Album', all: 'Alle Alben' }],
   columns: [
     { key: 'album', label: 'Album', cell: r => esc(r.rec.album) },
     ...SONG_CATS.map((c, i) => ({ key: 'c' + i, label: c.name.split(' ')[0], title: c.name, color: c.color, part: c.id, num: true, cell: r => scoreCell(r.cats[i]) })),
+    artistColumn,
   ],
   getRows: () => rankedSongs().map(r => ({
     id: r.s.id,
@@ -24,12 +28,15 @@ const list = createListView({
     title: r.s.song,
     sub: [r.s.artist, r.s.album].filter(Boolean).join(' · '),
     final: r.final, rank: r.rank, cats: r.cats,
-    bars: SONG_CATS.map((c, i) => ({ key: c.id, name: c.name, color: c.color, v: r.cats[i], w: c.w })),
+    // weights as in the final score: song categories share what the artist part leaves over
+    bars: [...SONG_CATS.map((c, i) => ({ key: c.id, name: c.name, color: c.color, v: r.cats[i], w: (1 - r.artistWeight) * c.w / songCatWeight })),
+      { ...ARTIST_PART, v: r.artistScore, w: r.artistWeight }],
+    artistScore: r.artistScore,
     filter: { artist: r.s.artist, album: r.s.album },
     text: [r.s.song, r.s.artist, r.s.album].join(' '),
     sort: {
       final: r.final, title: (r.s.song || '').toLowerCase(), artist: (r.s.artist || '').toLowerCase(),
-      album: (r.s.album || '').toLowerCase(), savedAt: r.s.savedAt || '',
+      album: (r.s.album || '').toLowerCase(), savedAt: r.s.savedAt || '', artistScore: r.artistScore,
       ...Object.fromEntries(r.cats.map((v, i) => ['c' + i, v])),
     },
   })),

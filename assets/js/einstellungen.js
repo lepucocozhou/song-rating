@@ -30,7 +30,7 @@ const openCats = new Set();
 function renderBar(kind) {
   const cats = cfg[kind];
   const total = cats.reduce((s, c) => s + (+c.w || 0), 0) || 1;
-  $(kind === 'songs' ? 'songBar' : 'albumBar').innerHTML = `
+  $({ songs: 'songBar', albums: 'albumBar', artists: 'artistBar' }[kind]).innerHTML = `
     <div class="wb-track">${cats.map(c => `<i style="flex:${(+c.w || 0) / total};background:${esc(c.color)}" title="${esc(c.name)}"></i>`).join('')}</div>
     <div class="wb-legend">${cats.map(c => `<span><i style="background:${esc(c.color)}"></i>${esc(c.name)} <b>${Math.round((+c.w || 0) / total * 100)} %</b></span>`).join('')}</div>`;
 }
@@ -39,14 +39,15 @@ function renderNavInfo() {
   const q = kind => cfg[kind].reduce((n, c) => n + c.qs.length, 0);
   $('navSongs').textContent = `${cfg.songs.length} Kategorien · ${q('songs')} Fragen`;
   $('navAlbums').textContent = `${cfg.albums.length} Kategorien · ${q('albums')} Fragen`;
-  $('navData').textContent = `${Songs.all().length} Songs · ${Albums.all().length} Alben`;
+  $('navArtists').textContent = `${cfg.artists.length} Kategorien · ${q('artists')} Fragen`;
+  $('navData').textContent = `${Songs.all().length} Songs · ${Albums.all().length} Alben · ${Artists.all().length} Artists`;
 }
 
 function renderEditor(kind) {
   const cats = cfg[kind];
   renderBar(kind);
   renderNavInfo();
-  $(kind === 'songs' ? 'songEditor' : 'albumEditor').innerHTML = cats.map((c, ci) => `
+  $({ songs: 'songEditor', albums: 'albumEditor', artists: 'artistEditor' }[kind]).innerHTML = cats.map((c, ci) => `
     <div class="cat-edit ${openCats.has(c.id) ? 'open' : ''}" style="--c:${esc(c.color)}" data-kind="${kind}" data-c="${ci}">
       <div class="cat-head">
         <input type="color" value="${esc(c.color)}" data-f="color" title="Farbe">
@@ -176,6 +177,20 @@ document.querySelectorAll('[data-rule]').forEach(inp => {
   });
 });
 
+/* ---------- artist influence ---------- */
+cfg.artistRules = { ...DEFAULT_CONFIG.artistRules, ...(cfg.artistRules || {}) };
+document.querySelectorAll('[data-artist-rule]').forEach(inp => {
+  const key = inp.dataset.artistRule;
+  const bar = document.querySelector(`[data-artist-split="${key}"]`);
+  inp.value = pct(cfg.artistRules[key]);
+  bar.style.width = pct(cfg.artistRules[key]) + '%';
+  inp.addEventListener('input', () => {
+    cfg.artistRules[key] = Math.min(100, Math.max(0, parseFloat(inp.value) || 0)) / 100;
+    bar.style.width = pct(cfg.artistRules[key]) + '%';
+    markDirty();
+  });
+});
+
 /* ---------- save / discard / reset ---------- */
 $('saveCfg').onclick = () => {
   Config.save(cfg);
@@ -203,9 +218,9 @@ function flash(msg) {
 
 /* ---------- data ---------- */
 function renderStats() {
-  $('stats').textContent = `${Songs.all().length} Songs und ${Albums.all().length} Alben`;
+  $('stats').textContent = `${Songs.all().length} Songs, ${Albums.all().length} Alben und ${Artists.all().length} Artists`;
   renderNavInfo();
-  const drafts = [store.get('songRatingDraft', null) && 'ein Song', store.get('albumRatingDraft', null) && 'ein Album'].filter(Boolean);
+  const drafts = [store.get('songRatingDraft', null) && 'ein Song', store.get('albumRatingDraft', null) && 'ein Album', store.get('artistRatingDraft', null) && 'ein Artist'].filter(Boolean);
   $('draftInfo').textContent = drafts.length
     ? `Gerade angefangen: ${drafts.join(' und ')}. Verwerfen, um beim nächsten Mal leer zu starten.`
     : 'Keine angefangenen Bewertungen auf diesem Gerät.';
@@ -215,6 +230,7 @@ $('clearDrafts').onclick = () => {
   if (!confirm('Angefangene, noch nicht gespeicherte Bewertungen verwerfen?')) return;
   store.set('songRatingDraft', null);
   store.set('albumRatingDraft', null);
+  store.set('artistRatingDraft', null);
   renderStats();
   flash('Angefangene Bewertungen verworfen');
 };
@@ -236,6 +252,7 @@ window.addEventListener('cloud-updated', e => {
 
 renderEditor('songs');
 renderEditor('albums');
+renderEditor('artists');
 renderStats();
 
 /* ---------- sections: one at a time, chosen in the side menu (or via #hash) ---------- */

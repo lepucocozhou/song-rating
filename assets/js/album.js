@@ -118,7 +118,7 @@ function renderTracks(as) {
         <span class="no">${esc(t.trackNumber)}</span>
         <span class="tt">${esc(t.song)}${norm(t.artist) !== norm(artistIn.value) ? `<small>${esc(t.artist)}</small>` : ''}</span>
         ${row
-          ? `<span class="chip" style="background:${scoreColor(row.final)}">${row.final === null ? '–' : fmt(row.final)}</span>
+          ? `<span class="chip" style="background:${scoreColor(row.own)}" title="Score aus den Song-Fragen (ohne Artist-Anteil)">${row.own === null ? '–' : fmt(row.own)}</span>
              <a class="small" href="${esc(trackMatches(t, row.s, true) ? 'bewerten.html?' + new URLSearchParams({ id: row.s.id, back: backLink() }) : rateHref(t))}">ändern</a>`
           : `<a class="btn small" href="${esc(rateHref(t))}">Bewerten →</a>`}
       </div>`).join('')}
@@ -145,7 +145,7 @@ function update() {
   form.render();
   const rec = currentRecord();
   const as = albumScores(rec);
-  const pct = v => Math.round(v * 100) + '%';
+  const pct = v => +(v * 100).toFixed(1) + '%';
 
   form.stepNote(0, albumIn.value ? '✓' : '', !!albumIn.value);
   form.stepNote(1, as.countedCount ? `${as.ratedCount}/${as.countedCount}` : '', as.countedCount && as.ratedCount === as.countedCount);
@@ -153,7 +153,7 @@ function update() {
 
   $('songAvg').textContent = $('songsAvgTitle').textContent = as.songAvg === null ? '–' : fmt(as.songAvg);
   $('songAvgBar').style.width = as.songAvg === null ? '0' : as.songAvg * 10 + '%';
-  $('songPartLabel').textContent = `Songs Ø · ${pct(as.songWeight)}`;
+  $('songPartLabel').textContent = `Songs Ø · ${pct((1 - as.artistWeight) * as.songWeight)}`;
   $('answered').textContent = `${as.answered}/${as.total} Album-Fragen` + (as.countedCount ? ` · ${as.ratedCount}/${as.countedCount} Songs` : '');
   $('final').textContent = as.complete ? fmt(as.final) : '–';
   $('badge').style.setProperty('--p', as.complete ? as.final * 10 : 0);
@@ -162,13 +162,20 @@ function update() {
 
   const part = (label, v, extra, color) => `
     <div class="part" style="--c:${color}"><div class="s">${label}</div><div class="n">${v === null ? '–' : fmt(v)}</div>${extra ? `<div class="s">${extra}</div>` : ''}</div>`;
+  // with a rated artist, songs and album questions share what the artist part leaves over
+  const rest = 1 - as.artistWeight;
+  const firstArtist = (artistIn.value.split(/,|&| feat\.? | ft\.? | x /i)[0] || '').trim();
   $('formula').innerHTML = `<div class="formula">
-    ${part(`Songs Ø · ${pct(as.songWeight)}`, as.songAvg, as.countedCount ? `${as.ratedCount}/${as.countedCount} Songs` : 'keine Songs', SONG_COLOR)}
+    ${part(`Songs Ø · ${pct(rest * as.songWeight)}`, as.songAvg, as.countedCount ? `${as.ratedCount}/${as.countedCount} Songs` : 'keine Songs', SONG_COLOR)}
     <div class="op">+</div>
-    ${part(`Album-Fragen · ${pct(1 - as.songWeight)}`, as.questionScore, '', '#8b5cf6')}
+    ${part(`Album-Fragen · ${pct(rest * (1 - as.songWeight))}`, as.questionScore, '', '#8b5cf6')}
+    ${as.artistScore !== null ? `<div class="op">+</div>
+    ${part(`Artist · ${pct(as.artistWeight || ARTIST_RULES.albumWeight)}`, as.artistScore, as.artistMatches.map(a => `<a href="artist.html?id=${encodeURIComponent(a.id)}">${esc(a.artist)}</a>`).join(' & '), '#f97316')}` : ''}
     <div class="op">=</div>
     ${part('Album-Score', as.complete ? as.final : null, as.complete ? '' : 'noch nicht fertig', 'var(--accent-strong)')}
   </div>`;
+  if (as.artistScore === null && firstArtist) $('formula').insertAdjacentHTML('beforeend', `<div class="artist-note">🎤 „${esc(firstArtist)}“ ist noch nicht als Artist bewertet – ` +
+    `<a href="artist.html?${new URLSearchParams({ name: firstArtist })}">jetzt bewerten</a>. Dann zählt der Artist-Score ${pct(ARTIST_RULES.albumWeight)} in dieses Album.</div>`);
   $('sum').innerHTML = ALBUM_CATS.map((cat, ci) => `
     <div class="sum-card" style="--c:${cat.color}"><div class="s">${esc(cat.name)} · ${Math.round(cat.w * 100)}% der Album-Fragen</div>
     <div class="n">${as.cats[ci] === null ? '–' : fmt(as.cats[ci])}</div></div>`).join('');
