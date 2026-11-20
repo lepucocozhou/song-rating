@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#cdeed7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernorte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Lernort bewerten</title>
+<script src="js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/bewerten.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+<header id="top" data-active="rate"></header>
+
+<div class="rate">
+  <aside class="side">
+    <div class="side-head">
+      <span id="sideImg"></span>
+      <div class="side-title"><div class="now" id="now">Neuer Lernort</div><div class="answered" id="answered"></div></div>
+    </div>
+    <div class="final">
+      <div class="final-badge" id="badge"><span id="final">–</span></div>
+      <div class="final-text"><div class="lbl">Endnote</div><div class="hint" id="finalHint">Noch keine Punkte</div></div>
+    </div>
+    <div class="steps" id="steps"></div>
+  </aside>
+
+  <main class="rate-main">
+    <div id="pages">
+      <div class="page" style="--c:var(--accent-strong)">
+        <div class="page-title"><div><div class="kicker">Schritt 1</div><h2>Welcher Lernort?</h2></div></div>
+        <div class="meta">
+          <label>Name des Lernorts<input id="name" placeholder="z. B. Unibibliothek, 2. Stock" autocomplete="off"></label>
+          <label>Wo? <span class="opt-l">(optional)</span><input id="where" placeholder="Stadt, Adresse oder Uni" autocomplete="off"></label>
+          <label class="full">Notiz <span class="opt-l">(optional)</span><textarea id="note" rows="3" placeholder="Beste Uhrzeit, Lieblingsplatz, was dir aufgefallen ist …"></textarea></label>
+        </div>
+        <div class="tip"><b>Tipp:</b> Bewerte erst, wenn du mindestens 2 Stunden dort gelernt hast. Warst du öfter da, denk an einen durchschnittlichen Besuch.</div>
+      </div>
+      <!-- Kategorie-Seiten werden von bewerten.js eingefügt -->
+      <div class="page" style="--c:var(--accent-strong)">
+        <div class="page-title"><div><div class="kicker">Ergebnis</div><h2>Deine Note</h2></div></div>
+        <div class="result-card">
+          <div class="rc-text"><div class="rc-title" id="rcTitle"></div><div class="rc-hint" id="rcHint"></div></div>
+          <div class="rc-score" id="rcScore">–</div>
+        </div>
+        <div class="ko-box" id="koBox" hidden></div>
+        <div class="sum" id="sum"></div>
+        <div class="save-row">
+          <button class="primary" id="save">In Rangliste speichern</button>
+          <button id="newPlace">Neuer Lernort</button>
+          <button class="danger" id="delete" hidden>Löschen</button>
+          <span class="toast" id="toast"></span>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="js/fragen.js"></script>
+<script src="js/common.js"></script>
+<script src="js/bewerten.js"></script>
+</body>
+</html>

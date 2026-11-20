@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#cdeed7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernorte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Rangliste – Lernorte</title>
+<script src="js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/orte.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+<header id="top" data-active="orte"></header>
+
+<main class="wrap">
+  <div class="page-head">
+    <div><h1>Rangliste</h1><p id="sub"></p></div>
+    <a class="btn primary" href="bewerten.html">+ Lernort bewerten</a>
+  </div>
+  <div class="tools">
+    <input id="q" type="search" placeholder="Lernort suchen …" autocomplete="off">
+    <select id="sort">
+      <option value="note">Nach Note</option>
+      <option value="name">Nach Name (A–Z)</option>
+      <option value="new">Zuletzt bewertet</option>
+    </select>
+    <div class="seg" id="view">
+      <button data-v="list">Liste</button>
+      <button data-v="table">Tabelle</button>
+    </div>
+  </div>
+  <div id="out"></div>
+</main>
+
+<script src="js/fragen.js"></script>
+<script src="js/common.js"></script>
+<script src="js/orte.js"></script>
+</body>
+</html>

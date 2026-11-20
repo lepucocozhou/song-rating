@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#cdeed7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernorte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>So geht’s – Lernorte</title>
+<script src="js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/text.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+<header id="top" data-active="anleitung"></header>
+
+<main class="wrap narrow">
+  <div class="page-head"><div><h1>So geht’s</h1><p>Lernorte fair von 1,00 bis 10,00 bewerten und vergleichen.</p></div></div>
+
+  <section class="card">
+    <h2>Punkteskala</h2>
+    <p>Für jede der 20 Fragen gibst du 0 bis 4 Punkte. Zu jeder Punktzahl steht bei der Frage eine Beschreibung – nimm die, die am besten passt.</p>
+    <div class="scale">
+      <div><b>0</b>sehr schlecht / stört massiv</div>
+      <div><b>1</b>schlecht</div>
+      <div><b>2</b>okay, geht so</div>
+      <div><b>3</b>gut</div>
+      <div><b>4</b>sehr gut / perfekt</div>
+      <div class="na-s"><b>–</b>trifft nicht zu – zählt nicht mit, der Ort wird dadurch nicht bestraft</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Kategorien &amp; Gewichte</h2>
+    <div id="cats" class="cat-list"></div>
+    <p class="muted">Die Gewichte kannst du in den <a href="einstellungen.html">Einstellungen</a> ändern. Sie gelten immer für alle Orte gleich, damit der Vergleich fair bleibt.</p>
+  </section>
+
+  <section class="card">
+    <h2>So wird gerechnet</h2>
+    <ol class="calc">
+      <li><b>Kategorie-Wert</b> K = Durchschnitt der beantworteten Fragen ÷ 4. Ergebnis zwischen 0 % und 100 %.</li>
+      <li><b>Gesamtwert</b> G = Summe aus (Gewicht × K) ÷ Summe der Gewichte, die wirklich verwendet wurden. Fällt eine ganze Kategorie weg, verteilen sich die Gewichte automatisch auf die anderen.</li>
+      <li><b>Note</b> = 1 + 9 × G, gerundet auf 2 Nachkommastellen. Alles 0 Punkte ergibt 1,00, alles 4 Punkte ergibt 10,00.</li>
+    </ol>
+    <div class="ko-note"><b>K.-o.-Regel:</b> Bekommt „Lautstärke“ oder „Platz bekommen“ 0 Punkte, ist die Note höchstens 5,00. Ein Ort, an dem es zu laut ist oder du nie einen Platz findest, ist kein guter Lernort, egal wie schön er sonst ist.</div>
+  </section>
+
+  <section class="card">
+    <h2>Bewertungsstufen</h2>
+    <div class="levels">
+      <div><span class="chip top">ab 8,50</span> Top-Lernort</div>
+      <div><span class="chip good">7,00 – 8,49</span> Gut</div>
+      <div><span class="chip ok">5,00 – 6,99</span> Okay</div>
+      <div><span class="chip bad">unter 5,00</span> Eher meiden</div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Tipps für eine faire Bewertung</h2>
+    <dl class="tips">
+      <dt>Lange genug testen</dt><dd>Bewerte erst, wenn du mindestens 2 Stunden dort gelernt hast.</dd>
+      <dt>Mehrere Besuche</dt><dd>Warst du öfter dort, nimm den Durchschnitt. Dienstag 10 Uhr ist oft ganz anders als Freitag 16 Uhr. Du kannst jede Bewertung später in der Rangliste öffnen und anpassen.</dd>
+      <dt>Ehrlich bleiben</dt><dd>Bewerte nach den Beschreibungen, nicht nach Gefühl. Dafür sind sie da.</dd>
+    </dl>
+  </section>
+</main>
+
+<script src="js/fragen.js"></script>
+<script src="js/common.js"></script>
+<script>
+  $('cats').innerHTML = CATS.map(c => `<div class="cat-item" style="--c:${c.color}">
+    <div><b>${esc(c.name)}</b><span>${esc(c.desc)}</span></div><em>${Math.round(c.w * 100)} %</em></div>`).join('');
+</script>
+</body>
+</html>

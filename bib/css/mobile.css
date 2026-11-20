@@ -1,0 +1,36 @@
+/* Handy: Tab-Leiste unten, kompaktere Seiten. Wird zuletzt geladen. */
+:root{--tabbar:64px}
+.tabbar{display:none}
+
+@media (max-width:640px){
+  body{padding-bottom:calc(var(--tabbar) + env(safe-area-inset-bottom) + 12px)}
+  .wrap{padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+
+  header{padding-top:env(safe-area-inset-top)}
+  .head{display:flex;min-height:0;padding:12px 16px 10px}
+  .logo{font-size:23px}
+  header nav,.head-right{display:none}
+  header[data-active=start]{background:var(--hero1);border-bottom:0}
+  header[data-active=start] .logo{color:var(--hero-text)}
+  header[data-active=start] .logo em{color:var(--hero-em)}
+
+  .tabbar{display:grid;grid-template-columns:repeat(5,1fr);align-items:center;position:fixed;left:0;right:0;bottom:0;z-index:40;
+    height:calc(var(--tabbar) + env(safe-area-inset-bottom));padding:0 6px env(safe-area-inset-bottom);
+    background:color-mix(in srgb,var(--card) 95%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    border-top:1px solid var(--line)}
+  .tabbar a{justify-self:center;display:grid;place-items:center;width:56px;height:44px;border-radius:12px;
+    color:var(--muted);text-decoration:none;-webkit-tap-highlight-color:transparent}
+  .tabbar a svg{width:24px;height:24px}
+  .tabbar a.active{background:var(--accent-soft);color:var(--accent-strong)}
+  .tabbar a.plus{width:48px;height:48px;border-radius:50%;background:var(--accent);color:var(--on-accent)}
+  .tabbar a.plus svg{stroke-width:2.4}
+  .tabbar a.plus.active{background:var(--accent-strong);color:#fff}
+
+  .page-head{margin:20px 0 14px}
+  .page-head h1{font-size:34px}
+  .page-head .btn{display:none}
+}
+
+@media (display-mode: standalone){
+  header{padding-top:max(env(safe-area-inset-top),8px)}
+}

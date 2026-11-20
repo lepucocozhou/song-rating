@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#cdeed7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernorte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Lernorte</title>
+<script src="js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/start.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+<header id="top" data-active="start"></header>
+
+<main class="start">
+  <div class="hero-wrap">
+    <section class="hero">
+      <div>
+        <h1>Wo lernst du <em>am besten?</em></h1>
+        <p id="summary">Bewerte Bibliotheken, Cafés und Lernräume mit 20 Fragen und finde deinen Lieblingsort.</p>
+      </div>
+      <div class="hero-actions">
+        <a class="btn hero-main" href="bewerten.html">Lernort bewerten</a>
+        <a class="btn hero-alt" href="orte.html">Zur Rangliste</a>
+      </div>
+    </section>
+  </div>
+
+  <div class="start-main" id="mine"></div>
+</main>
+
+<script src="js/fragen.js"></script>
+<script src="js/common.js"></script>
+<script src="js/start.js"></script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#cdeed7">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Lernorte">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>Einstellungen – Lernorte</title>
+<script src="js/theme.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/text.css">
+<link rel="stylesheet" href="css/mobile.css">
+</head>
+<body>
+<header id="top" data-active="settings"></header>
+
+<main class="wrap narrow">
+  <div class="page-head"><div><h1>Einstellungen</h1><p>Gelten nur für die Lernorte, nicht für die Song-Seite.</p></div></div>
+
+  <section class="card">
+    <h2>Aussehen</h2>
+    <div class="seg" id="theme">
+      <button data-t="auto">Automatisch</button>
+      <button data-t="light">Hell</button>
+      <button data-t="dark">Dunkel</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Gewichte der Kategorien</h2>
+    <p class="muted">Wie wichtig dir jede Kategorie ist. Die Summe muss nicht genau 100 % sein, die Rechnung gleicht das aus. Gilt sofort für alle Orte.</p>
+    <div id="weights" class="weights"></div>
+    <div class="wsum" id="wsum"></div>
+    <div class="row-btns"><button class="primary" id="saveW">Gewichte speichern</button><button id="resetW">Standard (25/20/15/20/10/10)</button><span class="toast" id="wToast"></span></div>
+  </section>
+
+  <section class="card">
+    <h2>Sicherung</h2>
+    <p class="muted">Deine Lernorte sind nur in diesem Browser gespeichert. Mit einer Sicherungsdatei kannst du sie auf ein anderes Gerät mitnehmen.</p>
+    <div class="row-btns">
+      <button id="export">Sicherung herunterladen</button>
+      <label class="btn">Sicherung laden<input type="file" id="import" accept=".json,application/json" hidden></label>
+      <span class="toast" id="bToast"></span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Alles löschen</h2>
+    <p class="muted">Löscht alle bewerteten Lernorte auf diesem Gerät.</p>
+    <button class="danger" id="wipe">Alle Lernorte löschen</button>
+  </section>
+</main>
+
+<script src="js/fragen.js"></script>
+<script src="js/common.js"></script>
+<script src="js/einstellungen.js"></script>
+</body>
+</html>
