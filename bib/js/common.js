@@ -1,5 +1,6 @@
 // Gemeinsam für alle Lernort-Seiten: Speicher, Gewichte, Notenberechnung, Kopfzeile + Tab-Leiste.
-// Alles liegt nur in diesem Browser (localStorage, Schlüssel beginnen mit „bib.“) – getrennt von der Song-Seite.
+// Arbeitskopie im Browser (localStorage, Schlüssel beginnen mit „bib.“); bist du in Song Rating angemeldet,
+// gleicht cloud.js sie mit deinem Konto ab.
 
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[ch]));
@@ -14,11 +15,15 @@ const store = {
   set(k, v) { try { localStorage.setItem('bib.' + k, JSON.stringify(v)); } catch (e) {} },
 };
 
+// Wird von cloud.js ersetzt: nach jeder Änderung kurz danach ins Song-Rating-Konto hochladen
+let onBibChanged = () => { store.set('cloudPending', true); };
+
 /* ---------- Kategorien + eigene Gewichte ---------- */
+// weightsAt = wann zuletzt geändert (damit beim Abgleich zwischen Geräten die neuere Einstellung gewinnt)
 const Weights = {
   get: () => store.get('weights', {}),
-  save: w => store.set('weights', w),
-  reset: () => store.set('weights', {}),
+  save(w) { store.set('weights', w); store.set('weightsAt', now()); onBibChanged(); },
+  reset() { Weights.save({}); },
 };
 const CATS = DEFAULT_CATS.map(c => {
   const w = Weights.get()[c.id];
@@ -28,18 +33,26 @@ const ALL_QS = CATS.flatMap(c => c.qs);
 
 /* ---------- gespeicherte Lernorte ---------- */
 // { id, name, where, note, answers: { f1: 0–4 | '-' }, createdAt, updatedAt }
+// Gelöschte Orte bleiben als { id, deleted: true, updatedAt } stehen, damit das Löschen auch auf anderen Geräten ankommt.
 const Places = {
-  all: () => store.get('places', []),
+  raw: () => store.get('places', []),
+  all: () => Places.raw().filter(p => !p.deleted),
   get: id => Places.all().find(p => p.id === id),
   save(p) {
-    const list = Places.all(), i = list.findIndex(x => x.id === p.id);
+    const list = Places.raw(), i = list.findIndex(x => x.id === p.id);
     const rec = { ...p, updatedAt: now() };
     if (i >= 0) list[i] = rec; else list.push({ ...rec, id: rec.id || newId(), createdAt: now() });
     store.set('places', list);
+    onBibChanged();
     return i >= 0 ? rec : list[list.length - 1];
   },
-  remove: id => store.set('places', Places.all().filter(p => p.id !== id)),
-  setAll: list => store.set('places', list),
+  remove(id) { Places.removeMany([id]); },
+  removeMany(ids) {
+    const gone = new Set(ids);
+    store.set('places', Places.raw().map(p => gone.has(p.id) ? { id: p.id, deleted: true, updatedAt: now() } : p));
+    onBibChanged();
+  },
+  setRaw(list, silent) { store.set('places', list); if (!silent) onBibChanged(); },
 };
 
 /* ---------- Berechnung wie in der Excel-Tabelle ---------- */

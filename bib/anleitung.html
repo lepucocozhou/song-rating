@@ -76,6 +76,9 @@
 
 <script src="js/fragen.js"></script>
 <script src="js/common.js"></script>
+<script src="../assets/vendor/supabase.min.js"></script>
+<script src="../assets/js/cloud-config.js"></script>
+<script src="js/cloud.js"></script>
 <script>
   $('cats').innerHTML = CATS.map(c => `<div class="cat-item" style="--c:${c.color}">
     <div><b>${esc(c.name)}</b><span>${esc(c.desc)}</span></div><em>${Math.round(c.w * 100)} %</em></div>`).join('');

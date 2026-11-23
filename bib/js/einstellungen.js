@@ -54,9 +54,9 @@ $('import').onchange = async e => {
     const data = JSON.parse(await file.text());
     if (data.app !== 'lernorte' || !Array.isArray(data.places)) throw new Error();
     // Zusammenführen: gleiche id → die neuere Bewertung gewinnt
-    const map = new Map(Places.all().map(p => [p.id, p]));
+    const map = new Map(Places.raw().map(p => [p.id, p]));
     data.places.forEach(p => { const old = map.get(p.id); if (!old || (p.updatedAt || '') > (old.updatedAt || '')) map.set(p.id, p); });
-    Places.setAll([...map.values()]);
+    Places.setRaw([...map.values()]);
     if (data.weights && Object.keys(data.weights).length) Weights.save(data.weights);
     $('bToast').textContent = `${data.places.length} Lernorte geladen ✓`;
     setTimeout(() => location.reload(), 900);
@@ -66,11 +66,11 @@ $('import').onchange = async e => {
   e.target.value = '';
 };
 
-/* Alles löschen */
+/* Alles löschen (mit Konto: auch auf den anderen Geräten) */
 $('wipe').onclick = () => {
   const n = Places.all().length;
   if (!n) return alert('Es sind keine Lernorte gespeichert.');
   if (!confirm(`Wirklich alle ${n} Lernorte löschen? Das kann nicht rückgängig gemacht werden.`)) return;
-  Places.setAll([]);
+  Places.removeMany(Places.all().map(p => p.id));
   location.href = 'index.html';
 };

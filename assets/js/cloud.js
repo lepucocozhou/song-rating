@@ -42,7 +42,9 @@ const Cloud = (() => {
   function setStatus(s) { status = s; listeners.forEach(fn => fn()); renderChip(); }
 
   // The table has no own column for artists: they travel in the albums column, marked with kind: 'artist'
-  const packAlbums = () => [...Albums.raw(), ...Artists.raw().map(r => ({ ...r, kind: 'artist' }))];
+  // The Lernorte page (/bib) also keeps its records there, marked with kind: 'lernort…' – they are passed through untouched
+  const isBib = r => typeof r.kind === 'string' && r.kind.startsWith('lernort');
+  const packAlbums = () => [...Albums.raw().filter(r => !r.kind), ...Artists.raw().map(r => ({ ...r, kind: 'artist' }))];
   const isArtist = r => r.kind === 'artist';
   const unpackArtists = list => list.filter(isArtist).map(({ kind, ...r }) => r);
 
@@ -52,13 +54,15 @@ const Cloud = (() => {
     const { data: row, error } = await sb.from('user_data').select('songs, albums, config').eq('user_id', user.id).maybeSingle();
     if (error) throw error;
     const local = { songs: Songs.raw(), albums: packAlbums(), config: store.get('songRatingConfig', null) };
+    const remoteAlbums = row?.albums || [];
     const merged = {
       songs: mergeRecords(local.songs, row?.songs || []),
-      albums: mergeRecords(local.albums, row?.albums || []),
+      albums: mergeRecords(local.albums, remoteAlbums.filter(r => !isBib(r))),
       config: newerConfig(local.config, row?.config),
     };
-    if (!row || !same(merged.songs, row.songs) || !same(merged.albums, row.albums) || !same(merged.config, row.config)) {
-      const { error: upErr } = await sb.from('user_data').upsert({ user_id: user.id, ...merged, updated_at: now() });
+    const upload = { ...merged, albums: [...merged.albums, ...remoteAlbums.filter(isBib)] };
+    if (!row || !same(merged.songs, row.songs) || !same(upload.albums, row.albums) || !same(merged.config, row.config)) {
+      const { error: upErr } = await sb.from('user_data').upsert({ user_id: user.id, ...upload, updated_at: now() });
       if (upErr) throw upErr;
     }
     const configChanged = !same(merged.config, local.config);

@@ -47,3 +47,11 @@
   .row-btns > *{flex:1 1 auto;text-align:center}
   .levels .chip{min-width:104px}
 }
+
+/* Konto */
+.k-form{display:flex;gap:8px;flex-wrap:wrap;margin:4px 0 10px}
+.k-form input{flex:1 1 180px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--text);font:inherit}
+.k-form input:focus{outline:none;border-color:var(--accent-strong)}
+.k-err{color:var(--warn-text);background:var(--warn);padding:8px 12px;border-radius:10px;font-size:14px}
+.card p.k-small{font-size:13px;margin-top:10px}
+@media (max-width:640px){.k-form input{font-size:16px}.k-form button{flex:1 1 100%}}

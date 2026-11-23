@@ -26,6 +26,11 @@
   <div class="page-head"><div><h1>Einstellungen</h1><p>Gelten nur für die Lernorte, nicht für die Song-Seite.</p></div></div>
 
   <section class="card">
+    <h2>Konto</h2>
+    <div id="account"><p class="muted">Lade …</p></div>
+  </section>
+
+  <section class="card">
     <h2>Aussehen</h2>
     <div class="seg" id="theme">
       <button data-t="auto">Automatisch</button>
@@ -44,7 +49,7 @@
 
   <section class="card">
     <h2>Sicherung</h2>
-    <p class="muted">Deine Lernorte sind nur in diesem Browser gespeichert. Mit einer Sicherungsdatei kannst du sie auf ein anderes Gerät mitnehmen.</p>
+    <p class="muted">Zusätzlich zum Konto kannst du deine Lernorte als Datei sichern – oder ohne Anmeldung auf ein anderes Gerät mitnehmen.</p>
     <div class="row-btns">
       <button id="export">Sicherung herunterladen</button>
       <label class="btn">Sicherung laden<input type="file" id="import" accept=".json,application/json" hidden></label>
@@ -54,13 +59,17 @@
 
   <section class="card">
     <h2>Alles löschen</h2>
-    <p class="muted">Löscht alle bewerteten Lernorte auf diesem Gerät.</p>
+    <p class="muted">Löscht alle bewerteten Lernorte – bist du angemeldet, auch in deinem Konto und auf deinen anderen Geräten.</p>
     <button class="danger" id="wipe">Alle Lernorte löschen</button>
   </section>
 </main>
 
 <script src="js/fragen.js"></script>
 <script src="js/common.js"></script>
+<script src="../assets/vendor/supabase.min.js"></script>
+<script src="../assets/js/cloud-config.js"></script>
+<script src="js/cloud.js"></script>
+<script src="js/konto.js"></script>
 <script src="js/einstellungen.js"></script>
 </body>
 </html>
