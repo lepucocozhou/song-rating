@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/bewerten.css">
+<link rel="stylesheet" href="css/share.css">
 <link rel="stylesheet" href="css/mobile.css">
 </head>
 <body>
@@ -44,6 +45,11 @@
           <label>Wo? <span class="opt-l">(optional)</span><input id="where" placeholder="Stadt, Adresse oder Uni" autocomplete="off"></label>
           <label class="full">Notiz <span class="opt-l">(optional)</span><textarea id="note" rows="3" placeholder="Beste Uhrzeit, Lieblingsplatz, was dir aufgefallen ist …"></textarea></label>
         </div>
+        <div class="photos-box">
+          <div class="ph-head"><b>Fotos</b> <span class="opt-l">(optional, bis zu 4 – das erste ist das Titelbild)</span></div>
+          <div class="photos" id="photos"></div>
+          <div class="ph-msg" id="phMsg"></div>
+        </div>
         <div class="tip"><b>Tipp:</b> Bewerte erst, wenn du mindestens 2 Stunden dort gelernt hast. Warst du öfter da, denk an einen durchschnittlichen Besuch.</div>
       </div>
       <!-- Kategorie-Seiten werden von bewerten.js eingefügt -->
@@ -57,6 +63,7 @@
         <div class="sum" id="sum"></div>
         <div class="save-row">
           <button class="primary" id="save">In Rangliste speichern</button>
+          <button id="share" hidden>📤 Teilen</button>
           <button id="newPlace">Neuer Lernort</button>
           <button class="danger" id="delete" hidden>Löschen</button>
           <span class="toast" id="toast"></span>
@@ -72,6 +79,7 @@
 <script src="../assets/vendor/supabase.min.js"></script>
 <script src="../assets/js/cloud-config.js"></script>
 <script src="js/cloud.js"></script>
+<script src="js/share.js"></script>
 <script src="js/bewerten.js"></script>
 </body>
 </html>

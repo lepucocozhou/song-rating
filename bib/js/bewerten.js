@@ -4,6 +4,7 @@
 const params = new URLSearchParams(location.search);
 let editing = params.get('id') ? Places.get(params.get('id')) : null;
 let answers = editing ? { ...editing.answers } : {};
+let photos = editing?.photos ? [...editing.photos] : [];
 let dirty = false;
 let current = 0;
 
@@ -72,6 +73,35 @@ $('where').value = editing?.where || '';
 $('note').value = editing?.note || '';
 ['name', 'where', 'note'].forEach(id => $(id).addEventListener('input', () => { dirty = true; update(); }));
 
+/* ---------- Fotos ---------- */
+function renderPhotos() {
+  $('photos').innerHTML = photos.map((src, i) => `<div class="ph${i === 0 ? ' cover' : ''}" style="background-image:url('${src}')">
+      ${i === 0 ? '<span class="ph-tag">Titelbild</span>' : `<button type="button" class="ph-main" data-main="${i}">Als Titelbild</button>`}
+      <button type="button" class="ph-del" data-del="${i}" aria-label="Foto entfernen" title="Foto entfernen">×</button>
+    </div>`).join('') + (photos.length < MAX_PHOTOS ? `<label class="ph add">
+      <input type="file" accept="image/*" multiple hidden id="phInput"><span>＋</span><small>Foto hinzufügen</small></label>` : '');
+  $('phInput')?.addEventListener('change', addPhotos);
+}
+async function addPhotos(e) {
+  const files = [...e.target.files].slice(0, MAX_PHOTOS - photos.length);
+  $('phMsg').textContent = files.length ? 'Fotos werden verkleinert …' : '';
+  for (const f of files) {
+    try { photos.push(await shrinkPhoto(f)); } catch (err) { $('phMsg').textContent = 'Ein Bild konnte nicht gelesen werden.'; }
+  }
+  if ($('phMsg').textContent.endsWith('…')) $('phMsg').textContent = '';
+  dirty = true;
+  renderPhotos(); update();
+}
+$('photos').addEventListener('click', e => {
+  const del = e.target.closest('[data-del]'), main = e.target.closest('[data-main]');
+  if (del) photos.splice(+del.dataset.del, 1);
+  else if (main) photos.unshift(...photos.splice(+main.dataset.main, 1));
+  else return;
+  dirty = true;
+  renderPhotos(); update();
+});
+renderPhotos();
+
 /* ---------- Navigation ---------- */
 function goto(s) {
   current = Math.max(0, Math.min(steps.length - 1, s));
@@ -87,7 +117,7 @@ function goto(s) {
 function update() {
   const sc = score(answers);
   const name = $('name').value.trim();
-  const row = { p: { name: name || '?' }, cats: sc.cats };
+  const row = { p: { name: name || '?', photos }, cats: sc.cats };
 
   document.querySelectorAll('.q').forEach(el => {
     const v = answers[el.dataset.q];
@@ -135,10 +165,15 @@ function note(i, text, done) {
 $('save').onclick = () => {
   const name = $('name').value.trim();
   if (!name) { goto(0); $('name').focus(); $('name').classList.add('missing'); return; }
-  editing = Places.save({ ...(editing || {}), name, where: $('where').value.trim(), note: $('note').value.trim(), answers: { ...answers } });
+  try {
+    editing = Places.save({ ...(editing || {}), name, where: $('where').value.trim(), note: $('note').value.trim(), photos: [...photos], answers: { ...answers } });
+  } catch (e) {
+    return alert('Der Speicher in diesem Browser ist voll. Entferne ein paar Fotos (hier oder bei anderen Lernorten) und speichere dann noch einmal.');
+  }
   dirty = false;
   history.replaceState(null, '', '?id=' + editing.id);
   $('delete').hidden = false;
+  $('share').hidden = false;
   $('save').textContent = 'Änderungen speichern';
   const r = rankedPlaces().find(x => x.p.id === editing.id);
   $('toast').innerHTML = `Gespeichert ✓ ${r.rank ? `– Platz ${r.rank} · ` : ''}<a href="orte.html">zur Rangliste</a>`;
@@ -158,6 +193,11 @@ $('newPlace').onclick = () => {
 };
 addEventListener('beforeunload', e => { if (dirty) { e.preventDefault(); e.returnValue = ''; } });
 
-if (editing) { $('delete').hidden = false; $('save').textContent = 'Änderungen speichern'; document.title = editing.name + ' – Lernort'; }
+$('share').onclick = () => {
+  if (dirty && !confirm('Es gibt ungespeicherte Änderungen – geteilt wird der gespeicherte Stand. Trotzdem teilen?')) return;
+  sharePlace(editing.id);
+};
+
+if (editing) { $('share').hidden = false; $('delete').hidden = false; $('save').textContent = 'Änderungen speichern'; document.title = editing.name + ' – Lernort'; }
 update();
 goto(location.hash === '#ergebnis' ? steps.length - 1 : 0);

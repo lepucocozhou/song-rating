@@ -12,7 +12,8 @@ const pct = v => v === null || v === undefined ? '–' : Math.round(v * 100) + '
 
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem('bib.' + k)) ?? d; } catch (e) { return d; } },
-  set(k, v) { try { localStorage.setItem('bib.' + k, JSON.stringify(v)); } catch (e) {} },
+  // false = Speicher voll (z. B. zu viele Fotos)
+  set(k, v) { try { localStorage.setItem('bib.' + k, JSON.stringify(v)); return true; } catch (e) { return false; } },
 };
 
 // Wird von cloud.js ersetzt: nach jeder Änderung kurz danach ins Song-Rating-Konto hochladen
@@ -32,7 +33,7 @@ const CATS = DEFAULT_CATS.map(c => {
 const ALL_QS = CATS.flatMap(c => c.qs);
 
 /* ---------- gespeicherte Lernorte ---------- */
-// { id, name, where, note, answers: { f1: 0–4 | '-' }, createdAt, updatedAt }
+// { id, name, where, note, photos: [JPEG als data-URL, das erste ist das Titelbild], answers: { f1: 0–4 | '-' }, createdAt, updatedAt }
 // Gelöschte Orte bleiben als { id, deleted: true, updatedAt } stehen, damit das Löschen auch auf anderen Geräten ankommt.
 const Places = {
   raw: () => store.get('places', []),
@@ -42,7 +43,7 @@ const Places = {
     const list = Places.raw(), i = list.findIndex(x => x.id === p.id);
     const rec = { ...p, updatedAt: now() };
     if (i >= 0) list[i] = rec; else list.push({ ...rec, id: rec.id || newId(), createdAt: now() });
-    store.set('places', list);
+    if (!store.set('places', list)) throw new Error('voll');
     onBibChanged();
     return i >= 0 ? rec : list[list.length - 1];
   },
@@ -83,12 +84,33 @@ function rankedPlaces() {
   return rows;
 }
 
-// Kleines Bild für einen Ort: Anfangsbuchstabe auf der Farbe seiner stärksten Kategorie
+// Bild für einen Ort: sein Titelfoto – sonst der Anfangsbuchstabe auf der Farbe seiner stärksten Kategorie
 function placeTile(row, cls = '') {
+  const photo = row.p.photos?.[0];
+  if (photo) return `<span class="tile-img photo ${cls}" style="background-image:url('${photo}')" role="img" aria-label="${esc(row.p.name)}"></span>`;
   let best = -1;
   row.cats.forEach((k, i) => { if (k !== null && (best < 0 || k > row.cats[best])) best = i; });
   const letter = (row.p.name || '?').trim().charAt(0).toUpperCase() || '?';
   return `<span class="tile-img ${cls}" style="--c:${best < 0 ? '#2a9461' : CATS[best].color}">${esc(letter)}</span>`;
+}
+
+/* ---------- Fotos ---------- */
+// Fotos werden verkleinert (längste Seite 640 px, JPEG), damit sie in den Speicher und ins Konto passen.
+const MAX_PHOTOS = 4;
+function shrinkPhoto(file, max = 640, quality = 0.62) {
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const f = Math.min(1, max / Math.max(img.width, img.height));
+      const c = document.createElement('canvas');
+      c.width = Math.round(img.width * f); c.height = Math.round(img.height * f);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL('image/jpeg', quality));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('Bild konnte nicht gelesen werden')); };
+    img.src = url;
+  });
 }
 
 function chip(note) {

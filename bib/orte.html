@@ -17,6 +17,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/base.css">
 <link rel="stylesheet" href="css/orte.css">
+<link rel="stylesheet" href="css/share.css">
 <link rel="stylesheet" href="css/mobile.css">
 </head>
 <body>
@@ -25,7 +26,7 @@
 <main class="wrap">
   <div class="page-head">
     <div><h1>Rangliste</h1><p id="sub"></p></div>
-    <a class="btn primary" href="bewerten.html">+ Lernort bewerten</a>
+    <div class="head-btns"><button id="shareTop">📤 Top 10 teilen</button><a class="btn primary" href="bewerten.html">+ Lernort bewerten</a></div>
   </div>
   <div class="tools">
     <input id="q" type="search" placeholder="Lernort suchen …" autocomplete="off">
@@ -36,6 +37,7 @@
     </select>
     <div class="seg" id="view">
       <button data-v="list">Liste</button>
+      <button data-v="grid">Kacheln</button>
       <button data-v="table">Tabelle</button>
     </div>
   </div>
@@ -48,6 +50,7 @@
 <script src="../assets/vendor/supabase.min.js"></script>
 <script src="../assets/js/cloud-config.js"></script>
 <script src="js/cloud.js"></script>
+<script src="js/share.js"></script>
 <script src="js/orte.js"></script>
 </body>
 </html>

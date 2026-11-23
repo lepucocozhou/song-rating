@@ -124,3 +124,22 @@
   .sum-card .n{font-size:24px}
   .save-row button{flex:1 1 auto}
 }
+
+/* Fotos in Schritt 1 */
+.photos-box{max-width:680px;margin-top:16px}
+.ph-head{font-size:13px;color:var(--muted);margin-bottom:6px}
+.ph-head b{font-weight:700}
+.photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px}
+.ph{position:relative;aspect-ratio:4/3;border-radius:14px;background:var(--soft) center/cover no-repeat;border:1px solid var(--line);overflow:hidden}
+.ph.cover{outline:3px solid var(--accent);outline-offset:-3px}
+.ph-tag,.ph-main{position:absolute;left:6px;bottom:6px;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:99px;border:0}
+.ph-tag{background:var(--accent);color:var(--on-accent)}
+.ph-main{background:rgba(255,255,255,.88);color:#1b2e23;cursor:pointer}
+.ph-del{position:absolute;top:6px;right:6px;width:28px;height:28px;padding:0;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:18px;line-height:28px;cursor:pointer}
+.ph.add{display:grid;place-content:center;justify-items:center;gap:2px;cursor:pointer;border:2px dashed var(--line);background:var(--card);color:var(--muted)}
+.ph.add:hover{border-color:var(--accent-strong);color:var(--accent-strong)}
+.ph.add span{font-size:28px;line-height:1}
+.ph.add small{font-size:12.5px;font-weight:700}
+.ph-msg{font-size:13px;color:var(--muted);margin-top:6px}
+.ph-msg:empty{display:none}
+@media (max-width:640px){.photos{grid-template-columns:repeat(2,1fr)}}

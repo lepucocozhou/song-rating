@@ -81,3 +81,4 @@ nav{display:flex;gap:28px}
 .toast a{color:inherit}
 .muted{color:var(--muted)}
 .head-left{display:flex;align-items:center;min-width:0}
+.tile-img.photo{background:var(--soft) center/cover no-repeat}

@@ -1,4 +1,4 @@
-// Rangliste aller Lernorte: als Liste mit Kategorie-Balken oder als Vergleichstabelle (wie Blatt „Übersicht“).
+// Rangliste aller Lernorte: als Liste mit Kategorie-Balken, als Kacheln mit Fotos oder als Vergleichstabelle (wie Blatt „Übersicht“).
 
 const all = rankedPlaces();
 let view = store.get('view', 'list');
@@ -31,7 +31,28 @@ function render() {
     return;
   }
   if (!rows.length) { $('out').innerHTML = '<p class="muted">Nichts gefunden.</p>'; return; }
-  $('out').innerHTML = view === 'table' ? table(rows) : list(rows);
+  $('out').innerHTML = view === 'table' ? table(rows) : view === 'grid' ? grid(rows) : list(rows);
+}
+$('shareTop').onclick = shareTop;
+
+// Kacheln: großes Foto (oder Anfangsbuchstabe), Rang, Note, Name und die Kategorie-Balken
+function grid(rows) {
+  return `<div class="cards">${rows.map(r => {
+    const l = level(r.note), n = r.p.photos?.length || 0;
+    return `<a class="card-pl" href="bewerten.html?id=${r.p.id}">
+      <div class="cp-img">${placeTile(r, 'cp-photo')}
+        ${r.rank ? `<span class="cp-rank${r.rank <= 3 ? ' m' + r.rank : ''}">${r.rank}</span>` : ''}
+        ${n > 1 ? `<span class="cp-count">${n} Fotos</span>` : ''}
+        <span class="cp-chip">${chip(r.note)}</span>
+      </div>
+      <div class="cp-body">
+        <div class="t">${esc(r.p.name)}</div>
+        <div class="sub">${[r.p.where, l?.name].filter(Boolean).map(esc).join(' · ') || '&nbsp;'}${r.ko ? ' <span class="ko-tag">K.-o.</span>' : ''}</div>
+        <div class="cat-bars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color}" title="${esc(CATS[i].name)}: ${pct(k)}"><b style="width:${(k ?? 0) * 100}%"></b></i>`).join('')}</div>
+      </div>
+    </a>`;
+  }).join('')}</div>
+  <div class="legend">${CATS.map(c => `<span><i style="background:${c.color}"></i>${esc(c.short)} ${Math.round(c.w * 100)} %</span>`).join('')}</div>`;
 }
 
 function list(rows) {
