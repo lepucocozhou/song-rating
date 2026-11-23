@@ -3,6 +3,11 @@
 // t(x) translates a captured part again (e.g. a status inside a sentence).
 
 const ZH_WORDS = {
+  // app switcher (apps.js)
+  'Meine Apps': '我的应用', 'Mehr Apps': '更多应用', 'Mehr': '更多', 'Du bist hier': '当前', 'Lernorte & Co.': '学习地点等',
+  'Ein Konto für alle Apps.': '一个账号用于所有应用。', 'Songs, Alben und Artists bewerten und ranken': '评价并排名歌曲、专辑和艺人',
+  'Lernorte bewerten und die besten finden': '评价学习地点，找到最好的',
+  'Weitere Apps von dir – du meldest dich überall mit demselben Konto an.': '你的其他应用——所有应用都用同一个账号登录。',
   // header, tab bar, page titles
   'Start': '首页', 'Songs': '歌曲', 'Alben': '专辑', 'Einstellungen': '设置', 'Bewerten': '评价', '+ Bewerten': '+ 评价',
   'Song bewerten': '评价歌曲', 'Album bewerten': '评价专辑', 'Songs + Album-Fragen': '歌曲 + 专辑问题',

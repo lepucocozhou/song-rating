@@ -80,3 +80,4 @@ nav{display:flex;gap:28px}
 .toast{font-size:14px;color:var(--accent-strong);font-weight:700}
 .toast a{color:inherit}
 .muted{color:var(--muted)}
+.head-left{display:flex;align-items:center;min-width:0}

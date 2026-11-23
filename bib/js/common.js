@@ -113,7 +113,7 @@ const ICONS = {
   const active = h.dataset.active === 'rate' ? 'rate' : h.dataset.active;
   const tabs = [['start', 'index.html', 'Start'], ['orte', 'orte.html', 'Rangliste'], ['anleitung', 'anleitung.html', 'So geht’s'], ['settings', 'einstellungen.html', 'Einstellungen']];
   h.innerHTML = `<div class="head">
-    <a class="logo" href="index.html">Lern<em>orte</em></a>
+    <div class="head-left"><a class="logo" href="index.html">Lern<em>orte</em></a></div>
     <nav>${tabs.map(([k, href, label]) => `<a class="tab ${active === k ? 'active' : ''}" href="${href}">${label}${k === 'orte' ? `<span class="count">${Places.all().length}</span>` : ''}</a>`).join('')}</nav>
     <div class="head-right"><a class="plus-btn" href="bewerten.html">+ Lernort bewerten</a></div>
   </div>`;
