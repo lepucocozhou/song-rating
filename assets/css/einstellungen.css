@@ -138,3 +138,4 @@ button.excel{background:#e7f8ee;border-color:#9fdcb8;color:#14532d;font-weight:6
   .set-nav a{flex:none;align-items:center;padding:7px 12px 7px 7px;font-size:13.5px;white-space:nowrap}
   .set-nav .ic{width:26px;height:26px;font-size:13px}
 }
+.account .back-lernorte{justify-self:start;text-decoration:none}

@@ -4,6 +4,8 @@
 
 const ZH_WORDS = {
   // app switcher (apps.js)
+  'Fertig – zurück zu Lernorte': '完成 – 返回 Lernorte', 'Zurück zu Lernorte': '返回 Lernorte', 'Melde dich hier an': '在这里登录',
+  '– danach bist du auch in Lernorte angemeldet.': '——之后你在 Lernorte 中也会自动登录。',
   'Meine Apps': '我的应用', 'Mehr Apps': '更多应用', 'Mehr': '更多', 'Du bist hier': '当前', 'Lernorte & Co.': '学习地点等',
   'Ein Konto für alle Apps.': '一个账号用于所有应用。', 'Songs, Alben und Artists bewerten und ranken': '评价并排名歌曲、专辑和艺人',
   'Lernorte bewerten und die besten finden': '评价学习地点，找到最好的',

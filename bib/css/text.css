@@ -55,3 +55,6 @@
 .k-err{color:var(--warn-text);background:var(--warn);padding:8px 12px;border-radius:10px;font-size:14px}
 .card p.k-small{font-size:13px;margin-top:10px}
 @media (max-width:640px){.k-form input{font-size:16px}.k-form button{flex:1 1 100%}}
+.k-or{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:4px 0 10px}
+.k-or::before,.k-or::after{content:"";flex:1;height:1px;background:var(--line)}
+.card a.k-song{display:block;text-align:center;font-weight:700;color:var(--text)}

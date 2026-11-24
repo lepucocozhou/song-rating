@@ -32,12 +32,14 @@ function renderKonto() {
   box.innerHTML = `
     <p>Melde dich mit deinem <b>Song-Rating-Konto</b> an – kein neues Konto nötig. Dann sind deine Lernorte auf allen Geräten.</p>
     <form id="kForm" class="k-form">
-      <input type="email" id="kEmail" placeholder="E-Mail" autocomplete="username" required>
+      <input type="email" id="kEmail" placeholder="E-Mail" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
       <input type="password" id="kPw" placeholder="Passwort" autocomplete="current-password" required>
       <button type="submit" class="primary" id="kGo">Anmelden</button>
     </form>
     ${kontoMsg ? `<p class="k-err">${esc(kontoMsg)}</p>` : ''}
-    <p class="muted k-small">Passwort vergessen oder noch kein Konto? Das geht in <a href="../einstellungen.html">Song Rating → Einstellungen</a>. Bist du dort in diesem Browser schon angemeldet, bist du es hier automatisch auch.</p>`;
+    <div class="k-or"><span>oder</span></div>
+    <a class="btn k-song" href="../einstellungen.html?from=lernorte#konto">Über Song Rating anmelden</a>
+    <p class="muted k-small">Melde dich dort an (auch mit Code per E-Mail oder „Passwort vergessen“). Danach bringt dich ein Knopf hierher zurück – und du bist auch in Lernorte angemeldet.</p>`;
   $('kEmail').value = typed.e;
   $('kPw').value = typed.p;
   $('kForm').onsubmit = async e => {
@@ -48,7 +50,7 @@ function renderKonto() {
     let error;
     try { ({ error } = await BibCloud.signIn($('kEmail').value.trim(), $('kPw').value)); } catch (err) { error = err; }
     if (error) {
-      kontoMsg = /invalid/i.test(error.message || '') ? 'E-Mail oder Passwort stimmt nicht.' : 'Anmelden hat nicht geklappt: ' + (error.message || error);
+      kontoMsg = /invalid/i.test(error.message || '') ? 'E-Mail oder Passwort stimmt nicht. Klappt es in Song Rating? Dann melde dich unten „Über Song Rating“ an.' : 'Anmelden hat nicht geklappt: ' + (error.message || error);
       $('kGo').disabled = false;
       renderKonto();
     }

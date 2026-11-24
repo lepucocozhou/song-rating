@@ -7,8 +7,12 @@ let accountMsg = '';
 let accountOk = '';
 let pwMsg = '', pwOk = '', pwNonceNeeded = false;
 
+// Von Lernorte hierher geschickt (?from=lernorte): nach dem Anmelden ein Knopf zurück
+const fromLernorte = new URLSearchParams(location.search).get('from') === 'lernorte';
+
 function renderAccount() {
   const box = $('account');
+  const back = fromLernorte ? `<a class="btn primary back-lernorte" href="bib/einstellungen.html" translate="no">← ${Cloud && Cloud.user ? 'Fertig – zurück zu Lernorte' : 'Zurück zu Lernorte'}</a>` : '';
   if (!Cloud) {
     box.innerHTML = '<div class="account"><p>Die Cloud ist gerade nicht erreichbar – bist du online? Deine Bewertungen werden so lange auf diesem Gerät gespeichert.</p></div>';
     return;
@@ -25,6 +29,7 @@ function renderAccount() {
       error: 'Fehler beim Speichern – versuch es mit „Jetzt synchronisieren“' }[Cloud.status] || 'verbunden';
     box.innerHTML = `
       <div class="account">
+        ${back}
         <div class="signed">Angemeldet als <b>${esc(u.email)}</b></div>
         <p>Status: ${esc(status)}${last ? ` · zuletzt synchronisiert ${new Date(last).toLocaleString(LOCALE)}` : ''}</p>
         ${counts ? `<p>In deinem Konto: <b>${counts.songs} Songs, ${counts.albums} Alben${counts.artists ? `, ${counts.artists} Artists` : ''}</b> · auf diesem Gerät: <b>${Songs.all().length} Songs, ${Albums.all().length} Alben${Artists.all().length ? `, ${Artists.all().length} Artists` : ''}</b></p>` : ''}
@@ -138,6 +143,7 @@ function renderAccount() {
 
   box.innerHTML = `
     <div class="account">
+      ${fromLernorte ? `<p><b>Melde dich hier an</b> – danach bist du auch in Lernorte angemeldet.</p>${back}` : ''}
       <p>Melde dich an, damit deine Bewertungen in deinem Konto gespeichert werden und du sie auf allen Geräten siehst.
          Beim ersten Anmelden werden die Bewertungen auf diesem Gerät automatisch übernommen.</p>
       ${loginMode === 'code' ? '' : tabs}

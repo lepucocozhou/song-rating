@@ -143,3 +143,9 @@
 .ph-msg{font-size:13px;color:var(--muted);margin-top:6px}
 .ph-msg:empty{display:none}
 @media (max-width:640px){.photos{grid-template-columns:repeat(2,1fr)}}
+
+/* Hinweis „automatisch gespeichert“ */
+.auto-state{font-size:12px;font-weight:700;color:var(--muted);margin-top:2px}
+.auto-state.ok{color:var(--accent-strong)}
+.auto-state.full{color:#c2410c}
+.auto-state:empty{display:none}
