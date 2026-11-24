@@ -10,7 +10,7 @@ function renderIntro() {
       <div class="block-head"><div><h2>So funktioniert’s</h2><span>Dauert etwa 3 Minuten pro Ort</span></div></div>
       <div class="how">
         <div class="how-step"><b>1</b><h3>Ort eintragen</h3><p>Name und, wenn du magst, wo er ist.</p></div>
-        <div class="how-step"><b>2</b><h3>20 Fragen, 0–4 Punkte</h3><p>Zu jeder Punktzahl steht eine Beschreibung. Passt eine Frage nicht, wähl „trifft nicht zu“.</p></div>
+        <div class="how-step"><b>2</b><h3>${ALL_QS.length} Fragen, 0–4 Punkte</h3><p>Zu jeder Punktzahl steht eine Beschreibung. Passt eine Frage nicht, wähl „trifft nicht zu“.</p></div>
         <div class="how-step"><b>3</b><h3>Note 1–10</h3><p>Wird automatisch berechnet, alle Orte landen in deiner Rangliste.</p></div>
       </div>
       <div class="intro-actions">

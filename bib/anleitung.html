@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>So geht’s – Lernorte</title>
-<script src="js/theme.js?v=7"></script>
+<script src="js/theme.js?v=8"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
@@ -27,7 +27,7 @@
 
   <section class="card">
     <h2>Punkteskala</h2>
-    <p>Für jede der 20 Fragen gibst du 0 bis 4 Punkte. Zu jeder Punktzahl steht bei der Frage eine Beschreibung – nimm die, die am besten passt.</p>
+    <p>Für jede der 21 Fragen gibst du 0 bis 4 Punkte. Zu jeder Punktzahl steht bei der Frage eine Beschreibung – nimm die, die am besten passt.</p>
     <div class="scale">
       <div><b>0</b>sehr schlecht / stört massiv</div>
       <div><b>1</b>schlecht</div>
@@ -74,12 +74,12 @@
   </section>
 </main>
 
-<script src="js/fragen.js?v=7"></script>
-<script src="js/common.js?v=7"></script>
-<script src="../assets/js/apps.js?v=7"></script>
+<script src="js/fragen.js?v=8"></script>
+<script src="js/common.js?v=8"></script>
+<script src="../assets/js/apps.js?v=8"></script>
 <script src="../assets/vendor/supabase.min.js"></script>
-<script src="../assets/js/cloud-config.js?v=7"></script>
-<script src="js/cloud.js?v=7"></script>
+<script src="../assets/js/cloud-config.js?v=8"></script>
+<script src="js/cloud.js?v=8"></script>
 <script>
   $('cats').innerHTML = CATS.map(c => `<div class="cat-item" style="--c:${c.color}">
     <div><b>${esc(c.name)}</b><span>${esc(c.desc)}</span></div><em>${Math.round(c.w * 100)} %</em></div>`).join('');

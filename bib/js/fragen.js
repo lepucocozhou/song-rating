@@ -1,4 +1,4 @@
-// Die 20 Fragen aus „Lernort-Bewertung.xlsx“: 6 Kategorien, je Frage 0–4 Punkte (Texte = Spalten „0 Punkte“ bis „4 Punkte“).
+// Die Fragen aus „Lernort-Bewertung.xlsx“ (+ „Zugänglichkeit“, „Anbindung“ statt Minuten-Anfahrt): 6 Kategorien, je Frage 0–4 Punkte (Texte = Spalten „0 Punkte“ bis „4 Punkte“).
 // w = Standard-Gewicht der Kategorie (in den Einstellungen änderbar). ko: true = K.-o.-Frage (0 Punkte → Note höchstens 5,00).
 
 const DEFAULT_CATS = [
@@ -33,11 +33,12 @@ const DEFAULT_CATS = [
   },
   {
     id: 'weg', name: 'Verfügbarkeit & Erreichbarkeit', short: 'Verfügbarkeit', w: 0.2, color: '#14a39a',
-    desc: 'Platz bekommen, Öffnungszeiten, Anfahrt (einfach), Kosten pro Besuch',
+    desc: 'Platz bekommen, Öffnungszeiten, Anbindung, Zugänglichkeit, Kosten pro Besuch',
     qs: [
       { id: 'f12', q: 'Platz bekommen', ko: true, opts: ['fast nie', 'nur wenn du sehr früh kommst', 'zu Stoßzeiten schwierig', 'meistens', 'immer, oder du kannst reservieren'] },
       { id: 'f13', q: 'Öffnungszeiten', opts: ['unter 4 Std. am Tag oder passen gar nicht', 'nur werktags, kurz', 'werktags ca. 9–18 Uhr', 'lang (z. B. 8–22 Uhr), auch samstags', 'sehr lang oder 24/7, auch am Wochenende'] },
-      { id: 'f14', q: 'Anfahrt (einfach)', opts: ['über 45 Min.', '30–45 Min.', '20–30 Min.', '10–20 Min.', 'unter 10 Min.'] },
+      { id: 'f14', q: 'Anbindung & Erreichbarkeit', opts: ['kaum erreichbar: abgelegen, nur mit Auto oder sehr langem Fußweg', 'umständlich: Bus/Bahn selten, mehrmals umsteigen oder weiter Fußweg', 'okay: Bus oder Bahn in der Nähe, fährt aber nicht so oft', 'gut angebunden: Haltestelle in der Nähe, fährt regelmäßig, Fahrradständer', 'super angebunden: mehrere Linien direkt vor der Tür, auch spät noch, gut zu Fuß oder mit dem Rad'] },
+      { id: 'f21', q: 'Zugänglichkeit', opts: ['große Hürden: Anmeldung oder Ausweis nötig und Tasche muss draußen bleiben, Spind nur mit eigenem Schloss', 'umständlich: Tasche und Jacke müssen in den Spind, du brauchst ein Schloss oder eine Münze, die du oft nicht dabei hast', 'Spind ist Pflicht, klappt aber meistens (z. B. 1-€-Münze als Pfand)', 'kleine Regeln: z. B. nur Jacke abgeben oder Getränke nur in Flaschen, Spinde kostenlos und genug da', 'einfach reingehen: du darfst alles mitnehmen, nichts abgeben, keine Anmeldung'] },
       { id: 'f15', q: 'Kosten pro Besuch', opts: ['über 10 €', '5–10 €', 'du musst etwas kaufen, ca. 3–5 €', 'kleiner oder freiwilliger Beitrag', 'kostenlos, du musst nichts kaufen'] },
     ],
   },
@@ -71,9 +72,9 @@ const LEVELS = [
   { min: -Infinity, name: 'Eher meiden', cls: 'bad' },
 ];
 
-// Beispiel aus der Excel-Tabelle (Stadtbibliothek, Note 7,90)
+// Beispiel aus der Excel-Tabelle (Stadtbibliothek; dort Note 7,90, mit der Frage „Zugänglichkeit“ etwas anders)
 const EXAMPLE_PLACE = {
   name: 'Stadtbibliothek', where: 'Beispiel aus der Tabelle',
   answers: { f1: 3, f2: 2, f3: 3, f4: 4, f5: 3, f6: 2, f7: 4, f8: 3, f9: 3, f10: 4, f11: 2,
-    f12: 2, f13: 4, f14: 3, f15: 4, f16: 4, f17: 2, f18: 3, f19: 3, f20: 4 },
+    f12: 2, f13: 4, f14: 3, f21: 3, f15: 4, f16: 4, f17: 2, f18: 3, f19: 3, f20: 4 },
 };
