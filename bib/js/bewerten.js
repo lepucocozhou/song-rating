@@ -9,6 +9,7 @@ const start = editing || draft || {};
 let answers = { ...(start.answers || {}) };
 let photos = [...(start.photos || [])];
 let geo = start.geo || null;   // { lat, lon } vom Ortsvorschlag
+let pros = [...(start.pros || [])], cons = [...(start.cons || [])];
 let dirty = false, saveTimer = null;
 let current = 0;
 
@@ -91,6 +92,10 @@ initPlaceSearch($('name'), $('nameSug'), r => {
 });
 $('geoClear').onclick = () => { geo = null; showGeo(); changed(); };
 showGeo();
+
+/* ---------- Top-Vorteile / -Nachteile ---------- */
+initPcPicker($('prosPick'), 'pros', () => pros, l => { pros = l; changed(); });
+initPcPicker($('consPick'), 'cons', () => cons, l => { cons = l; changed(); });
 
 /* ---------- Fotos ---------- */
 function renderPhotos() {
@@ -193,7 +198,7 @@ function persist() {
   clearTimeout(saveTimer);
   if (!dirty) return true;
   const name = $('name').value.trim();
-  const rec = { name, where: $('where').value.trim(), note: $('note').value.trim(), photos: [...photos], geo, answers: { ...answers } };
+  const rec = { name, where: $('where').value.trim(), note: $('note').value.trim(), photos: [...photos], geo, pros: [...pros], cons: [...cons], answers: { ...answers } };
   if (!name) {
     if (!store.set('draft', rec)) return showSaveState('full'), false;
     dirty = false;

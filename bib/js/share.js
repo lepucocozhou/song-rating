@@ -35,22 +35,45 @@ function drawPhoto(ctx, img, x, y, w, h, radius, row) {
   ctx.restore();
 }
 
-function ellipsis(ctx, text, max) {
-  text = String(text || '');
-  if (ctx.measureText(text).width <= max) return text;
-  while (text && ctx.measureText(text + '…').width > max) text = text.slice(0, -1);
-  return text.trimEnd() + '…';
-}
-function wrapLines(ctx, text, max, lines) {
-  const words = String(text || '').split(/\s+/), out = [];
+// Text umbrechen, nie abschneiden; sehr lange Wörter werden zur Not mitten im Wort getrennt
+function wrapAll(ctx, text, max) {
+  const out = [];
   let line = '';
-  for (const w of words) {
+  out.broke = false;
+  for (const w of String(text || '').split(/\s+/).filter(Boolean)) {
     const next = line ? line + ' ' + w : w;
-    if (ctx.measureText(next).width <= max || !line) line = next; else { out.push(line); line = w; }
+    if (ctx.measureText(next).width <= max) { line = next; continue; }
+    if (line) out.push(line);
+    line = w;
+    while (ctx.measureText(line).width > max) {   // Wort allein zu lang
+      out.broke = true;
+      let cut = line.length - 1;
+      while (cut > 1 && ctx.measureText(line.slice(0, cut) + '-').width > max) cut--;
+      cut = Math.min(cut, line.length - 3);   // nie nur 1–2 Buchstaben allein in die nächste Zeile
+      out.push(line.slice(0, cut) + '-');
+      line = line.slice(cut);
+    }
   }
   if (line) out.push(line);
-  if (out.length <= lines) return out;
-  return [...out.slice(0, lines - 1), ellipsis(ctx, out.slice(lines - 1).join(' '), max)];
+  return out;
+}
+// Größte Schrift (zwischen size und min), bei der der Text in höchstens maxLines Zeilen passt
+function fitText(ctx, text, max, font, size, min, maxLines) {
+  // lieber kleinere Schrift als ein getrenntes Wort; erst ganz zum Schluss wird getrennt
+  for (const allowBreak of [false, true]) {
+    for (let s = size; s >= min; s -= 2) {
+      ctx.font = font(s);
+      const lines = wrapAll(ctx, text, max);
+      if (lines.length <= maxLines && (allowBreak || !lines.broke)) return { lines, size: s };
+    }
+  }
+  ctx.font = font(min);
+  return { lines: wrapAll(ctx, text, max), size: min };
+}
+function drawLines(ctx, block, font, x, y, lh) {
+  ctx.font = font(block.size);
+  block.lines.forEach((l, i) => ctx.fillText(l, x, y + i * block.size * lh));
+  return block.lines.length * block.size * lh;
 }
 const spaced = (ctx, px) => { if ('letterSpacing' in ctx) ctx.letterSpacing = px; };
 
@@ -83,44 +106,99 @@ function kicker(ctx, text, y) {
 }
 
 /* ---------- ein Lernort ---------- */
+// Vorteile/Nachteile als Pillen in Zeilen anordnen (Pillen zu lang für eine Zeile werden umgebrochen)
+function layoutPills(ctx, items, max) {
+  const font = `700 28px ${SHARE_SANS}`, padX = 22, lineH = 36, gap = 12;
+  ctx.font = font;
+  const pills = items.map(it => {
+    const lines = wrapAll(ctx, it.text, max - 2 * padX);
+    const w = Math.min(max, Math.max(...lines.map(l => ctx.measureText(l).width)) + 2 * padX);
+    return { ...it, lines, w, h: lines.length * lineH + 20 };
+  });
+  const rows = [];
+  let row = [], rw = 0;
+  pills.forEach(p => {
+    if (row.length && rw + gap + p.w > max) { rows.push(row); row = []; rw = 0; }
+    rw += (row.length ? gap : 0) + p.w; row.push(p);
+  });
+  if (row.length) rows.push(row);
+  const height = rows.reduce((h, r) => h + Math.max(...r.map(p => p.h)) + gap, 0) - (rows.length ? gap : 0);
+  return { rows, height, font, padX, lineH, gap };
+}
+
 async function drawPlaceCard(row, n) {
   const { canvas, ctx } = shareBase();
   kicker(ctx, 'Mein Lernort', 215);
   const img = await loadImg(row.p.photos?.[0]);
-  const pw = 900, ph = 600, px = (SHARE_W - pw) / 2, py = 265;
-  ctx.save(); ctx.shadowColor = 'rgba(18,56,36,.28)'; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
-  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(px, py, pw, ph, 40); ctx.fill(); ctx.restore();
-  drawPhoto(ctx, img, px, py, pw, ph, 40, row);
+  const W = 900, X = 90;
+  const nameFont = s => `600 ${s}px ${SHARE_SERIF}`, whereFont = s => `600 ${s}px ${SHARE_SANS}`, catFont = s => `700 ${s}px ${SHARE_SANS}`;
+  const name = fitText(ctx, row.p.name, W, nameFont, 70, 44, 3);
+  const where = row.p.where ? fitText(ctx, row.p.where, W, whereFont, 34, 24, 2) : null;
+  const pills = layoutPills(ctx, [...(row.p.pros || []).map(t => ({ text: '👍 ' + t, pro: true })), ...(row.p.cons || []).map(t => ({ text: '👎 ' + t, pro: false }))], W);
 
-  let y = py + ph + 105;
-  ctx.textAlign = 'center'; ctx.fillStyle = INK; ctx.font = `600 70px ${SHARE_SERIF}`;
-  wrapLines(ctx, row.p.name, 900, 2).forEach(l => { ctx.fillText(l, SHARE_W / 2, y); y += 78; });
-  if (row.p.where) { ctx.fillStyle = INK_SOFT; ctx.font = `600 34px ${SHARE_SANS}`; ctx.fillText(ellipsis(ctx, row.p.where, 900), SHARE_W / 2, y - 16); y += 34; }
-  y += 10;
+  // Höhen planen: das Foto bekommt, was übrig bleibt (260–600 px)
+  const nameH = name.lines.length * name.size * 1.12, whereH = where ? where.lines.length * where.size * 1.3 + 6 : 0;
+  const cardH = 210, pillsH = pills.height ? pills.height + 44 : 0;
+  let barH = 66;
+  const fixed = 40 + nameH + whereH + 34 + cardH + 44 + pillsH;
+  const bottom = SHARE_H - 125, top = 265;
+  let ph = bottom - top - fixed - CATS.length * barH;
+  if (ph < 260) { barH = Math.max(52, barH - (260 - ph) / CATS.length); ph = Math.max(260, bottom - top - fixed - CATS.length * barH); }
+  ph = Math.min(600, ph);
+
+  ctx.save(); ctx.shadowColor = 'rgba(18,56,36,.28)'; ctx.shadowBlur = 60; ctx.shadowOffsetY = 24;
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(X, top, W, ph, 40); ctx.fill(); ctx.restore();
+  drawPhoto(ctx, img, X, top, W, ph, 40, row);
+
+  let y = top + ph + 40;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top'; ctx.fillStyle = INK;
+  y += drawLines(ctx, name, nameFont, SHARE_W / 2, y, 1.12);
+  if (where) { ctx.fillStyle = INK_SOFT; y += 6 + drawLines(ctx, where, whereFont, SHARE_W / 2, y + 6, 1.3); }
+  ctx.textBaseline = 'alphabetic';
+  y += 34;
 
   // dunkle Karte mit der Note
-  const cardH = 210, l = level(row.note);
-  ctx.fillStyle = INK; ctx.beginPath(); ctx.roundRect(90, y, 900, cardH, 40); ctx.fill();
+  const l = level(row.note);
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.roundRect(X, y, W, cardH, 40); ctx.fill();
   ctx.textAlign = 'left'; ctx.fillStyle = '#cdeed7'; ctx.font = `800 28px ${SHARE_SANS}`;
   spaced(ctx, '4px'); ctx.fillText('ENDNOTE', 140, y + 88); spaced(ctx, '0px');
-  ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.font = `600 32px ${SHARE_SANS}`;
+  ctx.fillStyle = 'rgba(255,255,255,.8)';
   const rankText = n > 1 && row.rank ? `Platz ${row.rank} von ${n}` : '';
-  ctx.fillText([l?.name, rankText].filter(Boolean).join(' · ') + (row.ko ? ' · K.-o.' : ''), 140, y + 142);
+  const info = fitText(ctx, [l?.name, rankText].filter(Boolean).join(' · ') + (row.ko ? ' · K.-o.' : ''), 460, s => `600 ${s}px ${SHARE_SANS}`, 32, 22, 2);
+  ctx.textBaseline = 'top'; drawLines(ctx, info, s => `600 ${s}px ${SHARE_SANS}`, 140, y + 112, 1.2); ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'right'; ctx.fillStyle = '#cdeed7'; ctx.font = `600 150px ${SHARE_SERIF}`;
   ctx.fillText(fmt(row.note), 945, y + 160);
-  y += cardH + 70;
+  y += cardH + 44;
+
+  // Vorteile / Nachteile
+  if (pills.height) {
+    pills.rows.forEach(r => {
+      let x = X;
+      const rh = Math.max(...r.map(p => p.h));
+      r.forEach(p => {
+        ctx.fillStyle = p.pro ? '#d6f1df' : '#fde3da';
+        ctx.beginPath(); ctx.roundRect(x, y, p.w, p.h, Math.min(28, p.h / 2)); ctx.fill();
+        ctx.fillStyle = p.pro ? '#145233' : '#7a2810'; ctx.font = pills.font; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+        p.lines.forEach((t, i) => ctx.fillText(t, x + pills.padX, y + 10 + pills.lineH / 2 + i * pills.lineH + 1));
+        x += p.w + pills.gap;
+      });
+      y += rh + pills.gap;
+    });
+    ctx.textBaseline = 'alphabetic';
+    y += 44 - pills.gap;
+  }
 
   // ein Balken pro Kategorie
-  const rowH = Math.min(74, (SHARE_H - 130 - y) / CATS.length);
+  y += 30;
   CATS.forEach((c, i) => {
     const k = row.cats[i];
-    ctx.textAlign = 'left'; ctx.fillStyle = INK; ctx.font = `700 30px ${SHARE_SANS}`;
-    ctx.fillText(ellipsis(ctx, c.name, 740), 90, y);
-    ctx.textAlign = 'right'; ctx.font = `800 30px ${SHARE_SANS}`;
-    ctx.fillText(pct(k), 990, y);
-    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.roundRect(90, y + 14, 900, 14, 7); ctx.fill();
-    if (k) { ctx.fillStyle = c.color; ctx.beginPath(); ctx.roundRect(90, y + 14, Math.max(14, 900 * k), 14, 7); ctx.fill(); }
-    y += rowH;
+    ctx.textAlign = 'right'; ctx.fillStyle = INK; ctx.font = `800 30px ${SHARE_SANS}`;
+    ctx.fillText(pct(k), X + W, y);
+    const label = fitText(ctx, c.name, W - 130, catFont, 30, 20, 1);
+    ctx.textAlign = 'left'; ctx.font = catFont(label.size); ctx.fillText(label.lines.join(' '), X, y);
+    ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.roundRect(X, y + 14, W, 14, 7); ctx.fill();
+    if (k) { ctx.fillStyle = c.color; ctx.beginPath(); ctx.roundRect(X, y + 14, Math.max(14, W * k), 14, 7); ctx.fill(); }
+    y += barH;
   });
   return canvas;
 }
@@ -132,8 +210,9 @@ async function drawTopCard(rows) {
   const imgs = await Promise.all(rows.map(r => loadImg(r.p.photos?.[0])));
   const rowH = Math.min(142, (SHARE_H - 520) / rows.length), h = rowH - 16;
   const top = Math.max(380, (380 + SHARE_H - 140 - rows.length * rowH) / 2);
-  ctx.textAlign = 'center'; ctx.fillStyle = INK; ctx.font = `600 78px ${SHARE_SERIF}`;
-  ctx.fillText(rows.length === 1 ? 'Mein Lieblings-Lernort' : `Meine Top ${rows.length} Lernorte`, SHARE_W / 2, top - 60);
+  const titleFont = s => `600 ${s}px ${SHARE_SERIF}`;
+  const title = fitText(ctx, rows.length === 1 ? 'Mein Lieblings-Lernort' : `Meine Top ${rows.length} Lernorte`, 940, titleFont, 78, 50, 1);
+  ctx.textAlign = 'center'; ctx.fillStyle = INK; ctx.font = titleFont(title.size); ctx.fillText(title.lines[0], SHARE_W / 2, top - 60);
   const medals = ['#f5c542', '#c7d2dc', '#e0a46e'];
   rows.forEach((r, i) => {
     const y = top + i * rowH;
@@ -144,12 +223,23 @@ async function drawTopCard(rows) {
     ctx.fillText(String(r.rank), rx, ry + 1);
     const ch = h - 24, cw = Math.round(ch * 4 / 3);
     drawPhoto(ctx, imgs[i], 185, y + 12, cw, ch, 16, r);
+
+    // Name + Adresse: so groß wie möglich, zur Not in zwei Zeilen und kleiner – nie abgeschnitten
     const tx = 185 + cw + 26, tw = 820 - tx;
-    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = INK; ctx.font = `800 ${Math.round(h * .26)}px ${SHARE_SANS}`;
-    ctx.fillText(ellipsis(ctx, r.p.name, tw), tx, y + h * .47);
-    ctx.fillStyle = INK_SOFT; ctx.font = `600 ${Math.round(h * .2)}px ${SHARE_SANS}`;
-    ctx.fillText(ellipsis(ctx, r.p.where || level(r.note)?.name || '', tw), tx, y + h * .8);
+    const nf = s => `800 ${s}px ${SHARE_SANS}`, sf = s => `600 ${s}px ${SHARE_SANS}`;
+    const sub = r.p.where || level(r.note)?.name || '';
+    let nb, sb, total;
+    for (let k = 1; k >= 0.55; k -= 0.05) {
+      nb = fitText(ctx, r.p.name, tw, nf, Math.round(h * .26 * k), Math.round(h * .26 * k), 9);
+      sb = fitText(ctx, sub, tw, sf, Math.round(h * .2 * k), Math.round(h * .2 * k), 9);
+      total = nb.lines.length * nb.size * 1.1 + (sub ? 6 + sb.lines.length * sb.size * 1.2 : 0);
+      if (total <= h - 20) break;
+    }
+    ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    let ty = y + (h - total) / 2;
+    ctx.fillStyle = INK; ty += drawLines(ctx, nb, nf, tx, ty, 1.1);
+    if (sub) { ctx.fillStyle = INK_SOFT; drawLines(ctx, sb, sf, tx, ty + 6, 1.2); }
+
     const [bg, fg] = LEVEL_COLORS[level(r.note)?.cls] || LEVEL_COLORS.ok;
     ctx.fillStyle = bg; ctx.beginPath(); ctx.roundRect(840, y + h / 2 - 34, 140, 68, 20); ctx.fill();
     ctx.fillStyle = fg; ctx.font = `800 34px ${SHARE_SANS}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';

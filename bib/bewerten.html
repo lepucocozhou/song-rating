@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/base.css?v=4">
-<link rel="stylesheet" href="css/bewerten.css?v=4">
+<link rel="stylesheet" href="css/bewerten.css?v=5">
 <link rel="stylesheet" href="css/share.css?v=4">
 <link rel="stylesheet" href="css/mobile.css?v=4">
 </head>
@@ -67,6 +67,12 @@
           <div class="rc-score" id="rcScore">–</div>
         </div>
         <div class="ko-box" id="koBox" hidden></div>
+        <div class="pc-box">
+          <h3>👍 Top-Vorteile <small>bis zu 3 – der erste ist der wichtigste</small></h3>
+          <div id="prosPick"></div>
+          <h3>👎 Top-Nachteile <small>bis zu 3</small></h3>
+          <div id="consPick"></div>
+        </div>
         <div class="sum" id="sum"></div>
         <div class="save-row">
           <button class="primary" id="save">Fertig – zur Rangliste</button>
@@ -86,8 +92,9 @@
 <script src="../assets/vendor/supabase.min.js"></script>
 <script src="../assets/js/cloud-config.js?v=4"></script>
 <script src="js/cloud.js?v=4"></script>
-<script src="js/share.js?v=4"></script>
+<script src="js/share.js?v=6"></script>
+<script src="js/vorteile.js?v=6"></script>
 <script src="js/ortsuche.js?v=4"></script>
-<script src="js/bewerten.js?v=4"></script>
+<script src="js/bewerten.js?v=5"></script>
 </body>
 </html>
