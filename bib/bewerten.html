@@ -41,8 +41,15 @@
       <div class="page" style="--c:var(--accent-strong)">
         <div class="page-title"><div><div class="kicker">Schritt 1</div><h2>Welcher Lernort?</h2></div></div>
         <div class="meta">
-          <label>Name des Lernorts<input id="name" placeholder="z. B. Unibibliothek, 2. Stock" autocomplete="off"></label>
-          <label>Wo? <span class="opt-l">(optional)</span><input id="where" placeholder="Stadt, Adresse oder Uni" autocomplete="off"></label>
+          <div class="name-wrap">
+            <label>Name des Lernorts<input id="name" placeholder="Tippen, z. B. „Stadtbibliothek“ – Vorschläge kommen" autocomplete="off" autocorrect="off" enterkeyhint="search"></label>
+            <div class="suggest" id="nameSug" hidden></div>
+          </div>
+          <label>Adresse <span class="opt-l">(kommt vom Vorschlag oder selbst eintragen)</span><input id="where" placeholder="Straße, Stadt oder Uni" autocomplete="off"></label>
+          <div class="geo-row full" id="geoRow" hidden>
+            <a class="btn map-btn" id="mapLink" target="_blank" rel="noopener">📍 In Apple Karten öffnen</a>
+            <button type="button" class="linkbtn" id="geoClear">Ort-Verknüpfung entfernen</button>
+          </div>
           <label class="full">Notiz <span class="opt-l">(optional)</span><textarea id="note" rows="3" placeholder="Beste Uhrzeit, Lieblingsplatz, was dir aufgefallen ist …"></textarea></label>
         </div>
         <div class="photos-box">
@@ -80,6 +87,7 @@
 <script src="../assets/js/cloud-config.js?v=4"></script>
 <script src="js/cloud.js?v=4"></script>
 <script src="js/share.js?v=4"></script>
+<script src="js/ortsuche.js?v=4"></script>
 <script src="js/bewerten.js?v=4"></script>
 </body>
 </html>

@@ -8,6 +8,7 @@ const draft = params.get('id') ? null : store.get('draft', null);
 const start = editing || draft || {};
 let answers = { ...(start.answers || {}) };
 let photos = [...(start.photos || [])];
+let geo = start.geo || null;   // { lat, lon } vom Ortsvorschlag
 let dirty = false, saveTimer = null;
 let current = 0;
 
@@ -75,6 +76,21 @@ $('name').value = start.name || '';
 $('where').value = start.where || '';
 $('note').value = start.note || '';
 ['name', 'where', 'note'].forEach(id => $(id).addEventListener('input', () => { changed(); update(); }));
+
+/* ---------- Ortssuche: Vorschlag wählen → Name, Adresse und Position eintragen ---------- */
+function showGeo() {
+  $('geoRow').hidden = !geo;
+  if (geo) $('mapLink').href = appleMapsUrl($('name').value.trim(), geo);
+}
+initPlaceSearch($('name'), $('nameSug'), r => {
+  $('name').value = r.name;
+  $('where').value = r.address;
+  $('name').classList.remove('missing');
+  geo = { lat: r.lat, lon: r.lon };
+  showGeo(); changed(); update();
+});
+$('geoClear').onclick = () => { geo = null; showGeo(); changed(); };
+showGeo();
 
 /* ---------- Fotos ---------- */
 function renderPhotos() {
@@ -177,7 +193,7 @@ function persist() {
   clearTimeout(saveTimer);
   if (!dirty) return true;
   const name = $('name').value.trim();
-  const rec = { name, where: $('where').value.trim(), note: $('note').value.trim(), photos: [...photos], answers: { ...answers } };
+  const rec = { name, where: $('where').value.trim(), note: $('note').value.trim(), photos: [...photos], geo, answers: { ...answers } };
   if (!name) {
     if (!store.set('draft', rec)) return showSaveState('full'), false;
     dirty = false;

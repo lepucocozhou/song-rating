@@ -149,3 +149,23 @@
 .auto-state.ok{color:var(--accent-strong)}
 .auto-state.full{color:#c2410c}
 .auto-state:empty{display:none}
+
+/* Ortssuche beim Namen */
+.name-wrap{position:relative}
+.name-wrap label{display:block}
+.suggest{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:20;background:var(--card);border:1px solid var(--line);border-radius:14px;
+  box-shadow:0 12px 30px rgba(18,56,36,.16);overflow:hidden;min-width:min(460px,calc(100vw - 32px))}
+.sug{display:flex;gap:12px;align-items:center;padding:9px 12px;cursor:pointer}
+.sug + .sug{border-top:1px solid var(--soft)}
+.sug.hl,.sug:hover{background:var(--accent-soft)}
+.sug-ic{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:var(--soft);font-size:19px}
+.sug-txt{flex:1;min-width:0}
+.sug .t{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sug .sub{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sug-km{flex:none;font-size:12px;font-weight:700;color:var(--muted)}
+.sug-msg{padding:12px 14px;font-size:13.5px;color:var(--muted)}
+.sug-foot{padding:7px 12px;font-size:11.5px;color:var(--muted);background:var(--bg);border-top:1px solid var(--line)}
+.geo-row{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.map-btn{text-decoration:none;font-size:14px;font-weight:700}
+.linkbtn{background:none;border:0;padding:0;color:var(--muted);font-size:13px;text-decoration:underline;cursor:pointer}
+@media (max-width:640px){.suggest{min-width:0}.sug-foot{display:none}}
