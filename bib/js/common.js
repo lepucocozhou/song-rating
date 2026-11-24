@@ -8,7 +8,8 @@ const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2
 const now = () => new Date().toISOString();
 // Zahlen deutsch: 7,90
 const fmt = v => v === null || v === undefined ? '–' : v.toFixed(2).replace('.', ',');
-const pct = v => v === null || v === undefined ? '–' : Math.round(v * 100) + ' %';
+// Kategorie-Note 1–10 (wie die Endnote): 1 + 9 × Kategorie-Wert, eine Nachkommastelle → „7,8“
+const catNote = v => v === null || v === undefined ? '–' : (1 + 9 * v).toFixed(1).replace('.', ',');
 
 const store = {
   get(k, d) { try { return JSON.parse(localStorage.getItem('bib.' + k)) ?? d; } catch (e) { return d; } },

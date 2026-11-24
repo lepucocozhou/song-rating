@@ -11,7 +11,7 @@
 <link rel="icon" type="image/png" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>So geht’s – Lernorte</title>
-<script src="js/theme.js?v=4"></script>
+<script src="js/theme.js?v=7"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,600&family=Manrope:wght@400;500;600;700;800&display=swap">
@@ -47,7 +47,7 @@
   <section class="card">
     <h2>So wird gerechnet</h2>
     <ol class="calc">
-      <li><b>Kategorie-Wert</b> K = Durchschnitt der beantworteten Fragen ÷ 4. Ergebnis zwischen 0 % und 100 %.</li>
+      <li><b>Kategorie-Wert</b> K = Durchschnitt der beantworteten Fragen ÷ 4 (zwischen 0 und 1). Angezeigt wird er als Kategorie-Note 1 + 9 × K, also wie die Endnote von 1 bis 10.</li>
       <li><b>Gesamtwert</b> G = Summe aus (Gewicht × K) ÷ Summe der Gewichte, die wirklich verwendet wurden. Fällt eine ganze Kategorie weg, verteilen sich die Gewichte automatisch auf die anderen.</li>
       <li><b>Note</b> = 1 + 9 × G, gerundet auf 2 Nachkommastellen. Alles 0 Punkte ergibt 1,00, alles 4 Punkte ergibt 10,00.</li>
     </ol>
@@ -74,12 +74,12 @@
   </section>
 </main>
 
-<script src="js/fragen.js?v=4"></script>
-<script src="js/common.js?v=4"></script>
-<script src="../assets/js/apps.js?v=4"></script>
+<script src="js/fragen.js?v=7"></script>
+<script src="js/common.js?v=7"></script>
+<script src="../assets/js/apps.js?v=7"></script>
 <script src="../assets/vendor/supabase.min.js"></script>
-<script src="../assets/js/cloud-config.js?v=4"></script>
-<script src="js/cloud.js?v=4"></script>
+<script src="../assets/js/cloud-config.js?v=7"></script>
+<script src="js/cloud.js?v=7"></script>
 <script>
   $('cats').innerHTML = CATS.map(c => `<div class="cat-item" style="--c:${c.color}">
     <div><b>${esc(c.name)}</b><span>${esc(c.desc)}</span></div><em>${Math.round(c.w * 100)} %</em></div>`).join('');

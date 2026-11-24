@@ -193,7 +193,7 @@ async function drawPlaceCard(row, n) {
   CATS.forEach((c, i) => {
     const k = row.cats[i];
     ctx.textAlign = 'right'; ctx.fillStyle = INK; ctx.font = `800 30px ${SHARE_SANS}`;
-    ctx.fillText(pct(k), X + W, y);
+    ctx.fillText(catNote(k), X + W, y);
     const label = fitText(ctx, c.name, W - 130, catFont, 30, 20, 1);
     ctx.textAlign = 'left'; ctx.font = catFont(label.size); ctx.fillText(label.lines.join(' '), X, y);
     ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.roundRect(X, y + 14, W, 14, 7); ctx.fill();

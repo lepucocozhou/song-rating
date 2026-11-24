@@ -154,8 +154,8 @@ function update() {
 
   CATS.forEach((cat, ci) => {
     const open = cat.qs.filter(q => answers[q.id] === undefined).length;
-    $('cs' + ci).textContent = pct(sc.cats[ci]);
-    note(ci + 1, open ? `${cat.qs.length - open}/${cat.qs.length}` : `✓ ${pct(sc.cats[ci])}`, !open);
+    $('cs' + ci).textContent = catNote(sc.cats[ci]);
+    note(ci + 1, open ? `${cat.qs.length - open}/${cat.qs.length}` : `✓ ${catNote(sc.cats[ci])}`, !open);
   });
   note(0, name ? '✓' : 'Name fehlt', !!name);
   note(steps.length - 1, sc.note === null ? '' : fmt(sc.note), sc.answered === sc.total);
@@ -175,7 +175,7 @@ function update() {
   $('koBox').hidden = !sc.ko;
   $('koBox').innerHTML = sc.ko ? `<b>K.-o.-Regel:</b> „Lautstärke“ oder „Platz bekommen“ hat 0 Punkte, deshalb ist die Note höchstens 5,00 (ohne die Regel wären es ${fmt(Math.round(sc.raw * 100) / 100)}).` : '';
   $('sum').innerHTML = CATS.map((c, ci) => `<div class="sum-card" style="--c:${c.color}">
-    <div class="s">${esc(c.name)}</div><div class="n">${pct(sc.cats[ci])}</div>
+    <div class="s">${esc(c.name)}</div><div class="n">${catNote(sc.cats[ci])}</div>
     <div class="sum-bar"><i style="width:${(sc.cats[ci] ?? 0) * 100}%"></i></div>
     <div class="w">Gewicht ${Math.round(c.w * 100)} %</div></div>`).join('');
 }

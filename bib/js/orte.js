@@ -48,7 +48,7 @@ function grid(rows) {
       <div class="cp-body">
         <div class="t">${esc(r.p.name)}</div>
         <div class="sub">${[r.p.where, l?.name].filter(Boolean).map(esc).join(' · ') || '&nbsp;'}${r.ko ? ' <span class="ko-tag">K.-o.</span>' : ''}</div>
-        <div class="cat-bars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color}" title="${esc(CATS[i].name)}: ${pct(k)}"><b style="width:${(k ?? 0) * 100}%"></b></i>`).join('')}</div>
+        <div class="cat-bars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color}" title="${esc(CATS[i].name)}: ${catNote(k)}"><b style="width:${(k ?? 0) * 100}%"></b></i>`).join('')}</div>
       </div>
     </a>`;
   }).join('')}</div>
@@ -64,7 +64,7 @@ function list(rows) {
       <div class="row-text">
         <div class="t">${esc(r.p.name)}</div>
         <div class="sub">${[r.p.where, r.answered < r.total ? `${r.answered}/${r.total} Fragen` : ''].filter(Boolean).map(esc).join(' · ') || '&nbsp;'}</div>
-        <div class="cat-bars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color}" title="${esc(CATS[i].name)}: ${pct(k)}"><b style="width:${(k ?? 0) * 100}%"></b></i>`).join('')}</div>
+        <div class="cat-bars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color}" title="${esc(CATS[i].name)}: ${catNote(k)}"><b style="width:${(k ?? 0) * 100}%"></b></i>`).join('')}</div>
       </div>
       <div class="row-right">
         ${chip(r.note)}
@@ -82,9 +82,9 @@ function table(rows) {
     <tbody>${rows.map(r => `<tr onclick="location.href='bewerten.html?id=${r.p.id}'">
       <td>${r.rank ?? '–'}</td><td class="name">${esc(r.p.name)}</td><td class="num">${chip(r.note)}</td>
       <td>${level(r.note)?.name ?? '–'}</td><td>${r.note === null ? '–' : r.ko ? 'JA' : 'nein'}</td>
-      ${r.cats.map(k => `<td class="num">${pct(k)}</td>`).join('')}</tr>`).join('')}</tbody>
+      ${r.cats.map(k => `<td class="num">${catNote(k)}</td>`).join('')}</tr>`).join('')}</tbody>
   </table></div>
-  <p class="muted small">Kategorie-Spalten: wie gut der Ort in diesem Bereich abschneidet (100 % = alles 4 Punkte).</p>`;
+  <p class="muted small">Kategorie-Spalten: wie gut der Ort in diesem Bereich abschneidet (Note 1–10: 10 = alles 4 Punkte, 1 = alles 0 Punkte).</p>`;
 }
 
 render();

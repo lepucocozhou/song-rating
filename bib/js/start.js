@@ -46,7 +46,7 @@ function renderMine() {
     </section>
 
     <section class="block">
-      <div class="block-head"><div><h2>Stärken im Vergleich</h2><span>Wie gut jeder Ort pro Kategorie abschneidet (100 % = überall 4 Punkte)</span></div></div>
+      <div class="block-head"><div><h2>Stärken im Vergleich</h2><span>Wie gut jeder Ort pro Kategorie abschneidet (Note 1–10, 10 = überall 4 Punkte)</span></div></div>
       <div class="compare">${CATS.map((c, ci) => compareCard(c, ci)).join('')}</div>
     </section>`;
 }
@@ -63,7 +63,7 @@ function podium(r) {
       <div class="pod-text"><div class="pod-t">${esc(r.p.name)}</div><div class="pod-sub">${esc(r.p.where || l.name)}</div></div>
       ${chip(r.note)}
     </div>
-    <div class="minibars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color};height:${k === null ? 0 : Math.max(4, k * 100)}%" title="${esc(CATS[i].name)}: ${pct(k)}"></i>`).join('')}</div>
+    <div class="minibars">${r.cats.map((k, i) => `<i style="--c:${CATS[i].color};height:${k === null ? 0 : Math.max(4, k * 100)}%" title="${esc(CATS[i].name)}: ${catNote(k)}"></i>`).join('')}</div>
   </a>`;
 }
 
@@ -73,7 +73,7 @@ function compareCard(c, ci) {
   return `<div class="cmp-card" style="--c:${c.color}">
     <h3>${esc(c.name)}</h3><div class="cmp-sub">Gewicht ${Math.round(c.w * 100)} %</div>
     ${list.length ? list.map(r => `
-      <div class="hbar"><div class="hbar-label"><span>${esc(r.p.name)}</span><b>${pct(r.cats[ci])}</b></div>
+      <div class="hbar"><div class="hbar-label"><span>${esc(r.p.name)}</span><b>${catNote(r.cats[ci])}</b></div>
       <div class="hbar-track"><i style="width:${r.cats[ci] * 100}%"></i></div></div>`).join('') : '<p class="muted">Noch keine Antworten.</p>'}
   </div>`;
 }
